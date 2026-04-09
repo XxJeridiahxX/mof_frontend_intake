@@ -4,6 +4,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-staff-layout',
@@ -16,6 +18,8 @@ import { MatDividerModule } from '@angular/material/divider';
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
+    MatSelectModule,
+    MatFormFieldModule,
   ],
   template: `
     <div class="staff-shell">
@@ -31,56 +35,68 @@ import { MatDividerModule } from '@angular/material/divider';
 
           <div class="group-info">
             <span class="group-label">Group name: <strong>Athens Heart Center and Specialty Group</strong></span>
-            <div class="group-dropdown cp">
-              <span class="group-name">Athens Heart Center</span>
-              <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+            <div class="group-dropdown-wrapper">
+              <mat-form-field appearance="outline" class="compact-field">
+                <mat-select value="athens">
+                  <mat-option value="athens">Athens Heart Center</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
           </div>
         </div>
 
         <div class="top-bar-center">
           <div class="connection-badge">
-            <mat-icon class="watermark-icon">health_and_safety</mat-icon>
-            <div class="conn-col">
-              <span class="conn-label">ONLINE</span>
-              <span class="conn-val pulse-text">0</span>
+            <div class="conn-col top-aligned">
+              <span class="header-label" style="color: rgb(80, 207, 171);">Excellent Connection <mat-icon class="refresh-icon">refresh</mat-icon></span>
+              <div class="conn-stats-row">
+                <div class="conn-block">
+                  <span class="conn-label">ONLINE</span>
+                  <div class="online-stats">
+                    <mat-icon class="small-call-icon">call_received</mat-icon> <span class="conn-val">0</span>
+                    <span class="pipe">|</span>
+                    <mat-icon class="small-call-icon">call_made</mat-icon> <span class="conn-val">0</span>
+                  </div>
+                </div>
+                
+                <div class="conn-block">
+                  <span class="conn-label">VOICE MAILS</span>
+                  <span class="conn-val">0</span>
+                </div>
+                
+                <div class="conn-block">
+                  <span class="conn-label">MISSED CALLS</span>
+                  <span class="conn-val">0</span>
+                </div>
+              </div>
             </div>
-            <div class="conn-col">
-              <span class="conn-label header-label">Excellent Connection</span>
-              <span class="conn-val">0</span>
-              <span class="conn-sublabel">VOICE MAILS</span>
-            </div>
-            <div class="conn-col">
-              <span class="conn-label">&nbsp;</span>
-              <span class="conn-val">0</span>
-              <span class="conn-sublabel">MISSED CALLS</span>
-            </div>
-            <mat-icon class="refresh-icon">autorenew</mat-icon>
           </div>
         </div>
 
         <div class="top-bar-right">
           <div class="action-icons">
-            <button mat-icon-button class="top-icon-btn" title="Phone">
-              <mat-icon>phone</mat-icon>
+            <button mat-icon-button class="top-icon-btn" title="TTY">
+              <mat-icon>tty</mat-icon>
             </button>
-            <button mat-icon-button class="top-icon-btn" title="Voice Call">
-              <mat-icon>phone_in_talk</mat-icon>
+            <button mat-icon-button class="top-icon-btn" title="Call Offline">
+              <mat-icon>phone_paused</mat-icon>
             </button>
             <button mat-icon-button class="top-icon-btn" title="Add Patient">
               <mat-icon>person_add</mat-icon>
             </button>
-            <button mat-icon-button class="top-icon-btn" title="Notifications">
+            <button mat-icon-button class="top-icon-btn custom-green" title="Notifications">
               <mat-icon>notifications</mat-icon>
             </button>
           </div>
 
           <button class="user-chip" [matMenuTriggerFor]="userMenu" mat-button>
+            <!-- Using account_circle as placeholder for assets/images/user.png -->
             <mat-icon class="user-avatar-icon">account_circle</mat-icon>
             <div class="user-info">
               <span class="user-role">General Care Manager</span>
               <span class="user-handle">(gmanager81530)</span>
             </div>
+            <mat-icon class="user-dropdown-icon">keyboard_arrow_down</mat-icon>
           </button>
 
           <mat-menu #userMenu="matMenu">
@@ -248,20 +264,32 @@ import { MatDividerModule } from '@angular/material/divider';
       }
     }
 
-    .group-dropdown {
-      display: flex;
-      align-items: center;
-      color: #444;
-      font-weight: 500;
-      font-size: 13px;
-
-      &:hover { color: #089bab; }
+    .group-dropdown-wrapper {
+      margin-top: 2px;
     }
 
-    .dropdown-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+    ::ng-deep .compact-field .mat-mdc-form-field-flex {
+      padding: 0 10px;
+      height: 32px;
+      align-items: center;
+      background: #fff;
+    }
+    
+    ::ng-deep .compact-field .mat-mdc-text-field-wrapper {
+      height: 32px;
+      padding-bottom: 0;
+    }
+
+    ::ng-deep .compact-field .mat-mdc-form-field-infix {
+      padding: 0;
+      min-height: auto;
+      width: 150px;
+    }
+
+    ::ng-deep .compact-field .mat-mdc-select-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
     }
 
     /* Center Middle (Connection Stats) */
@@ -273,83 +301,70 @@ import { MatDividerModule } from '@angular/material/divider';
     }
 
     .connection-badge {
-      display: flex;
-      align-items: stretch;
-      border: 1px solid #7ed5b8;
-      border-radius: 6px;
-      background: #fafffa;
-      padding: 4px 16px;
-      gap: 20px;
-      position: relative;
-      overflow: hidden;
-      min-width: 280px;
-    }
-
-    .watermark-icon {
-      position: absolute;
-      top: -5px;
-      right: 15px;
-      font-size: 45px;
-      width: 45px;
-      height: 45px;
-      color: rgba(126, 213, 184, 0.15);
-      z-index: 0;
-    }
-
-    .conn-col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 1;
-      position: relative;
-      padding-top: 5px;
-    }
-
-    .conn-label {
-      font-size: 9px;
-      color: #089bab;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      display: inline-block;
+      text-align: center;
     }
 
     .header-label {
-      color: #43a047;
-      font-size: 8px;
-      white-space: nowrap;
-      position: absolute;
-      top: -4px;
-    }
-
-    .conn-val {
-      font-size: 18px;
-      font-weight: 700;
-      color: #089bab;
-      line-height: 1;
-      margin: 4px 0;
-    }
-
-    .pulse-text {
-      color: #43a047;
-    }
-
-    .conn-sublabel {
-      font-size: 8px;
-      color: #089bab;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 2px;
     }
 
     .refresh-icon {
-      position: absolute;
-      top: 4px;
-      right: 4px;
       font-size: 14px;
       width: 14px;
       height: 14px;
-      color: #089bab;
       cursor: pointer;
+    }
+
+    .conn-stats-row {
+      display: flex;
+      align-items: stretch;
+      gap: 20px;
+    }
+
+    .conn-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .conn-label {
+      font-size: 10px;
+      color: rgb(80, 207, 171);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .conn-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .online-stats {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .small-call-icon {
+      font-size: 13px;
+      width: 13px;
+      height: 13px;
+      color: rgb(80, 207, 171);
+    }
+
+    .pipe {
+      color: #ccc;
+      margin: 0 2px;
+      font-size: 12px;
     }
 
     /* Right side */
@@ -417,6 +432,13 @@ import { MatDividerModule } from '@angular/material/divider';
     .user-handle {
       font-size: 11px;
       color: #888;
+    }
+
+    .user-dropdown-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #555;
     }
 
     .signout-item mat-icon,
