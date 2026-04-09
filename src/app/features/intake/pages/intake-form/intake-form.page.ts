@@ -73,39 +73,30 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <!-- ══ DESKTOP STICKY HEADER ══ -->
-    <div class="desktop-sticky-header">
-      <div class="desktop-header-inner">
-        <div class="desktop-header-brand">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="24" height="24" rx="6" fill="#094997"/>
+    <!-- ══ UNIFIED FIXED HEADER (all screen sizes) ══ -->
+    <div class="unified-header">
+      <div class="unified-header-inner">
+        <div class="unified-brand">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="6" fill="white" fill-opacity="0.2"/>
             <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
           </svg>
-          <span class="desktop-header-title">MOF Patient Intake</span>
+          <span class="unified-brand-name">MOF Patient Intake</span>
         </div>
-        <div class="desktop-header-progress">
-          <span class="desktop-step-label">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
-          <span class="desktop-step-name">{{ stepLabels[(stepper?.selectedIndex || 0)] }}</span>
+        <div class="unified-step-info">
+          <span class="unified-step-counter">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
+          <span class="unified-step-name">{{ stepLabels[(stepper?.selectedIndex || 0)] }}</span>
         </div>
+        <button class="hamburger-btn" (click)="sidenav.open()" aria-label="Open navigation menu">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="4" width="24" height="2.5" rx="1.25" fill="white"/>
+            <rect y="10.75" width="24" height="2.5" rx="1.25" fill="white"/>
+            <rect y="17.5" width="24" height="2.5" rx="1.25" fill="white"/>
+          </svg>
+        </button>
       </div>
-      <mat-progress-bar mode="determinate" [value]="(((stepper?.selectedIndex || 0) + 1) / 6) * 100" color="accent" style="height:3px;"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="(((stepper?.selectedIndex || 0) + 1) / 6) * 100" color="accent"></mat-progress-bar>
     </div>
-    @if (isMobile) {
-      <div class="mobile-top-toolbar">
-        <div class="mobile-toolbar-inner">
-          <span class="mobile-step-label">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
-          <span class="mobile-step-name">{{ stepLabels[(stepper?.selectedIndex || 0)] }}</span>
-          <button class="hamburger-btn" (click)="sidenav.open()" aria-label="Open navigation menu">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect y="4" width="24" height="2.5" rx="1.25" fill="white"/>
-              <rect y="10.75" width="24" height="2.5" rx="1.25" fill="white"/>
-              <rect y="17.5" width="24" height="2.5" rx="1.25" fill="white"/>
-            </svg>
-          </button>
-        </div>
-        <mat-progress-bar mode="determinate" [value]="(((stepper?.selectedIndex || 0) + 1) / 6) * 100" color="accent"></mat-progress-bar>
-      </div>
-    }
 
     <div class="intake-form-container">
       <h1 class="page-title">Comprehensive Medical Intake Form</h1>
@@ -1012,55 +1003,62 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .super-step-wrapper form:first-child .form-section-title:first-child {
       margin-top: 0;
     }
-
-
-    /* ═══ DESKTOP STICKY HEADER ═══ */
-    .desktop-sticky-header {
+    /* ═══ UNIFIED FIXED HEADER ═══ */
+    .unified-header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      z-index: 900;
-      background: white;
-      border-bottom: 1px solid #e8eaed;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      z-index: 1000;
+      background-color: #094997;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     }
-    .desktop-header-inner {
+    .unified-header-inner {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      height: 60px;
+      padding: 0 16px;
+      height: 56px;
       max-width: 960px;
       margin: 0 auto;
+      gap: 12px;
     }
-    .desktop-header-brand {
+    .unified-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
+      flex-shrink: 0;
     }
-    .desktop-header-title {
-      font-size: 17px;
+    .unified-brand-name {
+      font-size: 15px;
       font-weight: 700;
-      color: #094997;
-      letter-spacing: -0.2px;
+      color: white;
+      letter-spacing: -0.1px;
+      white-space: nowrap;
     }
-    .desktop-header-progress {
+    .unified-step-info {
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
+      align-items: flex-start;
+      flex: 1;
+      min-width: 0;
     }
-    .desktop-step-label {
+    .unified-step-counter {
       font-size: 13px;
       font-weight: 600;
-      color: #094997;
+      color: white;
+      line-height: 1.2;
     }
-    .desktop-step-name {
-      font-size: 12px;
-      color: #888;
+    .unified-step-name {
+      font-size: 11px;
+      color: rgba(255,255,255,0.75);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 160px;
     }
-    @media (max-width: 800px) {
-      .desktop-sticky-header { display: none; }
+    /* On very small screens hide the brand text to save space */
+    @media (max-width: 380px) {
+      .unified-brand-name { display: none; }
     }
 
     /* ═══ UNIVERSAL STICKY FOOTER ═══ */
@@ -1115,71 +1113,16 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
       transform: scale(1.4);
     }
 
-    /* Compensate for fixed header (desktop) + fixed footer via ::ng-deep on mat-sidenav-content */
+    /* Compensate for fixed header + fixed footer via ::ng-deep on mat-sidenav-content */
     ::ng-deep mat-sidenav-content {
+      padding-top: 72px !important;  /* unified header 56px + 4px progress bar + 12px gap */
       padding-bottom: 80px !important;
-    }
-    @media (min-width: 801px) {
-      ::ng-deep mat-sidenav-content {
-        padding-top: 63px !important;
-      }
-    }
-    @media (max-width: 800px) {
-      ::ng-deep mat-sidenav-content {
-        padding-top: 100px !important; /* mobile toolbar 56px + progress bar */
-      }
     }
     /* intake-form-container extra bottom padding for safety */
     .intake-form-container {
       padding-bottom: 20px;
     }
 
-    /* ------- Custom Mobile Toolbar ------- */
-    .mobile-top-toolbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background-color: #094997;
-    }
-    .mobile-toolbar-inner {
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      height: 56px;
-      color: white;
-    }
-    .mobile-step-label {
-      font-size: 18px;
-      font-weight: 600;
-      color: white;
-      margin-right: 8px;
-      white-space: nowrap;
-    }
-    .mobile-step-name {
-      font-size: 13px;
-      color: rgba(255,255,255,0.75);
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .hamburger-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 10px;
-      min-width: 48px;
-      min-height: 48px;
-      border-radius: 8px;
-      flex-shrink: 0;
-    }
-    .hamburger-btn:hover { background: rgba(255,255,255,0.15); }
-    .hamburger-btn:active { background: rgba(255,255,255,0.25); }
 
     /* ------- Sidenav Header ------- */
     .sidenav-header {
