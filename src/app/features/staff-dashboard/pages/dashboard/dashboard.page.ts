@@ -10,6 +10,13 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
   imports: [CommonModule, RouterLink, MatCardModule, MatIconModule, MatButtonModule],
   template: `
+    <div class="breadcrumb-container">
+      <ol class="breadcrumb">
+        <li>Applications &nbsp; | &nbsp;</li>
+        <li class="active-page"> Overview </li>
+      </ol>
+    </div>
+
     <h1 class="page-title">Dashboard</h1>
 
     <div class="stats-grid">
@@ -58,6 +65,25 @@ import { MatButtonModule } from '@angular/material/button';
     </div>
   `,
   styles: `
+    .breadcrumb-container {
+      margin-bottom: 16px;
+    }
+
+    .breadcrumb {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      color: #666;
+      font-size: 14px;
+      font-weight: 400;
+    }
+    
+    .active-page {
+      color: #333;
+      font-weight: 500;
+    }
+
     .page-title {
       font-size: 24px;
       font-weight: 600;

@@ -8,6 +8,11 @@ export const STAFF_ROUTES: Routes = [
     children: [
       {
         path: '',
+        redirectTo: 'overview',
+        pathMatch: 'full',
+      },
+      {
+        path: 'overview',
         loadComponent: () =>
           import('./pages/dashboard/dashboard.page').then(
             (m) => m.DashboardPageComponent
@@ -18,13 +23,6 @@ export const STAFF_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/intake-list/intake-list.page').then(
             (m) => m.IntakeListPageComponent
-          ),
-      },
-      {
-        path: 'patients',
-        loadComponent: () =>
-          import('./pages/patients/patients.page').then(
-            (m) => m.PatientsPageComponent
           ),
       },
     ],

@@ -120,7 +120,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
       <!-- ═══ Horizontal Nav Bar ══════════════════════════════ -->
       <nav class="top-nav">
         <div class="nav-tabs">
-          <a class="nav-tab" routerLink="/staff" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-tab">
             <mat-icon>home</mat-icon>
             <span>Dashboard</span>
           </a>
@@ -155,9 +155,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
             <mat-icon style="font-size: 16px; margin-left: -5px; width: 16px;">arrow_drop_down</mat-icon>
           </a>
           <mat-menu #appsMenu="matMenu">
-            <a mat-menu-item routerLink="/staff/patients" routerLinkActive="active-menu">
-              <mat-icon>people</mat-icon>
-              <span>Population Dashboard</span>
+            <a mat-menu-item routerLink="/staff/overview" routerLinkActive="active-menu">
+              <mat-icon>bar_chart</mat-icon>
+              <span>Overview</span>
             </a>
             <a mat-menu-item routerLink="/staff/intakes" routerLinkActive="active-menu">
               <mat-icon>assignment</mat-icon>
@@ -554,6 +554,6 @@ export class StaffLayoutComponent {
   router = inject(Router);
 
   get isAppsActive(): boolean {
-    return this.router.url.includes('/staff/patients') || this.router.url.includes('/staff/intakes');
+    return this.router.url.includes('/staff/overview') || this.router.url.includes('/staff/intakes');
   }
 }
