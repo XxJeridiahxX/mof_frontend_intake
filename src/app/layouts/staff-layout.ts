@@ -186,12 +186,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 
       <!-- ═══ Page Content ════════════════════════════════════ -->
       <main class="staff-content">
-        @if (isAppsActive) {
-          <div class="page-breadcrumbs">
-            <span class="bc-app">Applications</span> <span class="bc-sep">|</span> 
-            <span class="bc-page">{{ router.url.includes('patients') ? 'Population Dashboard' : 'Intake Forms' }}</span>
-          </div>
-        }
         <router-outlet />
       </main>
 
@@ -529,26 +523,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
       background: #ffffff;
       max-width: 100vw;
       overflow-x: auto;
-    }
-    
-    .page-breadcrumbs {
-      font-size: 14px;
-      margin-bottom: 20px;
-      font-weight: 500;
-    }
-
-    .page-breadcrumbs .bc-app {
-      color: #333;
-    }
-
-    .page-breadcrumbs .bc-sep {
-      color: #ccc;
-      margin: 0 6px;
-    }
-
-    .page-breadcrumbs .bc-page {
-      color: #444;
-      font-weight: 600;
     }
 
     /* ─── Responsive ─────────────────────────────────────────── */
