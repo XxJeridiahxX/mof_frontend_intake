@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,6 +19,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
@@ -58,6 +59,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
                 Resend Link
               </button>
             </p>
+            
+            <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee; text-align: center;">
+              <p style="color: #646464; font-size: 13px; margin-bottom: 8px;">(Prototype Direct Testing Link)</p>
+              <a [routerLink]="['/form']" [queryParams]="{ id: intakeId() }" style="color: #2196f3; font-weight: 500; text-decoration: none;">
+                Proceed Directly to Extended Form &rarr;
+              </a>
+            </div>
           </div>
         } @else {
           @if (loading()) {
@@ -242,6 +250,7 @@ export class LandingPageComponent {
   submitted = signal(false);
   resending = signal(false);
   maskedPhone = signal('');
+  intakeId = signal<string>('');
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.form = this.fb.group({
@@ -272,6 +281,11 @@ export class LandingPageComponent {
       });
       
       if (!response.ok) throw new Error('Failed to initiate intake');
+      
+      const data = await response.json();
+      if (data.id) {
+        this.intakeId.set(data.id.toString());
+      }
       
       this.loading.set(false);
       this.submitted.set(true);
