@@ -1,4 +1,4 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import {
   FormBuilder,
@@ -1087,9 +1087,10 @@ export class IntakeFormPageComponent implements OnInit {
   get surgeries() { return this.medicalHistoryForm.get('surgeries') as FormArray; }
   get familyConditions() { return this.familyHistoryForm.get('familyConditions') as FormArray; }
 
-  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.TabletPortrait]).subscribe(result => {
+  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver, private cdr: ChangeDetectorRef) {
+    this.breakpointObserver.observe(['(max-width: 800px)']).subscribe(result => {
       this.isMobile = result.matches;
+      this.cdr.detectChanges();
     });
     this.route.queryParams.subscribe(params => {
       if (params['token']) this.token = params['token'];
