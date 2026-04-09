@@ -62,7 +62,7 @@ interface IntakeRow {
         </mat-form-field>
         
         <div class="icon-group">
-          <button mat-icon-button class="toolbar-icon-btn"><mat-icon>refresh</mat-icon></button>
+          <button mat-icon-button class="toolbar-icon-btn" (click)="fetchIntakes()"><mat-icon>refresh</mat-icon></button>
         </div>
       </div>
     </div>
@@ -304,7 +304,12 @@ export class IntakeListPageComponent implements OnInit {
   rows = signal<IntakeRow[]>([]);
   loading = signal(true);
 
-  async ngOnInit() {
+  ngOnInit() {
+    this.fetchIntakes();
+  }
+
+  async fetchIntakes() {
+    this.loading.set(true);
     try {
       const response = await fetch('/api/getIntakes');
       if (!response.ok) throw new Error('Failed to fetch intakes');
