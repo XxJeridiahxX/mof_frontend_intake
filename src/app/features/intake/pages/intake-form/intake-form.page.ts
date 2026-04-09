@@ -54,11 +54,14 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     
 <mat-sidenav-container class="mobile-sidenav-wrapper" [class.is-mobile]="isMobile">
   <mat-sidenav #sidenav mode="over" position="end" class="intake-sidenav">
-    <mat-toolbar color="primary" style="background-color: #094997; color: white;">
-      <span style="font-size: 16px;">Form Navigation</span>
-      <span style="flex: 1 1 auto;"></span>
-      <button mat-icon-button (click)="sidenav.close()"><mat-icon>close</mat-icon></button>
-    </mat-toolbar>
+    <div class="sidenav-header">
+      <span class="sidenav-title">Navigate Form</span>
+      <button class="sidenav-close-btn" (click)="sidenav.close()" aria-label="Close menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
     <mat-nav-list>
       <a mat-list-item (click)="stepper.selectedIndex = 0; sidenav.close()">1. Patient Profile</a>
       <a mat-list-item (click)="stepper.selectedIndex = 1; sidenav.close()">2. Coverage</a>
@@ -71,14 +74,20 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
 
   <mat-sidenav-content>
     @if (isMobile) {
-      <mat-toolbar style="background-color: #094997; color: white;" class="mobile-top-toolbar">
-        <span style="font-size: 16px;">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
-        <span style="flex: 1 1 auto;"></span>
-        <button mat-icon-button (click)="sidenav.open()">
-          <mat-icon>menu</mat-icon>
-        </button>
-      </mat-toolbar>
-      <mat-progress-bar mode="determinate" [value]="(((stepper?.selectedIndex || 0) + 1) / 6) * 100" color="accent"></mat-progress-bar>
+      <div class="mobile-top-toolbar">
+        <div class="mobile-toolbar-inner">
+          <span class="mobile-step-label">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
+          <span class="mobile-step-name">{{ stepLabels[(stepper?.selectedIndex || 0)] }}</span>
+          <button class="hamburger-btn" (click)="sidenav.open()" aria-label="Open navigation menu">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect y="4" width="24" height="2.5" rx="1.25" fill="white"/>
+              <rect y="10.75" width="24" height="2.5" rx="1.25" fill="white"/>
+              <rect y="17.5" width="24" height="2.5" rx="1.25" fill="white"/>
+            </svg>
+          </button>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="(((stepper?.selectedIndex || 0) + 1) / 6) * 100" color="accent"></mat-progress-bar>
+      </div>
     }
 
     <div class="intake-form-container">
@@ -1002,6 +1011,79 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
       margin-top: 0;
     }
 
+    /* ------- Custom Mobile Toolbar ------- */
+    .mobile-top-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #094997;
+    }
+    .mobile-toolbar-inner {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      height: 56px;
+      color: white;
+    }
+    .mobile-step-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+    .mobile-step-name {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .hamburger-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      min-width: 48px;
+      min-height: 48px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .hamburger-btn:hover { background: rgba(255,255,255,0.15); }
+    .hamburger-btn:active { background: rgba(255,255,255,0.25); }
+
+    /* ------- Sidenav Header ------- */
+    .sidenav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #094997;
+      padding: 0 12px;
+      height: 56px;
+    }
+    .sidenav-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: white;
+    }
+    .sidenav-close-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 50%;
+    }
+    .sidenav-close-btn:hover { background: rgba(255,255,255,0.15); }
+
     .intake-form-container { max-width: 960px; margin: 0 auto; }
     .page-title { font-size: 28px; font-weight: 600; color: #094997; margin: 0 0 4px; }
     .page-subtitle { color: #646464; font-size: 14px; margin: 0 0 24px; }
@@ -1056,6 +1138,15 @@ export class IntakeFormPageComponent implements OnInit {
   submitting = signal(false);
   isMobile = false;
   token: string | null = null;
+
+  stepLabels = [
+    'Patient Profile',
+    'Coverage',
+    'Chief Complaint',
+    'Active Clinicals',
+    'Health History',
+    'Signatures'
+  ];
 
   demographicsForm: FormGroup;
   contactForm: FormGroup;
