@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -542,6 +542,7 @@ export class IntakeFormPageComponent {
   medicalForm: FormGroup;
   consentForm: FormGroup;
   submitting = signal(false);
+  token: string | null = null;
 
   private allergies = signal<string[]>([]);
   private medications = signal<string[]>([]);
@@ -551,7 +552,13 @@ export class IntakeFormPageComponent {
   getMedications = this.medications.asReadonly();
   getConditions = this.conditions.asReadonly();
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      if (params['token']) {
+        this.token = params['token'];
+      }
+    });
+
     this.demographicsForm = this.fb.group({
       firstName: ['', Validators.required],
       middleName: [''],
@@ -629,7 +636,7 @@ export class IntakeFormPageComponent {
     this.submitting.set(true);
     
     // Construct full data payload payload
-    const payload = {
+    const payload: any = {
       demographicsForm: this.demographicsForm.value,
       emergencyForm: this.emergencyForm.value,
       insuranceForm: this.insuranceForm.value,
@@ -641,6 +648,10 @@ export class IntakeFormPageComponent {
       },
       consentForm: this.consentForm.value
     };
+
+    if (this.token) {
+        payload.token = this.token;
+    }
 
     try {
       const response = await fetch('/api/submitIntake', {

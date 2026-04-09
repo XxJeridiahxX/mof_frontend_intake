@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -145,21 +145,53 @@ export class VerifyPageComponent {
   loading = signal(false);
   error = signal('');
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  token: string | null = null;
+
+  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute) {
     this.form = this.fb.group({
       dateOfBirth: ['', Validators.required],
     });
+    
+    // Snag the token from URL query params
+    this.route.queryParams.subscribe(params => {
+      if (params['token']) {
+        this.token = params['token'];
+      }
+    });
   }
 
-  onVerify() {
+  async onVerify() {
     if (this.form.invalid) return;
+    if (!this.token) {
+        this.error.set('No session token provided in the URL. Please request a new link.');
+        return;
+    }
+
     this.loading.set(true);
     this.error.set('');
 
-    // TODO: Replace with API call to verifyIntakeToken
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/verifyDob', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+           token: this.token,
+           dateOfBirth: this.form.value.dateOfBirth
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Verification failed');
+      }
+      
       this.loading.set(false);
-      this.router.navigate(['/form']);
-    }, 1000);
+      this.router.navigate(['/form'], { queryParams: { token: data.token } });
+      
+    } catch (err: any) {
+      this.error.set(err.message || 'There was an issue processing your request.');
+      this.loading.set(false);
+    }
   }
 }

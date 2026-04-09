@@ -62,7 +62,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
             
             <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee; text-align: center;">
               <p style="color: #646464; font-size: 13px; margin-bottom: 8px;">(Prototype Direct Testing Link)</p>
-              <a [routerLink]="['/form']" [queryParams]="{ id: intakeId() }" style="color: #2196f3; font-weight: 500; text-decoration: none;">
+              <a [routerLink]="['/verify']" [queryParams]="{ token: intakeToken() }" style="color: #2196f3; font-weight: 500; text-decoration: none;">
                 Proceed Directly to Extended Form &rarr;
               </a>
             </div>
@@ -250,7 +250,7 @@ export class LandingPageComponent {
   submitted = signal(false);
   resending = signal(false);
   maskedPhone = signal('');
-  intakeId = signal<string>('');
+  intakeToken = signal<string>('');
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.form = this.fb.group({
@@ -283,8 +283,8 @@ export class LandingPageComponent {
       if (!response.ok) throw new Error('Failed to initiate intake');
       
       const data = await response.json();
-      if (data.id) {
-        this.intakeId.set(data.id.toString());
+      if (data.token) {
+        this.intakeToken.set(data.token);
       }
       
       this.loading.set(false);

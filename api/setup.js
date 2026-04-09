@@ -5,6 +5,7 @@ module.exports = async function handler(request, response) {
     const result = await sql`
       CREATE TABLE IF NOT EXISTS intakes (
         id SERIAL PRIMARY KEY,
+        token VARCHAR(255) UNIQUE,
         first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
