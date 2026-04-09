@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -112,7 +112,7 @@ import { MatDividerModule } from '@angular/material/divider';
             <mat-icon>schedule</mat-icon>
             <span>Schedule</span>
           </a>
-          <a class="nav-tab" routerLink="/staff/patients" routerLinkActive="active">
+          <a class="nav-tab">
             <mat-icon>person</mat-icon>
             <span>Patient</span>
           </a>
@@ -124,7 +124,7 @@ import { MatDividerModule } from '@angular/material/divider';
             <mat-icon>bar_chart</mat-icon>
             <span>Reports</span>
           </a>
-          <a class="nav-tab active">
+          <a class="nav-tab">
             <mat-icon>people</mat-icon>
             <span>Staff</span>
           </a>
@@ -132,10 +132,23 @@ import { MatDividerModule } from '@angular/material/divider';
             <mat-icon>chat</mat-icon>
             <span>Messaging</span>
           </a>
-          <a class="nav-tab" routerLink="/staff/intakes" routerLinkActive="active">
+          <!-- Applications Dropdown Menu -->
+          <a class="nav-tab cp" [class.active]="isAppsActive" [matMenuTriggerFor]="appsMenu">
             <mat-icon>apps</mat-icon>
             <span>Applications</span>
+            <mat-icon style="font-size: 16px; margin-left: -5px; width: 16px;">arrow_drop_down</mat-icon>
           </a>
+          <mat-menu #appsMenu="matMenu">
+            <a mat-menu-item routerLink="/staff/patients" routerLinkActive="active-menu">
+              <mat-icon>people</mat-icon>
+              <span>Population Dashboard</span>
+            </a>
+            <a mat-menu-item routerLink="/staff/intakes" routerLinkActive="active-menu">
+              <mat-icon>assignment</mat-icon>
+              <span>Intake Forms</span>
+            </a>
+          </mat-menu>
+
           <a class="nav-tab">
             <mat-icon>record_voice_over</mat-icon>
             <span>Voice Call</span>
@@ -157,9 +170,12 @@ import { MatDividerModule } from '@angular/material/divider';
 
       <!-- ═══ Page Content ════════════════════════════════════ -->
       <main class="staff-content">
-        <div class="page-breadcrumbs">
-          <span class="bc-app">Applications</span> <span class="bc-sep">|</span> <span class="bc-page">Population Dashboard</span>
-        </div>
+        @if (isAppsActive) {
+          <div class="page-breadcrumbs">
+            <span class="bc-app">Applications</span> <span class="bc-sep">|</span> 
+            <span class="bc-page">{{ router.url.includes('patients') ? 'Population Dashboard' : 'Intake Forms' }}</span>
+          </div>
+        }
         <router-outlet />
       </main>
 
@@ -538,4 +554,10 @@ import { MatDividerModule } from '@angular/material/divider';
     }
   `,
 })
-export class StaffLayoutComponent {}
+export class StaffLayoutComponent {
+  router = inject(Router);
+
+  get isAppsActive(): boolean {
+    return this.router.url.includes('/staff/patients') || this.router.url.includes('/staff/intakes');
+  }
+}
