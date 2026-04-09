@@ -254,20 +254,32 @@ export class LandingPageComponent {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.form.invalid) return;
     this.loading.set(true);
 
-    const phone = this.form.value.phone;
+    const payload = this.form.value;
+    const phone = payload.phone;
     this.maskedPhone.set(
       phone.replace(/(\d{3})\d{4}(\d{3,4})/, '$1****$2')
     );
 
-    // TODO: Replace with actual API call to registerPatientByIntake + sendIntakeFormToPatient
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/requestIntakeLink', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) throw new Error('Failed to initiate intake');
+      
       this.loading.set(false);
       this.submitted.set(true);
-    }, 1500);
+    } catch (err) {
+      console.error('Error initiating form:', err);
+      this.loading.set(false);
+      alert('There was an issue processing your request. Please try again.');
+    }
   }
 
   resendLink() {
