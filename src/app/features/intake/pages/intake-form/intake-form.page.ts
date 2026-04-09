@@ -18,7 +18,6 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-intake-form-page',
@@ -36,362 +35,832 @@ import { MatChipsModule } from '@angular/material/chips';
     MatCheckboxModule,
     MatRadioModule,
     MatProgressBarModule,
-    MatChipsModule,
   ],
   template: `
     <div class="intake-form-container">
-      <h1 class="page-title">Medical Intake Form</h1>
+      <h1 class="page-title">Comprehensive Medical Intake Form</h1>
       <p class="page-subtitle">
-        Please complete all sections. Your information is encrypted and secure.
+        Please complete all 11 sections. Your information is encrypted and securely stored.
       </p>
 
       @if (submitting()) {
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <mat-stepper
-        [linear]="false"
-        #stepper
-        class="intake-stepper"
-      >
-        <!-- Step 1: Demographics -->
-        <mat-step [stepControl]="demographicsForm" label="Demographics">
+      <mat-stepper [linear]="false" #stepper class="intake-stepper">
+        
+        <!-- STEP 1: Demographics -->
+        <mat-step [stepControl]="demographicsForm" label="Patient Demographics">
           <form [formGroup]="demographicsForm" class="step-form">
-            <div class="form-section-title">Personal Information</div>
+            <div class="form-section-title">Patient Name</div>
             <div class="form-row">
-              <mat-form-field class="dont-apply" appearance="outline">
+              <mat-form-field appearance="outline">
                 <mat-label>First Name</mat-label>
                 <input matInput formControlName="firstName" />
               </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Middle Name</mat-label>
+              <mat-form-field appearance="outline">
+                <mat-label>Middle Name / Initial</mat-label>
                 <input matInput formControlName="middleName" />
               </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
+              <mat-form-field appearance="outline">
                 <mat-label>Last Name</mat-label>
                 <input matInput formControlName="lastName" />
               </mat-form-field>
             </div>
             <div class="form-row">
-              <mat-form-field class="dont-apply" appearance="outline">
+              <mat-form-field appearance="outline">
+                <mat-label>Suffix (e.g. Jr., Sr., III)</mat-label>
+                <input matInput formControlName="suffix" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
                 <mat-label>Date of Birth</mat-label>
                 <input matInput type="date" formControlName="dateOfBirth" />
               </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Gender</mat-label>
-                <mat-select formControlName="gender">
-                  <mat-option value="male">Male</mat-option>
-                  <mat-option value="female">Female</mat-option>
-                  <mat-option value="other">Other</mat-option>
-                  <mat-option value="prefer_not">Prefer not to say</mat-option>
+            </div>
+
+            <div class="form-section-title">Identity & Profile</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Sex Assigned at Birth</mat-label>
+                <mat-select formControlName="sexAssigned">
+                  <mat-option value="Male">Male</mat-option>
+                  <mat-option value="Female">Female</mat-option>
+                  <mat-option value="Intersex">Intersex</mat-option>
+                  <mat-option value="Decline">Decline to state</mat-option>
                 </mat-select>
               </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
+              <mat-form-field appearance="outline">
+                <mat-label>Gender Identity</mat-label>
+                <input matInput formControlName="genderIdentity" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Social Security Number</mat-label>
+                <input matInput formControlName="ssn" placeholder="XXX-XX-XXXX"/>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Race</mat-label>
+                <input matInput formControlName="race" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Ethnicity</mat-label>
+                <input matInput formControlName="ethnicity" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
                 <mat-label>Marital Status</mat-label>
                 <mat-select formControlName="maritalStatus">
-                  <mat-option value="single">Single</mat-option>
-                  <mat-option value="married">Married</mat-option>
-                  <mat-option value="divorced">Divorced</mat-option>
-                  <mat-option value="widowed">Widowed</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="form-row">
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Email</mat-label>
-                <input matInput type="email" formControlName="email" />
-              </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Phone</mat-label>
-                <input matInput type="tel" formControlName="phone" />
-              </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Preferred Language</mat-label>
-                <mat-select formControlName="language">
-                  <mat-option value="en">English</mat-option>
-                  <mat-option value="es">Spanish</mat-option>
-                  <mat-option value="hi">Hindi</mat-option>
-                  <mat-option value="zh">Chinese</mat-option>
+                  <mat-option value="Single">Single</mat-option>
+                  <mat-option value="Married">Married</mat-option>
+                  <mat-option value="Divorced">Divorced</mat-option>
+                  <mat-option value="Widowed">Widowed</mat-option>
+                  <mat-option value="Separated">Separated</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
 
-            <div class="form-section-title">Address</div>
-            <div formGroupName="address">
-              <div class="form-row">
-                <mat-form-field
-                  class="dont-apply"
-                  appearance="outline"
-                  style="flex: 2"
-                >
-                  <mat-label>Street Address</mat-label>
-                  <input matInput formControlName="street" />
+            <div class="form-section-title">Status & Accommodations</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Type of Housing</mat-label>
+                <input matInput formControlName="housingType" placeholder="e.g. House, Apartment, Homeless" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Communication Difficulties?</mat-label>
+                <mat-select formControlName="communicationDiff">
+                  <mat-option value="Yes">Yes</mat-option>
+                  <mat-option value="No">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+              @if (demographicsForm.value.communicationDiff === 'Yes') {
+                <mat-form-field appearance="outline">
+                  <mat-label>Please describe</mat-label>
+                  <input matInput formControlName="communicationDesc" placeholder="e.g., hearing impaired" />
                 </mat-form-field>
-                <mat-form-field class="dont-apply" appearance="outline">
-                  <mat-label>City</mat-label>
-                  <input matInput formControlName="city" />
-                </mat-form-field>
-              </div>
-              <div class="form-row">
-                <mat-form-field class="dont-apply" appearance="outline">
-                  <mat-label>State</mat-label>
-                  <input matInput formControlName="state" />
-                </mat-form-field>
-                <mat-form-field class="dont-apply" appearance="outline">
-                  <mat-label>ZIP Code</mat-label>
-                  <input matInput formControlName="zip" />
-                </mat-form-field>
-                <mat-form-field class="dont-apply" appearance="outline">
-                  <mat-label>Country</mat-label>
-                  <mat-select formControlName="country">
-                    <mat-option value="US">United States</mat-option>
-                    <mat-option value="other">Other</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
+              }
             </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Employment Status</mat-label>
+                <mat-select formControlName="employmentStatus">
+                  <mat-option value="Employed">Employed</mat-option>
+                  <mat-option value="Unemployed">Unemployed</mat-option>
+                  <mat-option value="Retired">Retired</mat-option>
+                  <mat-option value="Student">Student</mat-option>
+                </mat-select>
+              </mat-form-field>
+              @if (demographicsForm.value.employmentStatus === 'Employed') {
+                <mat-form-field appearance="outline">
+                  <mat-label>Employer Name</mat-label>
+                  <input matInput formControlName="employerName" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Employer Phone Number</mat-label>
+                  <input matInput formControlName="employerPhone" />
+                </mat-form-field>
+              }
+            </div>
+
             <div class="step-actions">
-              <button class="btn btn-primary" matStepperNext>
-                Next <mat-icon>arrow_forward</mat-icon>
-              </button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
             </div>
           </form>
         </mat-step>
 
-        <!-- Step 2: Emergency Contact -->
-        <mat-step
-          [stepControl]="emergencyForm"
-          label="Emergency Contact"
-        >
-          <form [formGroup]="emergencyForm" class="step-form">
-            <div class="form-section-title">Emergency Contact</div>
+        <!-- STEP 2: Contact & Address -->
+        <mat-step [stepControl]="contactForm" label="Contact & Address">
+          <form [formGroup]="contactForm" class="step-form">
+            <div class="form-section-title">Mailing Address</div>
             <div class="form-row">
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Contact Name</mat-label>
-                <input matInput formControlName="name" />
+              <mat-form-field appearance="outline" style="flex:2">
+                <mat-label>Street Address</mat-label>
+                <input matInput formControlName="mailingStreet" />
               </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Relationship</mat-label>
-                <mat-select formControlName="relationship">
-                  <mat-option value="spouse">Spouse</mat-option>
-                  <mat-option value="parent">Parent</mat-option>
-                  <mat-option value="child">Child</mat-option>
-                  <mat-option value="sibling">Sibling</mat-option>
-                  <mat-option value="friend">Friend</mat-option>
-                  <mat-option value="other">Other</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Phone Number</mat-label>
-                <input matInput type="tel" formControlName="phone" />
+              <mat-form-field appearance="outline">
+                <mat-label>Apartment / Suite / Unit</mat-label>
+                <input matInput formControlName="mailingApt" />
               </mat-form-field>
             </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>City</mat-label>
+                <input matInput formControlName="mailingCity" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>State</mat-label>
+                <input matInput formControlName="mailingState" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>ZIP Code</mat-label>
+                <input matInput formControlName="mailingZip" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-section-title">Billing Address</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Billing Address Same as Mailing?</mat-label>
+                <mat-select formControlName="billingSame">
+                  <mat-option value="Yes">Yes</mat-option>
+                  <mat-option value="No">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            @if (contactForm.value.billingSame === 'No') {
+              <div class="form-row">
+                <mat-form-field appearance="outline" style="flex:2">
+                  <mat-label>Billing Street Address</mat-label>
+                  <input matInput formControlName="billingStreet" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Apartment / Suite / Unit</mat-label>
+                  <input matInput formControlName="billingApt" />
+                </mat-form-field>
+              </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Billing City</mat-label>
+                  <input matInput formControlName="billingCity" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Billing State</mat-label>
+                  <input matInput formControlName="billingState" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Billing ZIP</mat-label>
+                  <input matInput formControlName="billingZip" />
+                </mat-form-field>
+              </div>
+            }
+
+            <div class="form-section-title">Contact Numbers</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Cell Phone Number</mat-label>
+                <input matInput type="tel" formControlName="cellPhone" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Home Phone Number</mat-label>
+                <input matInput type="tel" formControlName="homePhone" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Work Phone Number</mat-label>
+                <input matInput type="tel" formControlName="workPhone" />
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Primary Contact Number</mat-label>
+                <mat-select formControlName="primaryContactNum">
+                  <mat-option value="Cell">Cell</mat-option>
+                  <mat-option value="Home">Home</mat-option>
+                  <mat-option value="Work">Work</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Best Contact Method</mat-label>
+                <mat-select formControlName="bestContactMethod">
+                  <mat-option value="Phone Call">Phone Call</mat-option>
+                  <mat-option value="Text">Text</mat-option>
+                  <mat-option value="Email">Email</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Email Address</mat-label>
+                <input matInput type="email" formControlName="emailAddress" />
+              </mat-form-field>
+            </div>
+
             <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>
-                <mat-icon>arrow_back</mat-icon> Back
-              </button>
-              <button class="btn btn-primary" matStepperNext>
-                Next <mat-icon>arrow_forward</mat-icon>
-              </button>
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
             </div>
           </form>
         </mat-step>
 
-        <!-- Step 3: Insurance -->
+        <!-- STEP 3: Insurance -->
         <mat-step [stepControl]="insuranceForm" label="Insurance">
           <form [formGroup]="insuranceForm" class="step-form">
-            <div class="form-section-title">Insurance Information</div>
-            <p class="form-helper">
-              If you don't have insurance, you can skip this section.
-            </p>
+            <div class="form-section-title">Primary Insurance</div>
             <div class="form-row">
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Insurance Provider</mat-label>
-                <input matInput formControlName="provider" />
+              <mat-form-field appearance="outline">
+                <mat-label>Insurance Carrier</mat-label>
+                <input matInput formControlName="primaryCarrier" />
               </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Policy Number</mat-label>
-                <input matInput formControlName="policyNumber" />
+              <mat-form-field appearance="outline">
+                <mat-label>Subscriber ID / Member Number</mat-label>
+                <input matInput formControlName="subscriberId" />
               </mat-form-field>
-            </div>
-            <div class="form-row">
-              <mat-form-field class="dont-apply" appearance="outline">
+              <mat-form-field appearance="outline">
                 <mat-label>Group Number</mat-label>
                 <input matInput formControlName="groupNumber" />
               </mat-form-field>
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Subscriber Name</mat-label>
-                <input matInput formControlName="subscriberName" />
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Relationship to Policy Holder</mat-label>
+                <mat-select formControlName="relationship">
+                  <mat-option value="Self">Self</mat-option>
+                  <mat-option value="Spouse">Spouse</mat-option>
+                  <mat-option value="Child">Child</mat-option>
+                  <mat-option value="Other">Other</mat-option>
+                </mat-select>
               </mat-form-field>
             </div>
-            <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>
-                <mat-icon>arrow_back</mat-icon> Back
-              </button>
-              <button class="btn btn-primary" matStepperNext>
-                Next <mat-icon>arrow_forward</mat-icon>
-              </button>
-            </div>
-          </form>
-        </mat-step>
 
-        <!-- Step 4: Medical History -->
-        <mat-step label="Medical History">
-          <form [formGroup]="medicalForm" class="step-form">
-            <div class="form-section-title">Allergies</div>
-            <div class="chip-input-row">
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Add an allergy</mat-label>
-                <input
-                  matInput
-                  #allergyInput
-                  (keydown.enter)="addChip('allergies', allergyInput); $event.preventDefault()"
-                />
-                <button
-                  matSuffix
-                  mat-icon-button
-                  (click)="addChip('allergies', allergyInput)"
-                >
-                  <mat-icon>add</mat-icon>
-                </button>
-              </mat-form-field>
-              <div class="chip-list">
-                @for (item of getAllergies(); track item) {
-                  <span class="chip chip-cyan">
-                    {{ item }}
-                    <mat-icon class="chip-remove" (click)="removeChip('allergies', item)">close</mat-icon>
-                  </span>
-                }
-              </div>
-            </div>
-
-            <div class="form-section-title">Current Medications</div>
-            <div class="chip-input-row">
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Add a medication</mat-label>
-                <input
-                  matInput
-                  #medInput
-                  (keydown.enter)="addChip('medications', medInput); $event.preventDefault()"
-                />
-                <button
-                  matSuffix
-                  mat-icon-button
-                  (click)="addChip('medications', medInput)"
-                >
-                  <mat-icon>add</mat-icon>
-                </button>
-              </mat-form-field>
-              <div class="chip-list">
-                @for (item of getMedications(); track item) {
-                  <span class="chip chip-teal">
-                    {{ item }}
-                    <mat-icon class="chip-remove" (click)="removeChip('medications', item)">close</mat-icon>
-                  </span>
-                }
-              </div>
-            </div>
-
-            <div class="form-section-title">Existing Conditions / Diagnoses</div>
-            <div class="chip-input-row">
-              <mat-form-field class="dont-apply" appearance="outline">
-                <mat-label>Add a condition</mat-label>
-                <input
-                  matInput
-                  #condInput
-                  (keydown.enter)="addChip('conditions', condInput); $event.preventDefault()"
-                />
-                <button
-                  matSuffix
-                  mat-icon-button
-                  (click)="addChip('conditions', condInput)"
-                >
-                  <mat-icon>add</mat-icon>
-                </button>
-              </mat-form-field>
-              <div class="chip-list">
-                @for (item of getConditions(); track item) {
-                  <span class="chip chip-orange">
-                    {{ item }}
-                    <mat-icon class="chip-remove" (click)="removeChip('conditions', item)">close</mat-icon>
-                  </span>
-                }
-              </div>
-            </div>
-
-            <div class="form-section-title">Social History</div>
-            <div formGroupName="socialHistory">
+            @if (insuranceForm.value.relationship && insuranceForm.value.relationship !== 'Self') {
               <div class="form-row">
-                <mat-form-field class="dont-apply" appearance="outline">
-                  <mat-label>Smoking Status</mat-label>
-                  <mat-select formControlName="smoking">
-                    <mat-option value="never">Never</mat-option>
-                    <mat-option value="former">Former Smoker</mat-option>
-                    <mat-option value="current">Current Smoker</mat-option>
-                  </mat-select>
+                <mat-form-field appearance="outline">
+                  <mat-label>Policy Holder First Name</mat-label>
+                  <input matInput formControlName="policyHolderFirstName" />
                 </mat-form-field>
-                <mat-form-field class="dont-apply" appearance="outline">
-                  <mat-label>Alcohol Use</mat-label>
-                  <mat-select formControlName="alcohol">
-                    <mat-option value="none">None</mat-option>
-                    <mat-option value="occasional">Occasional</mat-option>
-                    <mat-option value="moderate">Moderate</mat-option>
-                    <mat-option value="heavy">Heavy</mat-option>
-                  </mat-select>
+                <mat-form-field appearance="outline">
+                  <mat-label>Policy Holder Last Name</mat-label>
+                  <input matInput formControlName="policyHolderLastName" />
                 </mat-form-field>
-                <mat-form-field class="dont-apply" appearance="outline">
-                  <mat-label>Exercise Frequency</mat-label>
-                  <mat-select formControlName="exercise">
-                    <mat-option value="none">None</mat-option>
-                    <mat-option value="light">1-2 days/week</mat-option>
-                    <mat-option value="moderate">3-4 days/week</mat-option>
-                    <mat-option value="active">5+ days/week</mat-option>
-                  </mat-select>
+                <mat-form-field appearance="outline">
+                  <mat-label>Policy Holder Date of Birth</mat-label>
+                  <input matInput type="date" formControlName="policyHolderDob" />
                 </mat-form-field>
               </div>
-            </div>
+            }
 
             <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>
-                <mat-icon>arrow_back</mat-icon> Back
-              </button>
-              <button class="btn btn-primary" matStepperNext>
-                Next <mat-icon>arrow_forward</mat-icon>
-              </button>
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
             </div>
           </form>
         </mat-step>
 
-        <!-- Step 5: Consent & Submit -->
-        <mat-step label="Consent & Submit">
-          <form [formGroup]="consentForm" class="step-form">
-            <div class="form-section-title">Consent</div>
-            <div class="consent-box">
-              <p>
-                By checking the box below, I acknowledge that the information
-                provided is accurate and complete to the best of my knowledge.
-                I consent to the collection and use of my health information
-                for treatment purposes in accordance with HIPAA regulations.
-              </p>
-              <p>
-                I understand that my data will be securely stored and only
-                accessed by authorized medical personnel.
-              </p>
+        <!-- STEP 4: Care Team & Emergency -->
+        <mat-step [stepControl]="careTeamForm" label="Care Team">
+          <form [formGroup]="careTeamForm" class="step-form">
+            <div class="form-section-title">Emergency Contact</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="emergFirst" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="emergLast" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Relationship to Patient</mat-label>
+                <input matInput formControlName="emergRel" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Contact Number</mat-label>
+                <input matInput type="tel" formControlName="emergPhone" />
+              </mat-form-field>
             </div>
-            <mat-checkbox formControlName="consentSigned" color="primary">
-              I agree to the terms and consent to treatment
-            </mat-checkbox>
+
+            <div class="form-section-title">Family / Friends Involved in Care</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="familyFirst" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="familyLast" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Relationship</mat-label>
+                <input matInput formControlName="familyRel" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Contact Number</mat-label>
+                <input matInput type="tel" formControlName="familyPhone" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-section-title">Primary Care Physician (PCP)</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="pcpFirst" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="pcpLast" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Practice Name</mat-label>
+                <input matInput formControlName="pcpPractice" />
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Practice Phone Number</mat-label>
+                <input matInput formControlName="pcpPhone" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Practice Fax Number</mat-label>
+                <input matInput formControlName="pcpFax" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-section-title">Referring Physician</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="refFirst" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="refLast" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Specialty</mat-label>
+                <input matInput formControlName="refSpecialty" />
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Practice Name</mat-label>
+                <input matInput formControlName="refPractice" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Practice Phone</mat-label>
+                <input matInput formControlName="refPhone" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Practice Fax</mat-label>
+                <input matInput formControlName="refFax" />
+              </mat-form-field>
+            </div>
 
             <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>
-                <mat-icon>arrow_back</mat-icon> Back
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- STEP 5: Pharmacy -->
+        <mat-step [stepControl]="pharmacyForm" label="Pharmacy">
+          <form [formGroup]="pharmacyForm" class="step-form">
+            <div class="form-section-title">Preferred Local Pharmacy</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline" style="flex:2">
+                <mat-label>Pharmacy Name</mat-label>
+                <input matInput formControlName="localName" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Phone Number</mat-label>
+                <input matInput type="tel" formControlName="localPhone" />
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline" style="flex:2">
+                <mat-label>Street Address</mat-label>
+                <input matInput formControlName="localStreet" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" style="flex:2">
+                <mat-label>City, State, ZIP Code</mat-label>
+                <input matInput formControlName="localCityStateZip" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-section-title">Preferred Mail-In Pharmacy (Optional)</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Mail-in Pharmacy Name</mat-label>
+                <input matInput formControlName="mailName" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Account / Phone Number</mat-label>
+                <input matInput formControlName="mailAccount" />
+              </mat-form-field>
+            </div>
+
+            <div class="step-actions">
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- STEP 6: Reason for Visit -->
+        <mat-step [stepControl]="visitForm" label="Reason for Visit">
+          <form [formGroup]="visitForm" class="step-form">
+            <div class="form-section-title">Current Health</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline" style="flex: 1">
+                <mat-label>Primary Reason for Visit / Chief Complaint</mat-label>
+                <textarea matInput rows="3" formControlName="chiefComplaint"></textarea>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline" style="flex: 1">
+                <mat-label>Current Symptoms</mat-label>
+                <textarea matInput rows="3" formControlName="currentSymptoms"></textarea>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>When did these symptoms begin? (Date or duration)</mat-label>
+                <input matInput formControlName="symptomOnset" />
+              </mat-form-field>
+            </div>
+            <div class="step-actions">
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- STEP 7: Allergies & Meds -->
+        <mat-step [stepControl]="allergiesMedicationsForm" label="Allergies & Meds">
+          <form [formGroup]="allergiesMedicationsForm" class="step-form">
+            <div class="form-section-title">Allergies</div>
+            <div class="form-row">
+              <p style="margin:0 0 8px;">Do you have any known allergies (Medications, Food, Environmental, Latex)?</p>
+              <mat-radio-group formControlName="hasAllergies" color="primary">
+                <mat-radio-button value="Yes">Yes</mat-radio-button>
+                <mat-radio-button value="No">No</mat-radio-button>
+              </mat-radio-group>
+            </div>
+            
+            @if (allergiesMedicationsForm.value.hasAllergies === 'Yes') {
+              <div formArrayName="allergies">
+                @for (al of allergies.controls; track $index) {
+                  <div [formGroupName]="$index" class="array-item-box">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Allergy Name</mat-label>
+                      <input matInput formControlName="name" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Reaction Type / Severity</mat-label>
+                      <input matInput formControlName="reaction" />
+                    </mat-form-field>
+                    <button class="btn-compact-warn" (click)="removeAllergy($index)">Drop</button>
+                  </div>
+                }
+              </div>
+              <button mat-button class="array-add-btn" (click)="addAllergy()">
+                <mat-icon>add</mat-icon> Add Additional Allergy
               </button>
+            }
+
+            <div class="form-section-title" style="margin-top:24px;">Current Medications</div>
+            <div class="form-row">
+              <p style="margin:0 0 8px;">Are you currently taking any prescription medications, OTC medications, or supplements?</p>
+              <mat-radio-group formControlName="hasMedications" color="primary">
+                <mat-radio-button value="Yes">Yes</mat-radio-button>
+                <mat-radio-button value="No">No</mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            @if (allergiesMedicationsForm.value.hasMedications === 'Yes') {
+              <div formArrayName="medications">
+                @for (m of medications.controls; track $index) {
+                  <div [formGroupName]="$index" class="array-item-box">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Medication Name</mat-label>
+                      <input matInput formControlName="name" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Dosage (e.g. mg)</mat-label>
+                      <input matInput formControlName="dosage" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Frequency</mat-label>
+                      <input matInput formControlName="frequency" />
+                    </mat-form-field>
+                    <button class="btn-compact-warn" (click)="removeMedication($index)">Drop</button>
+                  </div>
+                }
+              </div>
+              <button mat-button class="array-add-btn" (click)="addMedication()">
+                <mat-icon>add</mat-icon> Add Additional Medication
+              </button>
+            }
+
+            <div class="step-actions">
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- STEP 8: Medical History -->
+        <mat-step [stepControl]="medicalHistoryForm" label="Past Medical">
+          <form [formGroup]="medicalHistoryForm" class="step-form">
+            <div class="form-section-title">Past Surgical History</div>
+            <div class="form-row">
+              <p style="margin:0 0 8px;">Have you had any past procedures or surgeries?</p>
+              <mat-radio-group formControlName="hasSurgeries" color="primary">
+                <mat-radio-button value="Yes">Yes</mat-radio-button>
+                <mat-radio-button value="No">No</mat-radio-button>
+              </mat-radio-group>
+            </div>
+            
+            @if (medicalHistoryForm.value.hasSurgeries === 'Yes') {
+              <div formArrayName="surgeries">
+                @for (s of surgeries.controls; track $index) {
+                  <div [formGroupName]="$index" class="array-item-box">
+                    <mat-form-field appearance="outline" style="flex:2">
+                      <mat-label>Type of Surgery/Procedure</mat-label>
+                      <input matInput formControlName="type" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Approximate Date/Year</mat-label>
+                      <input matInput formControlName="date" />
+                    </mat-form-field>
+                    <button class="btn-compact-warn" (click)="removeSurgery($index)">Drop</button>
+                  </div>
+                }
+              </div>
+              <button mat-button class="array-add-btn" (click)="addSurgery()">
+                <mat-icon>add</mat-icon> Add Additional Procedure
+              </button>
+            }
+            <div class="step-actions">
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- STEP 9: Social History -->
+        <mat-step [stepControl]="socialHistoryForm" label="Social History">
+          <form [formGroup]="socialHistoryForm" class="step-form">
+            <div class="form-section-title">Alcohol</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Do you drink alcohol?</mat-label>
+                <mat-select formControlName="drinksAlcohol">
+                  <mat-option value="Yes">Yes</mat-option>
+                  <mat-option value="No">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+              @if (socialHistoryForm.value.drinksAlcohol === 'Yes') {
+                <mat-form-field appearance="outline">
+                  <mat-label>How often?</mat-label>
+                  <mat-select formControlName="alcoholFrequency">
+                    <mat-option value="Daily">Daily</mat-option>
+                    <mat-option value="Weekly">Weekly</mat-option>
+                    <mat-option value="Monthly">Monthly</mat-option>
+                    <mat-option value="Socially">Socially</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Drinks at a time?</mat-label>
+                  <input matInput formControlName="alcoholDrinks" />
+                </mat-form-field>
+              }
+            </div>
+
+            <div class="form-section-title">Tobacco / Nicotine</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Current use?</mat-label>
+                <mat-select formControlName="usesTobacco">
+                  <mat-option value="Yes">Yes</mat-option>
+                  <mat-option value="No">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            @if (socialHistoryForm.value.usesTobacco === 'Yes') {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Types</mat-label>
+                  <mat-select formControlName="tobaccoTypes" multiple>
+                    <mat-option value="Cigarettes">Cigarettes</mat-option>
+                    <mat-option value="Cigars">Cigars</mat-option>
+                    <mat-option value="Smokeless">Smokeless</mat-option>
+                    <mat-option value="Vapes">Vapes</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Frequency / Day</mat-label>
+                  <input matInput formControlName="tobaccoFrequency" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Start Year</mat-label>
+                  <input matInput formControlName="tobaccoStartYear" />
+                </mat-form-field>
+              </div>
+            }
+            @if (socialHistoryForm.value.usesTobacco === 'No') {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Used in the past?</mat-label>
+                  <mat-select formControlName="usedTobaccoPast">
+                    <mat-option value="Yes">Yes</mat-option>
+                    <mat-option value="No">No</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                @if (socialHistoryForm.value.usedTobaccoPast === 'Yes') {
+                  <mat-form-field appearance="outline">
+                    <mat-label>Start Year</mat-label>
+                    <input matInput formControlName="tobaccoPastStart" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Stop Year</mat-label>
+                    <input matInput formControlName="tobaccoPastStop" />
+                  </mat-form-field>
+                }
+              </div>
+            }
+
+            <div class="form-section-title">Recreational Drugs</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Current use?</mat-label>
+                <mat-select formControlName="usesDrugs">
+                  <mat-option value="Yes">Yes</mat-option>
+                  <mat-option value="No">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            @if (socialHistoryForm.value.usesDrugs === 'Yes') {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Types</mat-label>
+                  <input matInput formControlName="drugsTypes" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Start Year</mat-label>
+                  <input matInput formControlName="drugsStartYear" />
+                </mat-form-field>
+              </div>
+            }
+            @if (socialHistoryForm.value.usesDrugs === 'No') {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Used in the past?</mat-label>
+                  <mat-select formControlName="usedDrugsPast">
+                    <mat-option value="Yes">Yes</mat-option>
+                    <mat-option value="No">No</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                @if (socialHistoryForm.value.usedDrugsPast === 'Yes') {
+                  <mat-form-field appearance="outline">
+                    <mat-label>Start Year</mat-label>
+                    <input matInput formControlName="drugsPastStart" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Stop Year</mat-label>
+                    <input matInput formControlName="drugsPastStop" />
+                  </mat-form-field>
+                }
+              </div>
+            }
+
+            <div class="form-section-title">Exercise & Diet</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Regular Exercise?</mat-label>
+                <mat-select formControlName="exercises">
+                  <mat-option value="Yes">Yes</mat-option>
+                  <mat-option value="No">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+              @if (socialHistoryForm.value.exercises === 'Yes') {
+                <mat-form-field appearance="outline">
+                  <mat-label>Type</mat-label>
+                  <input matInput formControlName="exerciseType" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Frequency</mat-label>
+                  <input matInput formControlName="exerciseFrequency" placeholder="Days per week" />
+                </mat-form-field>
+              }
+              <mat-form-field appearance="outline">
+                <mat-label>Diet Rating</mat-label>
+                <mat-select formControlName="dietRating">
+                  <mat-option value="Excellent">Excellent</mat-option>
+                  <mat-option value="Good">Good</mat-option>
+                  <mat-option value="Fair">Fair</mat-option>
+                  <mat-option value="Poor">Poor</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="step-actions">
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- STEP 10: Family History -->
+        <mat-step [stepControl]="familyHistoryForm" label="Family History">
+          <form [formGroup]="familyHistoryForm" class="step-form">
+            <div class="form-section-title">Family History</div>
+            <div class="form-row">
+              <p style="margin:0 0 8px;">Significant family history of medical conditions?</p>
+              <mat-radio-group formControlName="hasFamilyHistory" color="primary">
+                <mat-radio-button value="Yes">Yes</mat-radio-button>
+                <mat-radio-button value="No">No</mat-radio-button>
+              </mat-radio-group>
+            </div>
+            
+            @if (familyHistoryForm.value.hasFamilyHistory === 'Yes') {
+              <div formArrayName="familyConditions">
+                @for (c of familyConditions.controls; track $index) {
+                  <div [formGroupName]="$index" class="array-item-box">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Diagnosis</mat-label>
+                      <input matInput formControlName="diagnosis" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Affected Family Member</mat-label>
+                      <input matInput formControlName="member" />
+                    </mat-form-field>
+                    <button class="btn-compact-warn" (click)="removeFamilyCondition($index)">Drop</button>
+                  </div>
+                }
+              </div>
+              <button mat-button class="array-add-btn" (click)="addFamilyCondition()">
+                <mat-icon>add</mat-icon> Add Additional History
+              </button>
+            }
+            <div class="step-actions">
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- STEP 11: Consent & Submit -->
+        <mat-step [stepControl]="consentForm" label="Agreements">
+          <form [formGroup]="consentForm" class="step-form">
+            <div class="form-section-title">Legal Agreements & Signatures</div>
+            <div class="consent-box">
+              <p>Please review and acknowledge the following mandatory practice agreements.</p>
+            </div>
+            
+            <div class="consent-check-row">
+              <mat-checkbox formControlName="consentTreat" color="primary">
+                <b>Consent to Treat:</b> I authorize the providers to perform necessary medical treatments.
+              </mat-checkbox>
+            </div>
+            <div class="consent-check-row">
+              <mat-checkbox formControlName="consentFinancial" color="primary">
+                <b>Financial Responsibility & Assignment of Benefits:</b> I agree to assume full financial responsibility for services rendered.
+              </mat-checkbox>
+            </div>
+            <div class="consent-check-row">
+              <mat-checkbox formControlName="consentPrivacy" color="primary">
+                <b>HIPAA Acknowledgment:</b> I acknowledge receipt of the Notice of Privacy Practices.
+              </mat-checkbox>
+            </div>
+
+            <div class="step-actions">
+              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
               <button
                 class="btn btn-success btn-submit layout-1"
                 (click)="onSubmit()"
-                [disabled]="!consentForm.value.consentSigned || submitting()"
+                [disabled]="consentForm.invalid || submitting()"
               >
-                <mat-icon>send</mat-icon> Submit Intake Form
+                <mat-icon>send</mat-icon> Submit Complete Intake
               </button>
             </div>
           </form>
@@ -400,274 +869,171 @@ import { MatChipsModule } from '@angular/material/chips';
     </div>
   `,
   styles: `
-    .intake-form-container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .page-title {
-      font-size: 28px;
-      font-weight: 600;
-      color: #094997;
-      margin: 0 0 4px;
-    }
-
-    .page-subtitle {
-      color: #646464;
-      font-size: 14px;
-      margin: 0 0 24px;
-    }
-
-    @media (max-width: 550px) {
-      .page-title { font-size: 22px; }
-    }
-
-    .intake-stepper {
-      background: transparent;
-    }
-
-    .step-form {
-      padding: 16px 0;
-    }
-
+    .intake-form-container { max-width: 960px; margin: 0 auto; }
+    .page-title { font-size: 28px; font-weight: 600; color: #094997; margin: 0 0 4px; }
+    .page-subtitle { color: #646464; font-size: 14px; margin: 0 0 24px; }
+    .intake-stepper { background: transparent; }
+    
+    .step-form { padding: 16px 0; }
     .form-section-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #333;
-      margin: 20px 0 12px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #eee;
+      font-size: 16px; font-weight: 600; color: #333; margin: 24px 0 16px;
+      padding-bottom: 6px; border-bottom: 1px solid #eee;
     }
-
-    .form-section-title:first-child {
-      margin-top: 0;
+    .form-section-title:first-child { margin-top: 0; }
+    
+    .form-row { display: flex; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+    .form-row > * { flex: 1; min-width: 220px; }
+    
+    .array-item-box {
+      display: flex; gap: 12px; align-items: center;
+      background: #fafbfc; border-radius: 6px; padding: 12px;
+      margin-bottom: 12px; border: 1px solid #e1e4e8; flex-wrap: wrap;
     }
-
-    .form-helper {
-      color: #757575;
-      font-size: 13px;
-      margin: -4px 0 16px;
+    .array-item-box > mat-form-field { flex: 1; min-width: 180px; margin-bottom: -16px; }
+    .btn-compact-warn {
+      background: #fee; border: 1px solid #fcc; color: #d32f2f;
+      border-radius: 4px; cursor: pointer; padding: 6px 12px;
+      height: 38px; font-size: 13px; margin-top: 4px;
     }
+    .array-add-btn { color: #2196f3; margin-top: 8px; margin-bottom: 24px; }
 
-    .form-row {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 4px;
-    }
+    .consent-box { background: #eef5fd; border: 1px solid #d9edf7; padding: 16px; margin-bottom: 24px; }
+    .consent-check-row { margin-bottom: 16px; }
 
-    .form-row mat-form-field { flex: 1; }
-
-    @media (max-width: 599px) {
-      .form-row {
-        flex-direction: column;
-        gap: 4px;
-      }
-    }
-
-    .chip-input-row {
-      margin-bottom: 8px;
-    }
-
-    .chip-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-      min-height: 24px;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 16px;
-      font-size: 13px;
-      color: #fff;
-    }
-
-    .chip-cyan { background: rgb(0, 208, 255); }
-    .chip-teal { background: #089bab; }
-    .chip-orange { background: rgb(255, 177, 119); }
-
-    .chip-remove {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-      opacity: 0.8;
-    }
-
-    .chip-remove:hover { opacity: 1; }
-
-    .consent-box {
-      background: #eef5fd;
-      border: 1px solid #d9edf7;
-      border-radius: 4px;
-      padding: 16px;
-      margin-bottom: 16px;
-      color: #333;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .consent-box p { margin: 0 0 8px; }
-    .consent-box p:last-child { margin-bottom: 0; }
-
-    .step-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 1px solid #eee;
-    }
-
-    .step-actions .btn {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .btn-submit.layout-1 mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
-  `,
+    .step-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; }
+    .step-actions .btn { display: flex; align-items: center; gap: 4px; }
+  `
 })
 export class IntakeFormPageComponent {
-  demographicsForm: FormGroup;
-  emergencyForm: FormGroup;
-  insuranceForm: FormGroup;
-  medicalForm: FormGroup;
-  consentForm: FormGroup;
   submitting = signal(false);
   token: string | null = null;
 
-  private allergies = signal<string[]>([]);
-  private medications = signal<string[]>([]);
-  private conditions = signal<string[]>([]);
+  demographicsForm: FormGroup;
+  contactForm: FormGroup;
+  insuranceForm: FormGroup;
+  careTeamForm: FormGroup;
+  pharmacyForm: FormGroup;
+  visitForm: FormGroup;
+  allergiesMedicationsForm: FormGroup;
+  medicalHistoryForm: FormGroup;
+  socialHistoryForm: FormGroup;
+  familyHistoryForm: FormGroup;
+  consentForm: FormGroup;
 
-  getAllergies = this.allergies.asReadonly();
-  getMedications = this.medications.asReadonly();
-  getConditions = this.conditions.asReadonly();
+  get allergies() { return this.allergiesMedicationsForm.get('allergies') as FormArray; }
+  get medications() { return this.allergiesMedicationsForm.get('medications') as FormArray; }
+  get surgeries() { return this.medicalHistoryForm.get('surgeries') as FormArray; }
+  get familyConditions() { return this.familyHistoryForm.get('familyConditions') as FormArray; }
 
   constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute) {
     this.route.queryParams.subscribe(params => {
-      if (params['token']) {
-        this.token = params['token'];
-      }
+      if (params['token']) this.token = params['token'];
     });
 
     this.demographicsForm = this.fb.group({
-      firstName: ['', Validators.required],
-      middleName: [''],
-      lastName: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],
-      gender: ['', Validators.required],
-      maritalStatus: [''],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
-      language: ['en'],
-      address: this.fb.group({
-        street: ['', Validators.required],
-        city: ['', Validators.required],
-        state: ['', Validators.required],
-        zip: ['', Validators.required],
-        country: ['US'],
-      }),
+      firstName: ['', Validators.required], middleName: [''], lastName: ['', Validators.required], suffix: [''],
+      dateOfBirth: ['', Validators.required], sexAssigned: [''], genderIdentity: [''], ssn: [''],
+      race: [''], ethnicity: [''], maritalStatus: [''], housingType: [''],
+      communicationDiff: ['No'], communicationDesc: [''], employmentStatus: [''], employerName: [''], employerPhone: ['']
     });
 
-    this.emergencyForm = this.fb.group({
-      name: ['', Validators.required],
-      relationship: ['', Validators.required],
-      phone: ['', Validators.required],
+    this.contactForm = this.fb.group({
+      mailingStreet: [''], mailingApt: [''], mailingCity: [''], mailingState: [''], mailingZip: [''],
+      billingSame: ['Yes'], billingStreet: [''], billingApt: [''], billingCity: [''], billingState: [''], billingZip: [''],
+      cellPhone: ['', Validators.required], homePhone: [''], workPhone: [''],
+      primaryContactNum: ['Cell'], bestContactMethod: ['Phone Call'], emailAddress: ['', [Validators.required, Validators.email]]
     });
 
     this.insuranceForm = this.fb.group({
-      provider: [''],
-      policyNumber: [''],
-      groupNumber: [''],
-      subscriberName: [''],
+      primaryCarrier: [''], subscriberId: [''], groupNumber: [''],
+      relationship: ['Self'], policyHolderFirstName: [''], policyHolderLastName: [''], policyHolderDob: ['']
     });
 
-    this.medicalForm = this.fb.group({
-      socialHistory: this.fb.group({
-        smoking: ['never'],
-        alcohol: ['none'],
-        exercise: ['none'],
-      }),
+    this.careTeamForm = this.fb.group({
+      emergFirst: ['', Validators.required], emergLast: ['', Validators.required], emergRel: [''], emergPhone: ['', Validators.required],
+      familyFirst: [''], familyLast: [''], familyRel: [''], familyPhone: [''],
+      pcpFirst: [''], pcpLast: [''], pcpPractice: [''], pcpPhone: [''], pcpFax: [''],
+      refFirst: [''], refLast: [''], refSpecialty: [''], refPractice: [''], refPhone: [''], refFax: ['']
+    });
+
+    this.pharmacyForm = this.fb.group({
+      localName: [''], localStreet: [''], localCityStateZip: [''], localPhone: [''],
+      mailName: [''], mailAccount: ['']
+    });
+
+    this.visitForm = this.fb.group({ chiefComplaint: [''], currentSymptoms: [''], symptomOnset: [''] });
+
+    this.allergiesMedicationsForm = this.fb.group({
+      hasAllergies: ['No'], allergies: this.fb.array([]),
+      hasMedications: ['No'], medications: this.fb.array([])
+    });
+
+    this.medicalHistoryForm = this.fb.group({
+      hasSurgeries: ['No'], surgeries: this.fb.array([])
+    });
+
+    this.socialHistoryForm = this.fb.group({
+      drinksAlcohol: ['No'], alcoholFrequency: [''], alcoholDrinks: [''],
+      usesTobacco: ['No'], tobaccoTypes: [[]], tobaccoFrequency: [''], tobaccoStartYear: [''],
+      usedTobaccoPast: ['No'], tobaccoPastStart: [''], tobaccoPastStop: [''],
+      usesDrugs: ['No'], drugsTypes: [''], drugsStartYear: [''],
+      usedDrugsPast: ['No'], drugsPastStart: [''], drugsPastStop: [''],
+      exercises: ['No'], exerciseType: [''], exerciseFrequency: [''], dietRating: ['Good']
+    });
+
+    this.familyHistoryForm = this.fb.group({
+      hasFamilyHistory: ['No'], familyConditions: this.fb.array([])
     });
 
     this.consentForm = this.fb.group({
-      consentSigned: [false, Validators.requiredTrue],
+      consentTreat: [false, Validators.requiredTrue],
+      consentFinancial: [false, Validators.requiredTrue],
+      consentPrivacy: [false, Validators.requiredTrue]
     });
   }
 
-  addChip(
-    list: 'allergies' | 'medications' | 'conditions',
-    input: HTMLInputElement
-  ) {
-    const value = input.value.trim();
-    if (!value) return;
-    const sig =
-      list === 'allergies'
-        ? this.allergies
-        : list === 'medications'
-          ? this.medications
-          : this.conditions;
-    if (!sig().includes(value)) {
-      sig.update((arr) => [...arr, value]);
-    }
-    input.value = '';
-  }
+  addAllergy() { this.allergies.push(this.fb.group({ name: [''], reaction: [''] })); }
+  removeAllergy(index: number) { this.allergies.removeAt(index); }
 
-  removeChip(list: 'allergies' | 'medications' | 'conditions', item: string) {
-    const sig =
-      list === 'allergies'
-        ? this.allergies
-        : list === 'medications'
-          ? this.medications
-          : this.conditions;
-    sig.update((arr) => arr.filter((i) => i !== item));
-  }
+  addMedication() { this.medications.push(this.fb.group({ name: [''], dosage: [''], frequency: [''] })); }
+  removeMedication(index: number) { this.medications.removeAt(index); }
+
+  addSurgery() { this.surgeries.push(this.fb.group({ type: [''], date: [''] })); }
+  removeSurgery(index: number) { this.surgeries.removeAt(index); }
+
+  addFamilyCondition() { this.familyConditions.push(this.fb.group({ diagnosis: [''], member: [''] })); }
+  removeFamilyCondition(index: number) { this.familyConditions.removeAt(index); }
 
   async onSubmit() {
     this.submitting.set(true);
-    
-    // Construct full data payload payload
+
     const payload: any = {
       demographicsForm: this.demographicsForm.value,
-      emergencyForm: this.emergencyForm.value,
+      contactForm: this.contactForm.value,
       insuranceForm: this.insuranceForm.value,
-      medicalForm: {
-        ...this.medicalForm.value,
-        allergies: this.allergies(),
-        medications: this.medications(),
-        conditions: this.conditions()
-      },
+      careTeamForm: this.careTeamForm.value,
+      pharmacyForm: this.pharmacyForm.value,
+      visitForm: this.visitForm.value,
+      allergiesMedicationsForm: this.allergiesMedicationsForm.value,
+      medicalHistoryForm: this.medicalHistoryForm.value,
+      socialHistoryForm: this.socialHistoryForm.value,
+      familyHistoryForm: this.familyHistoryForm.value,
       consentForm: this.consentForm.value
     };
 
-    if (this.token) {
-        payload.token = this.token;
-    }
+    if (this.token) payload.token = this.token;
 
     try {
       const response = await fetch('/api/submitIntake', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
-      
       if (!response.ok) throw new Error('Failed to submit');
-      
       this.submitting.set(false);
       this.router.navigate(['/confirmation']);
     } catch (err) {
-      console.error('Error submitting form:', err);
+      console.error(err);
       this.submitting.set(false);
-      alert('There was an issue submitting your form. Please try again.');
+      alert('There was an issue submitting your form.');
     }
   }
 }
