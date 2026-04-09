@@ -1,6 +1,6 @@
-import { sql } from "@vercel/postgres";
+const { sql } = require("@vercel/postgres");
 
-export default async function handler(request, response) {
+module.exports = async function handler(request, response) {
   try {
     const result = await sql`
       CREATE TABLE IF NOT EXISTS intakes (
