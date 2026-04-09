@@ -1016,8 +1016,10 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
 
     /* ═══ DESKTOP STICKY HEADER ═══ */
     .desktop-sticky-header {
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
       z-index: 900;
       background: white;
       border-bottom: 1px solid #e8eaed;
@@ -1063,7 +1065,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
 
     /* ═══ UNIVERSAL STICKY FOOTER ═══ */
     .sticky-footer {
-      position: sticky;
+      position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
@@ -1113,15 +1115,31 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
       transform: scale(1.4);
     }
 
-    /* Ensure scrollable content has bottom padding so footer never covers fields */
+    /* Compensate for fixed header (desktop) + fixed footer via ::ng-deep on mat-sidenav-content */
+    ::ng-deep mat-sidenav-content {
+      padding-bottom: 80px !important;
+    }
+    @media (min-width: 801px) {
+      ::ng-deep mat-sidenav-content {
+        padding-top: 63px !important;
+      }
+    }
+    @media (max-width: 800px) {
+      ::ng-deep mat-sidenav-content {
+        padding-top: 100px !important; /* mobile toolbar 56px + progress bar */
+      }
+    }
+    /* intake-form-container extra bottom padding for safety */
     .intake-form-container {
-      padding-bottom: 90px !important;
+      padding-bottom: 20px;
     }
 
     /* ------- Custom Mobile Toolbar ------- */
     .mobile-top-toolbar {
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
       z-index: 1000;
       background-color: #094997;
     }
