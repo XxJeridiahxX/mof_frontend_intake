@@ -19,6 +19,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constants/fhir-constants';
@@ -40,9 +45,42 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     MatRadioModule,
     MatProgressBarModule,
     MatAutocompleteModule,
+    MatSidenavModule,
+    MatListModule,
+    MatToolbarModule,
     AsyncPipe
   ],
   template: `
+    
+<mat-sidenav-container class="mobile-sidenav-wrapper" [class.is-mobile]="isMobile">
+  <mat-sidenav #sidenav mode="over" position="end" class="intake-sidenav">
+    <mat-toolbar color="primary" style="background-color: #094997; color: white;">
+      <span style="font-size: 16px;">Form Navigation</span>
+      <span style="flex: 1 1 auto;"></span>
+      <button mat-icon-button (click)="sidenav.close()"><mat-icon>close</mat-icon></button>
+    </mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item (click)="stepper.selectedIndex = 0; sidenav.close()">1. Patient Profile</a>
+      <a mat-list-item (click)="stepper.selectedIndex = 1; sidenav.close()">2. Coverage</a>
+      <a mat-list-item (click)="stepper.selectedIndex = 2; sidenav.close()">3. Chief Complaint</a>
+      <a mat-list-item (click)="stepper.selectedIndex = 3; sidenav.close()">4. Active Clinicals</a>
+      <a mat-list-item (click)="stepper.selectedIndex = 4; sidenav.close()">5. Health History</a>
+      <a mat-list-item (click)="stepper.selectedIndex = 5; sidenav.close()">6. Signatures</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    @if (isMobile) {
+      <mat-toolbar style="background-color: #094997; color: white;" class="mobile-top-toolbar">
+        <span style="font-size: 16px;">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
+        <span style="flex: 1 1 auto;"></span>
+        <button mat-icon-button (click)="sidenav.open()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </mat-toolbar>
+      <mat-progress-bar mode="determinate" [value]="(((stepper?.selectedIndex || 0) + 1) / 6) * 100" color="accent"></mat-progress-bar>
+    }
+
     <div class="intake-form-container">
       <h1 class="page-title">Comprehensive Medical Intake Form</h1>
       <p class="page-subtitle">
@@ -938,6 +976,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
         </mat-step>
       </mat-stepper>
     </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
   `,
   styles: `
     ::ng-deep .mat-step-header .mat-step-label {
@@ -995,10 +1035,26 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
 
     .step-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; }
     .step-actions .btn { display: flex; align-items: center; gap: 4px; }
-  `
+  
+    .mobile-sidenav-wrapper { min-height: 100vh; }
+    .intake-sidenav { width: 280px; }
+    /* NNg Fitts Law 48px tap targets */
+    .step-actions button { min-height: 48px !important; font-size: 16px; padding: 0 24px; }
+    .mobile-top-toolbar { position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    @media (max-width: 768px) {
+      ::ng-deep .mat-horizontal-stepper-header-container {
+        display: none !important;
+      }
+      .intake-form-container {
+         padding: 0 16px;
+      }
+      .page-title { font-size: 24px; margin-top: 16px; }
+    }
+`
 })
 export class IntakeFormPageComponent implements OnInit {
   submitting = signal(false);
+  isMobile = false;
   token: string | null = null;
 
   demographicsForm: FormGroup;
@@ -1031,7 +1087,10 @@ export class IntakeFormPageComponent implements OnInit {
   get surgeries() { return this.medicalHistoryForm.get('surgeries') as FormArray; }
   get familyConditions() { return this.familyHistoryForm.get('familyConditions') as FormArray; }
 
-  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute) {
+  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) {
+    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.TabletPortrait]).subscribe(result => {
+      this.isMobile = result.matches;
+    });
     this.route.queryParams.subscribe(params => {
       if (params['token']) this.token = params['token'];
     });
