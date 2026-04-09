@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build -- --configuration=production",
+  "outputDirectory": "dist/mof_frontend_intake/browser",
+  "framework": "angular",
+  "nodejs": "22.x",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
