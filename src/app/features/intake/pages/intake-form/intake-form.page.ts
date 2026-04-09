@@ -51,53 +51,55 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     AsyncPipe
   ],
   template: `
-    
-<mat-sidenav-container class="mobile-sidenav-wrapper" [class.is-mobile]="isMobile">
-  <mat-sidenav #sidenav mode="over" position="end" class="intake-sidenav">
-    <div class="sidenav-header">
-      <span class="sidenav-title">Navigate Form</span>
-      <button class="sidenav-close-btn" (click)="sidenav.close()" aria-label="Close menu">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+<div class="app-shell">
+
+  <!-- ══ UNIFIED HEADER ══ -->
+  <div class="unified-header">
+    <div class="unified-header-inner">
+      <div class="unified-brand">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="24" height="24" rx="6" fill="white" fill-opacity="0.2"/>
+          <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span class="unified-brand-name">MOF Patient Intake</span>
+      </div>
+      <div class="unified-step-info">
+        <span class="unified-step-counter">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
+        <span class="unified-step-name">{{ stepLabels[(stepper?.selectedIndex || 0)] }}</span>
+      </div>
+      <button class="hamburger-btn" (click)="sidenav.open()" aria-label="Open navigation menu">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect y="4" width="24" height="2.5" rx="1.25" fill="white"/>
+          <rect y="10.75" width="24" height="2.5" rx="1.25" fill="white"/>
+          <rect y="17.5" width="24" height="2.5" rx="1.25" fill="white"/>
         </svg>
       </button>
     </div>
-    <mat-nav-list>
-      <a mat-list-item (click)="stepper.selectedIndex = 0; sidenav.close()">1. Patient Profile</a>
-      <a mat-list-item (click)="stepper.selectedIndex = 1; sidenav.close()">2. Coverage</a>
-      <a mat-list-item (click)="stepper.selectedIndex = 2; sidenav.close()">3. Chief Complaint</a>
-      <a mat-list-item (click)="stepper.selectedIndex = 3; sidenav.close()">4. Active Clinicals</a>
-      <a mat-list-item (click)="stepper.selectedIndex = 4; sidenav.close()">5. Health History</a>
-      <a mat-list-item (click)="stepper.selectedIndex = 5; sidenav.close()">6. Signatures</a>
-    </mat-nav-list>
-  </mat-sidenav>
+    <mat-progress-bar mode="determinate" [value]="(((stepper?.selectedIndex || 0) + 1) / 6) * 100" color="accent"></mat-progress-bar>
+  </div>
 
-  <mat-sidenav-content>
-    <!-- ══ UNIFIED FIXED HEADER (all screen sizes) ══ -->
-    <div class="unified-header">
-      <div class="unified-header-inner">
-        <div class="unified-brand">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="24" height="24" rx="6" fill="white" fill-opacity="0.2"/>
-            <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-          <span class="unified-brand-name">MOF Patient Intake</span>
-        </div>
-        <div class="unified-step-info">
-          <span class="unified-step-counter">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
-          <span class="unified-step-name">{{ stepLabels[(stepper?.selectedIndex || 0)] }}</span>
-        </div>
-        <button class="hamburger-btn" (click)="sidenav.open()" aria-label="Open navigation menu">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect y="4" width="24" height="2.5" rx="1.25" fill="white"/>
-            <rect y="10.75" width="24" height="2.5" rx="1.25" fill="white"/>
-            <rect y="17.5" width="24" height="2.5" rx="1.25" fill="white"/>
+  <!-- ══ SIDENAV + SCROLL CONTENT ══ -->
+  <mat-sidenav-container class="sidenav-flex-container">
+    <mat-sidenav #sidenav mode="over" position="end" class="intake-sidenav">
+      <div class="sidenav-header">
+        <span class="sidenav-title">Navigate Form</span>
+        <button class="sidenav-close-btn" (click)="sidenav.close()" aria-label="Close menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
           </svg>
         </button>
       </div>
-      <mat-progress-bar mode="determinate" [value]="(((stepper?.selectedIndex || 0) + 1) / 6) * 100" color="accent"></mat-progress-bar>
-    </div>
+      <mat-nav-list>
+        <a mat-list-item (click)="stepper.selectedIndex = 0; sidenav.close()">1. Patient Profile</a>
+        <a mat-list-item (click)="stepper.selectedIndex = 1; sidenav.close()">2. Coverage</a>
+        <a mat-list-item (click)="stepper.selectedIndex = 2; sidenav.close()">3. Chief Complaint</a>
+        <a mat-list-item (click)="stepper.selectedIndex = 3; sidenav.close()">4. Active Clinicals</a>
+        <a mat-list-item (click)="stepper.selectedIndex = 4; sidenav.close()">5. Health History</a>
+        <a mat-list-item (click)="stepper.selectedIndex = 5; sidenav.close()">6. Signatures</a>
+      </mat-nav-list>
+    </mat-sidenav>
 
+    <mat-sidenav-content>
     <div class="intake-form-container">
       <h1 class="page-title">Comprehensive Medical Intake Form</h1>
       <p class="page-subtitle">
@@ -945,41 +947,44 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
         </mat-step>
       </mat-stepper>
     </div>
-    <!-- ══ UNIVERSAL STICKY FOOTER ══ -->
-    <div class="sticky-footer">
-      <div class="sticky-footer-inner">
-        <button class="btn btn-secondary footer-btn"
-                [style.visibility]="(stepper?.selectedIndex || 0) === 0 ? 'hidden' : 'visible'"
-                (click)="stepper.previous()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Back
-        </button>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 
-        <div class="footer-step-dots">
-          @for (label of stepLabels; track $index) {
-            <span class="footer-dot" [class.active]="(stepper?.selectedIndex || 0) === $index"></span>
-          }
-        </div>
+  <!-- ══ UNIVERSAL STICKY FOOTER ══ -->
+  <div class="sticky-footer">
+    <div class="sticky-footer-inner">
+      <button class="btn btn-secondary footer-btn"
+              [style.visibility]="(stepper?.selectedIndex || 0) === 0 ? 'hidden' : 'visible'"
+              (click)="stepper.previous()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back
+      </button>
 
-        @if ((stepper?.selectedIndex || 0) < 5) {
-          <button class="btn btn-primary footer-btn" (click)="stepper.next()">
-            Next
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        } @else {
-          <button class="btn btn-success footer-btn" (click)="onSubmit()" [disabled]="consentForm.invalid || submitting()">
-            <mat-icon style="font-size:18px;line-height:18px;margin-right:4px;">send</mat-icon>
-            Submit
-          </button>
+      <div class="footer-step-dots">
+        @for (label of stepLabels; track $index) {
+          <span class="footer-dot" [class.active]="(stepper?.selectedIndex || 0) === $index"></span>
         }
       </div>
+
+      @if ((stepper?.selectedIndex || 0) < 5) {
+        <button class="btn btn-primary footer-btn" (click)="stepper.next()">
+          Next
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      } @else {
+        <button class="btn btn-success footer-btn" (click)="onSubmit()" [disabled]="consentForm.invalid || submitting()">
+          <mat-icon style="font-size:18px;line-height:18px;margin-right:4px;">send</mat-icon>
+          Submit
+        </button>
+      }
     </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+
+</div>
   `,
   styles: `
     ::ng-deep .mat-step-header .mat-step-label {
@@ -1000,16 +1005,30 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .super-step-wrapper .step-form {
       padding: 0;
     }
-    .super-step-wrapper form:first-child .form-section-title:first-child {
-      margin-top: 0;
+    /* ═══ APP SHELL LAYOUT ═══ */
+    :host {
+      display: block;
+      height: 100dvh;
+      overflow: hidden;
     }
-    /* ═══ UNIFIED FIXED HEADER ═══ */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
+    }
+    .sidenav-flex-container {
+      flex: 1;
+      min-height: 0; /* critical: allows flex child to shrink below content size */
+    }
+    ::ng-deep .sidenav-flex-container .mat-sidenav-content {
+      overflow-y: auto;
+    }
+
+    /* ═══ UNIFIED HEADER ═══ */
     .unified-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
+      flex-shrink: 0;
+      z-index: 100;
       background-color: #094997;
       box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     }
@@ -1063,11 +1082,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
 
     /* ═══ UNIVERSAL STICKY FOOTER ═══ */
     .sticky-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 900;
+      flex-shrink: 0;
+      z-index: 100;
       background: white;
       border-top: 1px solid #e8eaed;
       box-shadow: 0 -2px 8px rgba(0,0,0,0.09);
@@ -1113,12 +1129,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
       transform: scale(1.4);
     }
 
-    /* Compensate for fixed header + fixed footer via ::ng-deep on mat-sidenav-content */
-    ::ng-deep mat-sidenav-content {
-      padding-top: 72px !important;  /* unified header 56px + 4px progress bar + 12px gap */
-      padding-bottom: 80px !important;
-    }
-    /* intake-form-container extra bottom padding for safety */
+    /* intake-form-container bottom padding for safety */
     .intake-form-container {
       padding-bottom: 20px;
     }
