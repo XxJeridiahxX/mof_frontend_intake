@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, OnInit } from '@angular/core';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -18,6 +18,10 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../core/constants/fhir-constants';
 
 @Component({
   selector: 'app-intake-form-page',
@@ -35,6 +39,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatCheckboxModule,
     MatRadioModule,
     MatProgressBarModule,
+    MatAutocompleteModule,
+    AsyncPipe
   ],
   template: `
     <div class="intake-form-container">
@@ -82,12 +88,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Sex Assigned at Birth</mat-label>
-                <mat-select formControlName="sexAssigned">
-                  <mat-option value="Male">Male</mat-option>
-                  <mat-option value="Female">Female</mat-option>
-                  <mat-option value="Intersex">Intersex</mat-option>
-                  <mat-option value="Decline">Decline to state</mat-option>
-                </mat-select>
+                <input matInput type="text" formControlName="sexAssigned" [matAutocomplete]="autoSex" />
+                <mat-autocomplete #autoSex="matAutocomplete">
+                  @for (option of filteredSexes | async; track option) {
+                    <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-autocomplete>
+                @if (demographicsForm.get('sexAssigned')?.hasError('requireMatch')) {
+                  <mat-error>Please select a valid option from the dropdown</mat-error>
+                }
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Gender Identity</mat-label>
@@ -102,21 +111,41 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Race</mat-label>
-                <input matInput formControlName="race" />
+                <input matInput type="text" formControlName="race" [matAutocomplete]="autoRace" />
+                <mat-autocomplete #autoRace="matAutocomplete">
+                  @for (option of filteredRaces | async; track option) {
+                    <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-autocomplete>
+                @if (demographicsForm.get('race')?.hasError('requireMatch')) {
+                  <mat-error>Please select a valid option from the dropdown</mat-error>
+                }
               </mat-form-field>
+              
               <mat-form-field appearance="outline">
                 <mat-label>Ethnicity</mat-label>
-                <input matInput formControlName="ethnicity" />
+                <input matInput type="text" formControlName="ethnicity" [matAutocomplete]="autoEthnicity" />
+                <mat-autocomplete #autoEthnicity="matAutocomplete">
+                  @for (option of filteredEthnicities | async; track option) {
+                    <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-autocomplete>
+                @if (demographicsForm.get('ethnicity')?.hasError('requireMatch')) {
+                  <mat-error>Please select a valid option from the dropdown</mat-error>
+                }
               </mat-form-field>
+
               <mat-form-field appearance="outline">
                 <mat-label>Marital Status</mat-label>
-                <mat-select formControlName="maritalStatus">
-                  <mat-option value="Single">Single</mat-option>
-                  <mat-option value="Married">Married</mat-option>
-                  <mat-option value="Divorced">Divorced</mat-option>
-                  <mat-option value="Widowed">Widowed</mat-option>
-                  <mat-option value="Separated">Separated</mat-option>
-                </mat-select>
+                <input matInput type="text" formControlName="maritalStatus" [matAutocomplete]="autoMarital" />
+                <mat-autocomplete #autoMarital="matAutocomplete">
+                  @for (option of filteredMarital | async; track option) {
+                    <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-autocomplete>
+                @if (demographicsForm.get('maritalStatus')?.hasError('requireMatch')) {
+                  <mat-error>Please select a valid option from the dropdown</mat-error>
+                }
               </mat-form-field>
             </div>
 
@@ -302,12 +331,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Relationship to Policy Holder</mat-label>
-                <mat-select formControlName="relationship">
-                  <mat-option value="Self">Self</mat-option>
-                  <mat-option value="Spouse">Spouse</mat-option>
-                  <mat-option value="Child">Child</mat-option>
-                  <mat-option value="Other">Other</mat-option>
-                </mat-select>
+                <input matInput type="text" formControlName="relationship" [matAutocomplete]="autoRel" />
+                <mat-autocomplete #autoRel="matAutocomplete">
+                  @for (option of filteredRelationships | async; track option) {
+                    <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-autocomplete>
+                @if (insuranceForm.get('relationship')?.hasError('requireMatch')) {
+                  <mat-error>Please select a valid option from the dropdown</mat-error>
+                }
               </mat-form-field>
             </div>
 
@@ -904,7 +936,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     .step-actions .btn { display: flex; align-items: center; gap: 4px; }
   `
 })
-export class IntakeFormPageComponent {
+export class IntakeFormPageComponent implements OnInit {
   submitting = signal(false);
   token: string | null = null;
 
@@ -920,6 +952,12 @@ export class IntakeFormPageComponent {
   familyHistoryForm: FormGroup;
   consentForm: FormGroup;
 
+  filteredRaces!: Observable<string[]>;
+  filteredEthnicities!: Observable<string[]>;
+  filteredMarital!: Observable<string[]>;
+  filteredSexes!: Observable<string[]>;
+  filteredRelationships!: Observable<string[]>;
+
   get allergies() { return this.allergiesMedicationsForm.get('allergies') as FormArray; }
   get medications() { return this.allergiesMedicationsForm.get('medications') as FormArray; }
   get surgeries() { return this.medicalHistoryForm.get('surgeries') as FormArray; }
@@ -932,8 +970,13 @@ export class IntakeFormPageComponent {
 
     this.demographicsForm = this.fb.group({
       firstName: ['', Validators.required], middleName: [''], lastName: ['', Validators.required], suffix: [''],
-      dateOfBirth: ['', Validators.required], sexAssigned: [''], genderIdentity: [''], ssn: [''],
-      race: [''], ethnicity: [''], maritalStatus: [''], housingType: [''],
+      dateOfBirth: ['', Validators.required], 
+      sexAssigned: ['', RequireMatchValidator(FHIR_CONSTANTS.ADMIN_SEX)], 
+      genderIdentity: [''], ssn: [''],
+      race: ['', RequireMatchValidator(FHIR_CONSTANTS.OMB_RACE)], 
+      ethnicity: ['', RequireMatchValidator(FHIR_CONSTANTS.OMB_ETHNICITY)], 
+      maritalStatus: ['', RequireMatchValidator(FHIR_CONSTANTS.MARITAL_STATUS)], 
+      housingType: [''],
       communicationDiff: ['No'], communicationDesc: [''], employmentStatus: [''], employerName: [''], employerPhone: ['']
     });
 
@@ -946,7 +989,8 @@ export class IntakeFormPageComponent {
 
     this.insuranceForm = this.fb.group({
       primaryCarrier: [''], subscriberId: [''], groupNumber: [''],
-      relationship: ['Self'], policyHolderFirstName: [''], policyHolderLastName: [''], policyHolderDob: ['']
+      relationship: ['Self', RequireMatchValidator(FHIR_CONSTANTS.RELATIONSHIPS)], 
+      policyHolderFirstName: [''], policyHolderLastName: [''], policyHolderDob: ['']
     });
 
     this.careTeamForm = this.fb.group({
@@ -990,6 +1034,38 @@ export class IntakeFormPageComponent {
       consentFinancial: [false, Validators.requiredTrue],
       consentPrivacy: [false, Validators.requiredTrue]
     });
+  }
+
+  ngOnInit() {
+    this.filteredRaces = this.demographicsForm.get('race')!.valueChanges.pipe(
+      startWith(''),
+      map(val => this._filter(val || '', FHIR_CONSTANTS.OMB_RACE))
+    );
+
+    this.filteredEthnicities = this.demographicsForm.get('ethnicity')!.valueChanges.pipe(
+      startWith(''),
+      map(val => this._filter(val || '', FHIR_CONSTANTS.OMB_ETHNICITY))
+    );
+
+    this.filteredMarital = this.demographicsForm.get('maritalStatus')!.valueChanges.pipe(
+      startWith(''),
+      map(val => this._filter(val || '', FHIR_CONSTANTS.MARITAL_STATUS))
+    );
+
+    this.filteredSexes = this.demographicsForm.get('sexAssigned')!.valueChanges.pipe(
+      startWith(''),
+      map(val => this._filter(val || '', FHIR_CONSTANTS.ADMIN_SEX))
+    );
+
+    this.filteredRelationships = this.insuranceForm.get('relationship')!.valueChanges.pipe(
+      startWith('Self'), // Start with Default
+      map(val => this._filter(val || '', FHIR_CONSTANTS.RELATIONSHIPS))
+    );
+  }
+
+  private _filter(value: string, options: string[]): string[] {
+    const filterValue = value.toLowerCase();
+    return options.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   addAllergy() { this.allergies.push(this.fb.group({ name: [''], reaction: [''] })); }
