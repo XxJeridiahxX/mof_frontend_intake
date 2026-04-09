@@ -24,13 +24,7 @@ import { MatDividerModule } from '@angular/material/divider';
       <header class="top-bar">
         <div class="top-bar-left">
           <div class="brand">
-            <div class="brand-logo">
-              <!-- Placeholder for the green logo seen in the screenshot -->
-              <mat-icon class="logo-icon">psychology</mat-icon>
-            </div>
-            <div class="brand-text">
-              <span class="brand-name">Medical Office Force, LLC</span>
-            </div>
+            <img src="/logo.png" alt="Medical Office Force Logo" class="main-logo-img" />
           </div>
 
           <div class="top-divider"></div>
@@ -206,45 +200,10 @@ import { MatDividerModule } from '@angular/material/divider';
       flex: 1;
     }
 
-    /* Brand */
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-
-    .brand-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #158b3c;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
-    }
-
-    .logo-icon {
-      color: #fff;
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-
-    .brand-name {
-      font-size: 16px;
-      font-weight: 700;
-      color: #333;
-      letter-spacing: -0.2px;
-      white-space: nowrap;
+    .main-logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
     }
 
     .top-divider {
