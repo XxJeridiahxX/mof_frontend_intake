@@ -55,9 +55,12 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
 
       <mat-stepper [linear]="false" #stepper class="intake-stepper">
         
-        <!-- STEP 1: Demographics -->
-        <mat-step [stepControl]="demographicsForm" label="Patient Demographics">
+        <!-- STEP 1: Patient Profile -->
+        <mat-step [stepControl]="step1Form" label="1. Patient Profile">
+          <div class="super-step-wrapper">
+            
           <form [formGroup]="demographicsForm" class="step-form">
+
             <div class="form-section-title">Patient Name</div>
             <div class="form-row">
               <mat-form-field appearance="outline">
@@ -192,15 +195,14 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               }
             </div>
 
-            <div class="step-actions">
-              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
-            </div>
+            
+          
           </form>
-        </mat-step>
 
-        <!-- STEP 2: Contact & Address -->
-        <mat-step [stepControl]="contactForm" label="Contact & Address">
+          <hr class="super-step-divider" />
+
           <form [formGroup]="contactForm" class="step-form">
+
             <div class="form-section-title">Mailing Address</div>
             <div class="form-row">
               <mat-form-field appearance="outline" style="flex:2">
@@ -302,74 +304,14 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </mat-form-field>
             </div>
 
-            <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
-              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
-            </div>
-          </form>
-        </mat-step>
-
-        <!-- STEP 3: Insurance -->
-        <mat-step [stepControl]="insuranceForm" label="Insurance">
-          <form [formGroup]="insuranceForm" class="step-form">
-            <div class="form-section-title">Primary Insurance</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Insurance Carrier</mat-label>
-                <input matInput formControlName="primaryCarrier" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Subscriber ID / Member Number</mat-label>
-                <input matInput formControlName="subscriberId" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Group Number</mat-label>
-                <input matInput formControlName="groupNumber" />
-              </mat-form-field>
-            </div>
             
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Relationship to Policy Holder</mat-label>
-                <input matInput type="text" formControlName="relationship" [matAutocomplete]="autoRel" />
-                <mat-autocomplete #autoRel="matAutocomplete">
-                  @for (option of filteredRelationships | async; track option) {
-                    <mat-option [value]="option">{{option}}</mat-option>
-                  }
-                </mat-autocomplete>
-                @if (insuranceForm.get('relationship')?.hasError('requireMatch')) {
-                  <mat-error>Please select a valid option from the dropdown</mat-error>
-                }
-              </mat-form-field>
-            </div>
-
-            @if (insuranceForm.value.relationship && insuranceForm.value.relationship !== 'Self') {
-              <div class="form-row">
-                <mat-form-field appearance="outline">
-                  <mat-label>Policy Holder First Name</mat-label>
-                  <input matInput formControlName="policyHolderFirstName" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Policy Holder Last Name</mat-label>
-                  <input matInput formControlName="policyHolderLastName" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Policy Holder Date of Birth</mat-label>
-                  <input matInput type="date" formControlName="policyHolderDob" />
-                </mat-form-field>
-              </div>
-            }
-
-            <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
-              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
-            </div>
+          
           </form>
-        </mat-step>
 
-        <!-- STEP 4: Care Team & Emergency -->
-        <mat-step [stepControl]="careTeamForm" label="Care Team">
+          <hr class="super-step-divider" />
+
           <form [formGroup]="careTeamForm" class="step-form">
+
             <div class="form-section-title">Emergency Contact</div>
             <div class="form-row">
               <mat-form-field appearance="outline">
@@ -466,16 +408,81 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </mat-form-field>
             </div>
 
-            <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
-              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
-            </div>
+            
+          
           </form>
+
+            
+            <div class="step-actions">
+              
+              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+              
+            </div>
+          </div>
         </mat-step>
 
-        <!-- STEP 5: Pharmacy -->
-        <mat-step [stepControl]="pharmacyForm" label="Pharmacy">
+        <!-- STEP 2: Coverage -->
+        <mat-step [stepControl]="step2Form" label="2. Coverage">
+          <div class="super-step-wrapper">
+            
+          <form [formGroup]="insuranceForm" class="step-form">
+
+            <div class="form-section-title">Primary Insurance</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Insurance Carrier</mat-label>
+                <input matInput formControlName="primaryCarrier" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Subscriber ID / Member Number</mat-label>
+                <input matInput formControlName="subscriberId" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Group Number</mat-label>
+                <input matInput formControlName="groupNumber" />
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Relationship to Policy Holder</mat-label>
+                <input matInput type="text" formControlName="relationship" [matAutocomplete]="autoRel" />
+                <mat-autocomplete #autoRel="matAutocomplete">
+                  @for (option of filteredRelationships | async; track option) {
+                    <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-autocomplete>
+                @if (insuranceForm.get('relationship')?.hasError('requireMatch')) {
+                  <mat-error>Please select a valid option from the dropdown</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            @if (insuranceForm.value.relationship && insuranceForm.value.relationship !== 'Self') {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Policy Holder First Name</mat-label>
+                  <input matInput formControlName="policyHolderFirstName" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Policy Holder Last Name</mat-label>
+                  <input matInput formControlName="policyHolderLastName" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Policy Holder Date of Birth</mat-label>
+                  <input matInput type="date" formControlName="policyHolderDob" />
+                </mat-form-field>
+              </div>
+            }
+
+            
+          
+          </form>
+
+          <hr class="super-step-divider" />
+
           <form [formGroup]="pharmacyForm" class="step-form">
+
             <div class="form-section-title">Preferred Local Pharmacy</div>
             <div class="form-row">
               <mat-form-field appearance="outline" style="flex:2">
@@ -510,16 +517,25 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </mat-form-field>
             </div>
 
+            
+          
+          </form>
+
+            
             <div class="step-actions">
               <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
               <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+              
             </div>
-          </form>
+          </div>
         </mat-step>
 
-        <!-- STEP 6: Reason for Visit -->
-        <mat-step [stepControl]="visitForm" label="Reason for Visit">
+        <!-- STEP 3: Current Visit -->
+        <mat-step [stepControl]="step3Form" label="3. Chief Complaint">
+          <div class="super-step-wrapper">
+            
           <form [formGroup]="visitForm" class="step-form">
+
             <div class="form-section-title">Current Health</div>
             <div class="form-row">
               <mat-form-field appearance="outline" style="flex: 1">
@@ -539,16 +555,25 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                 <input matInput formControlName="symptomOnset" />
               </mat-form-field>
             </div>
+            
+          
+          </form>
+
+            
             <div class="step-actions">
               <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
               <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+              
             </div>
-          </form>
+          </div>
         </mat-step>
 
-        <!-- STEP 7: Allergies & Meds -->
-        <mat-step [stepControl]="allergiesMedicationsForm" label="Allergies & Meds">
+        <!-- STEP 4: Active Clinicals -->
+        <mat-step [stepControl]="step4Form" label="4. Allergies & Meds">
+          <div class="super-step-wrapper">
+            
           <form [formGroup]="allergiesMedicationsForm" class="step-form">
+
             <div class="form-section-title">Allergies</div>
             <div class="form-row">
               <p style="margin:0 0 8px;">Do you have any known allergies (Medications, Food, Environmental, Latex)?</p>
@@ -613,16 +638,25 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </button>
             }
 
+            
+          
+          </form>
+
+            
             <div class="step-actions">
               <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
               <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+              
             </div>
-          </form>
+          </div>
         </mat-step>
 
-        <!-- STEP 8: Medical History -->
-        <mat-step [stepControl]="medicalHistoryForm" label="Past Medical">
+        <!-- STEP 5: Past History -->
+        <mat-step [stepControl]="step5Form" label="5. Health History">
+          <div class="super-step-wrapper">
+            
           <form [formGroup]="medicalHistoryForm" class="step-form">
+
             <div class="form-section-title">Past Surgical History</div>
             <div class="form-row">
               <p style="margin:0 0 8px;">Have you had any past procedures or surgeries?</p>
@@ -652,16 +686,14 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                 <mat-icon>add</mat-icon> Add Additional Procedure
               </button>
             }
-            <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
-              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
-            </div>
+            
+          
           </form>
-        </mat-step>
 
-        <!-- STEP 9: Social History -->
-        <mat-step [stepControl]="socialHistoryForm" label="Social History">
+          <hr class="super-step-divider" />
+
           <form [formGroup]="socialHistoryForm" class="step-form">
+
             <div class="form-section-title">Alcohol</div>
             <div class="form-row">
               <mat-form-field appearance="outline">
@@ -815,16 +847,14 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </mat-form-field>
             </div>
 
-            <div class="step-actions">
-              <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
-              <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
-            </div>
+            
+          
           </form>
-        </mat-step>
 
-        <!-- STEP 10: Family History -->
-        <mat-step [stepControl]="familyHistoryForm" label="Family History">
+          <hr class="super-step-divider" />
+
           <form [formGroup]="familyHistoryForm" class="step-form">
+
             <div class="form-section-title">Family History</div>
             <div class="form-row">
               <p style="margin:0 0 8px;">Significant family history of medical conditions?</p>
@@ -854,16 +884,25 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                 <mat-icon>add</mat-icon> Add Additional History
               </button>
             }
+            
+          
+          </form>
+
+            
             <div class="step-actions">
               <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
               <button class="btn btn-primary" matStepperNext>Next &rarr;</button>
+              
             </div>
-          </form>
+          </div>
         </mat-step>
 
-        <!-- STEP 11: Consent & Submit -->
-        <mat-step [stepControl]="consentForm" label="Agreements">
+        <!-- STEP 6: Consents -->
+        <mat-step [stepControl]="step6Form" label="6. Signatures">
+          <div class="super-step-wrapper">
+            
           <form [formGroup]="consentForm" class="step-form">
+
             <div class="form-section-title">Legal Agreements & Signatures</div>
             <div class="consent-box">
               <p>Please review and acknowledge the following mandatory practice agreements.</p>
@@ -885,22 +924,44 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </mat-checkbox>
             </div>
 
+            
+          
+          </form>
+
+            
             <div class="step-actions">
               <button class="btn btn-secondary" matStepperPrevious>&larr; Back</button>
-              <button
-                class="btn btn-success btn-submit layout-1"
-                (click)="onSubmit()"
-                [disabled]="consentForm.invalid || submitting()"
-              >
-                <mat-icon>send</mat-icon> Submit Complete Intake
-              </button>
+              
+              <button class="btn btn-success btn-submit layout-1" (click)="onSubmit()" [disabled]="consentForm.invalid || submitting()"><mat-icon>send</mat-icon> Submit Complete Intake</button>
             </div>
-          </form>
+          </div>
         </mat-step>
       </mat-stepper>
     </div>
   `,
   styles: `
+    ::ng-deep .mat-step-header .mat-step-label {
+      white-space: normal !important;
+      text-align: center;
+      max-width: 90px;
+      line-height: 1.2;
+    }
+    ::ng-deep .mat-horizontal-stepper-header-container {
+      padding-bottom: 12px;
+    }
+    .super-step-divider {
+      border: 0;
+      height: 1px;
+      background: #e0e0e0;
+      margin: 32px 0;
+    }
+    .super-step-wrapper .step-form {
+      padding: 0;
+    }
+    .super-step-wrapper form:first-child .form-section-title:first-child {
+      margin-top: 0;
+    }
+
     .intake-form-container { max-width: 960px; margin: 0 auto; }
     .page-title { font-size: 28px; font-weight: 600; color: #094997; margin: 0 0 4px; }
     .page-subtitle { color: #646464; font-size: 14px; margin: 0 0 24px; }
@@ -951,6 +1012,13 @@ export class IntakeFormPageComponent implements OnInit {
   socialHistoryForm: FormGroup;
   familyHistoryForm: FormGroup;
   consentForm: FormGroup;
+
+  step1Form!: FormGroup;
+  step2Form!: FormGroup;
+  step3Form!: FormGroup;
+  step4Form!: FormGroup;
+  step5Form!: FormGroup;
+  step6Form!: FormGroup;
 
   filteredRaces!: Observable<string[]>;
   filteredEthnicities!: Observable<string[]>;
@@ -1033,6 +1101,30 @@ export class IntakeFormPageComponent implements OnInit {
       consentTreat: [false, Validators.requiredTrue],
       consentFinancial: [false, Validators.requiredTrue],
       consentPrivacy: [false, Validators.requiredTrue]
+    });
+
+    this.step1Form = this.fb.group({
+      demographicsForm: this.demographicsForm,
+      contactForm: this.contactForm,
+      careTeamForm: this.careTeamForm
+    });
+    this.step2Form = this.fb.group({
+      insuranceForm: this.insuranceForm,
+      pharmacyForm: this.pharmacyForm
+    });
+    this.step3Form = this.fb.group({
+      visitForm: this.visitForm
+    });
+    this.step4Form = this.fb.group({
+      allergiesMedicationsForm: this.allergiesMedicationsForm
+    });
+    this.step5Form = this.fb.group({
+      medicalHistoryForm: this.medicalHistoryForm,
+      socialHistoryForm: this.socialHistoryForm,
+      familyHistoryForm: this.familyHistoryForm
+    });
+    this.step6Form = this.fb.group({
+      consentForm: this.consentForm
     });
   }
 
