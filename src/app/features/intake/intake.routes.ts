@@ -21,13 +21,6 @@ export const INTAKE_ROUTES: Routes = [
           ),
       },
       {
-        path: 'form',
-        loadComponent: () =>
-          import('./pages/intake-form/intake-form.page').then(
-            (m) => m.IntakeFormPageComponent
-          ),
-      },
-      {
         path: 'confirmation',
         loadComponent: () =>
           import('./pages/confirmation/confirmation.page').then(
@@ -36,4 +29,13 @@ export const INTAKE_ROUTES: Routes = [
       },
     ],
   },
+  // Intake form is full-screen — no shared layout wrapper
+  {
+    path: 'form',
+    loadComponent: () =>
+      import('./pages/intake-form/intake-form.page').then(
+        (m) => m.IntakeFormPageComponent
+      ),
+  },
 ];
+
