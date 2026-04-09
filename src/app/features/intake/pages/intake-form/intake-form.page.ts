@@ -21,7 +21,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../core/constants/fhir-constants';
+import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constants/fhir-constants';
 
 @Component({
   selector: 'app-intake-form-page',
