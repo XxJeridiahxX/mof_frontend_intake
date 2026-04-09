@@ -38,21 +38,20 @@ interface IntakeRow {
   template: `
     <div class="list-header">
       <h1 class="page-title">Intake Forms</h1>
-      <button class="btn btn-primary">
-        <mat-icon>send</mat-icon> Send New Intake
+      <button mat-button class="action-add-btn">
+        <mat-icon style="margin-right: 6px;">send</mat-icon> Send New Intake
       </button>
     </div>
 
-    <mat-card class="filter-card">
-      <div class="filter-row">
-        <mat-form-field class="dont-apply" appearance="outline">
-          <mat-label>Search patients</mat-label>
-          <input matInput [(ngModel)]="searchTerm" placeholder="Name, email, or phone" />
-          <mat-icon matPrefix>search</mat-icon>
-        </mat-form-field>
-        <mat-form-field class="dont-apply filter-select" appearance="outline">
-          <mat-label>Status</mat-label>
-          <mat-select [(ngModel)]="statusFilter">
+    <div class="cust-div-header">
+      <div class="filter-controls-row">
+        <div class="search-field">
+          <mat-icon style="color: #777; margin-right: 4px; font-size: 20px; width: 20px; height: 20px; display:flex; align-items:center;">search</mat-icon>
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Name, email, phone">
+        </div>
+
+        <mat-form-field appearance="outline" class="toolbar-select">
+          <mat-select placeholder="Status" [(ngModel)]="statusFilter">
             <mat-option value="all">All</mat-option>
             <mat-option value="link_sent">Link Sent</mat-option>
             <mat-option value="in_progress">In Progress</mat-option>
@@ -61,8 +60,12 @@ interface IntakeRow {
             <mat-option value="converted">Converted</mat-option>
           </mat-select>
         </mat-form-field>
+        
+        <div class="icon-group">
+          <button mat-icon-button class="toolbar-icon-btn"><mat-icon>refresh</mat-icon></button>
+        </div>
       </div>
-    </mat-card>
+    </div>
 
     <mat-card class="table-card">
       <div class="table-responsive">
@@ -142,24 +145,103 @@ interface IntakeRow {
       gap: 6px;
     }
 
-    .filter-card {
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: rgb(221, 221, 221) 0px 0px 10px 0px;
-    }
-
-    .filter-row {
+    .cust-div-header {
       display: flex;
-      gap: 12px;
-      align-items: flex-start;
+      flex-direction: column;
+      margin-bottom: 24px;
+      box-sizing: border-box;
+      width: 100%;
     }
 
-    .filter-row mat-form-field { flex: 1; }
-    .filter-select { max-width: 200px; }
+    .filter-controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
 
-    @media (max-width: 599px) {
-      .filter-row { flex-direction: column; }
-      .filter-select { max-width: none; }
+    /* Target Material MDC form fields to match the provided styling */
+    ::ng-deep .toolbar-select {
+      width: 130px;
+    }
+
+    ::ng-deep .toolbar-select .mat-mdc-text-field-wrapper {
+      background: #fff;
+      box-shadow: rgb(221, 221, 221) 0px 0px 10px 0px;
+      border-radius: 4px;
+      height: 38px;
+    }
+
+    /* Hide the standard MDC outline border so shadow stands out */
+    ::ng-deep .toolbar-select .mdc-notched-outline {
+      display: none;
+    }
+
+    ::ng-deep .toolbar-select .mat-mdc-form-field-flex {
+      padding: 0 10px;
+      align-items: center;
+      height: 100%;
+    }
+
+    ::ng-deep .toolbar-select .mat-mdc-select-value-text {
+      font-size: 12px;
+      color: #333;
+    }
+
+    /* The search box matching the exact size */
+    .search-field {
+      height: 38px;
+      width: 220px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      padding: 0 16px;
+
+      input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 13px;
+        width: 100%;
+      }
+    }
+
+    .icon-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .toolbar-icon-btn {
+      color: #2196f3;
+      width: 36px;
+      height: 36px;
+
+      mat-icon { font-size: 20px; width: 20px; height: 20px; }
+      
+      &.dial-icon {
+        color: #ff9800;
+      }
+    }
+
+    .action-add-btn {
+      color: #2196f3;
+      font-weight: 500;
+      font-size: 13px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      background: #fafbfc;
+      min-width: unset;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      height: 36px;
+      
+      mat-icon { font-size: 16px; width: 16px; height: 16px; display:flex; align-items:center; }
     }
 
     .table-card {
