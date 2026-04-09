@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -297,22 +297,42 @@ interface IntakeRow {
     .status-converted { background: #e1f3f5; color: #089bab; }
   `,
 })
-export class IntakeListPageComponent {
+export class IntakeListPageComponent implements OnInit {
   searchTerm = '';
   statusFilter = 'all';
 
-  rows: IntakeRow[] = [
-    { id: '1', name: 'Jane Smith', phone: '(555) 123-4567', email: 'jane@example.com', status: 'submitted', statusLabel: 'Submitted', submitted: 'Apr 8, 2026' },
-    { id: '2', name: 'Robert Johnson', phone: '(555) 234-5678', email: 'robert@example.com', status: 'in_progress', statusLabel: 'In Progress', submitted: 'Apr 8, 2026' },
-    { id: '3', name: 'Maria Garcia', phone: '(555) 345-6789', email: 'maria@example.com', status: 'reviewed', statusLabel: 'Reviewed', submitted: 'Apr 7, 2026' },
-    { id: '4', name: 'David Lee', phone: '(555) 456-7890', email: 'david@example.com', status: 'link_sent', statusLabel: 'Link Sent', submitted: 'Apr 7, 2026' },
-    { id: '5', name: 'Sarah Williams', phone: '(555) 567-8901', email: 'sarah@example.com', status: 'converted', statusLabel: 'Converted', submitted: 'Apr 6, 2026' },
-    { id: '6', name: 'Michael Brown', phone: '(555) 678-9012', email: 'michael@example.com', status: 'submitted', statusLabel: 'Submitted', submitted: 'Apr 6, 2026' },
-    { id: '7', name: 'Emily Davis', phone: '(555) 789-0123', email: 'emily@example.com', status: 'reviewed', statusLabel: 'Reviewed', submitted: 'Apr 5, 2026' },
-  ];
+  rows = signal<IntakeRow[]>([]);
+  loading = signal(true);
+
+  async ngOnInit() {
+    try {
+      const response = await fetch('/api/getIntakes');
+      if (!response.ok) throw new Error('Failed to fetch intakes');
+      
+      const data = await response.json();
+      
+      const formatted = (data.intakes || []).map((i: any) => ({
+        id: i.id ? i.id.toString() : Math.random().toString(),
+        name: `${i.first_name} ${i.last_name}`,
+        phone: i.phone,
+        email: i.email,
+        status: i.status || 'submitted',
+        statusLabel: i.status_label || 'Submitted',
+        submitted: new Date(i.created_at).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+        })
+      }));
+      
+      this.rows.set(formatted);
+    } catch (error) {
+      console.error('API Error:', error);
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
   filteredRows() {
-    return this.rows.filter((r) => {
+    return this.rows().filter((r) => {
       const matchesStatus =
         this.statusFilter === 'all' || r.status === this.statusFilter;
       const term = this.searchTerm.toLowerCase();

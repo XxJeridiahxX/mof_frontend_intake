@@ -625,12 +625,38 @@ export class IntakeFormPageComponent {
     sig.update((arr) => arr.filter((i) => i !== item));
   }
 
-  onSubmit() {
+  async onSubmit() {
     this.submitting.set(true);
-    // TODO: Replace with actual API submission
-    setTimeout(() => {
+    
+    // Construct full data payload payload
+    const payload = {
+      demographicsForm: this.demographicsForm.value,
+      emergencyForm: this.emergencyForm.value,
+      insuranceForm: this.insuranceForm.value,
+      medicalForm: {
+        ...this.medicalForm.value,
+        allergies: this.allergies(),
+        medications: this.medications(),
+        conditions: this.conditions()
+      },
+      consentForm: this.consentForm.value
+    };
+
+    try {
+      const response = await fetch('/api/submitIntake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) throw new Error('Failed to submit');
+      
       this.submitting.set(false);
       this.router.navigate(['/confirmation']);
-    }, 2000);
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      this.submitting.set(false);
+      alert('There was an issue submitting your form. Please try again.');
+    }
   }
 }
