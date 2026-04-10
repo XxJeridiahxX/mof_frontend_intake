@@ -464,9 +464,7 @@ const SECTIONS: SectionDef[] = [
     /* ── Unified toolbar ── */
     .toolbar-row {
       display: flex; align-items: center; gap: 10px;
-      margin-bottom: 16px; flex-wrap: wrap;
-      /* All direct children share the same 38px height */
-      & > * { height: 38px; box-sizing: border-box; }
+      margin-bottom: 16px; flex-wrap: wrap; height: 38px;
     }
 
     .search-field {
@@ -479,18 +477,18 @@ const SECTIONS: SectionDef[] = [
     .search-icon { color: #9aa0ab; font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
 
     ::ng-deep .toolbar-select {
-      width: 140px;
-      /* Reset Material field height to exactly 38px */
+      width: 140px; height: 38px !important; display: block;
+      .mat-mdc-form-field-subscript-wrapper { display: none !important; }
       .mat-mdc-text-field-wrapper {
         height: 38px !important; padding: 0 !important;
         background: #fff; border: 1px solid #d0d5dd; border-radius: 6px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       }
-      .mdc-notched-outline { display: none; }
-      .mat-mdc-form-field-flex { height: 38px; padding: 0 12px; align-items: center; }
-      .mat-mdc-form-field-infix { padding: 0 !important; border-top: 0 !important; min-height: unset !important; }
-      .mat-mdc-select-value-text { font-size: 13px; color: #333; }
-      .mat-mdc-form-field-subscript-wrapper { display: none; }
+      .mdc-notched-outline { display: none !important; }
+      .mat-mdc-form-field-flex { height: 38px !important; padding: 0 12px !important; align-items: center !important; }
+      .mat-mdc-form-field-infix { padding: 0 !important; border-top: 0 !important; min-height: unset !important; width: auto; }
+      .mat-mdc-select-value { font-size: 13px; color: #333; }
+      .mat-mdc-select-arrow-wrapper { height: 38px; display: flex; align-items: center; }
     }
 
     .toolbar-icon-btn {

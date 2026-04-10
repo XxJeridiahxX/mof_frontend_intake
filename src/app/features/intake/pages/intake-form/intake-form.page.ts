@@ -492,7 +492,16 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             
           <form [formGroup]="insuranceForm" class="step-form">
 
-            <div class="form-section-title">Primary Insurance</div>
+            <div class="form-section-title">Insurance Coverage</div>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you have health insurance?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasInsurance')?.value === true" (click)="insuranceForm.get('hasInsurance')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasInsurance')?.value === false" (click)="insuranceForm.get('hasInsurance')?.setValue(false)">No</button>
+              </div>
+            </div>
+
+            @if (insuranceForm.get('hasInsurance')?.value === true) {
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Insurance Carrier</mat-label>
@@ -599,6 +608,102 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                 <span>{{ uploadError() }}</span>
               </div>
             }
+
+            <!-- Secondary Insurance -->
+            <div class="form-section-title" style="margin-top:20px">Secondary Insurance</div>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you have secondary insurance?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasSecondary')?.value" (click)="insuranceForm.get('hasSecondary')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="!insuranceForm.get('hasSecondary')?.value" (click)="insuranceForm.get('hasSecondary')?.setValue(false)">No</button>
+              </div>
+            </div>
+            @if (insuranceForm.get('hasSecondary')?.value) {
+              <div class="form-row">
+                <mat-form-field appearance="outline"><mat-label>Insurance Carrier</mat-label><input matInput formControlName="secCarrier" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Subscriber ID / Member Number</mat-label><input matInput formControlName="secSubscriberId" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Group Number</mat-label><input matInput formControlName="secGroupNumber" /></mat-form-field>
+              </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline"><mat-label>Relationship to Policy Holder</mat-label><input matInput formControlName="secRelationship" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Policy Holder First Name</mat-label><input matInput formControlName="secPolicyHolderFirstName" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Policy Holder Last Name</mat-label><input matInput formControlName="secPolicyHolderLastName" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Policy Holder DOB</mat-label><input matInput type="date" formControlName="secPolicyHolderDob" /></mat-form-field>
+              </div>
+              <div class="card-upload-row" style="margin-top:8px">
+                <div class="card-upload-zone" [class.has-file]="insuranceCardFront2()" [class.uploading]="uploadingFront2()" (click)="front2Input.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event,'front2')">
+                  <input #front2Input type="file" accept="image/*" hidden (change)="onFileSelected($event,'front2')" />
+                  @if (insuranceCardFront2()) { <img [src]="insuranceCardFront2()" class="card-preview" alt="Secondary card front" /><div class="card-overlay"><mat-icon>check_circle</mat-icon><span>Front uploaded</span><button class="remove-card-btn" (click)="$event.stopPropagation();removeCard('front2')">Remove</button></div> }
+                  @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Front of Card</span><span class="upload-sub">Tap or drag to upload</span> }
+                </div>
+                <div class="card-upload-zone" [class.has-file]="insuranceCardBack2()" [class.uploading]="uploadingBack2()" (click)="back2Input.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event,'back2')">
+                  <input #back2Input type="file" accept="image/*" hidden (change)="onFileSelected($event,'back2')" />
+                  @if (insuranceCardBack2()) { <img [src]="insuranceCardBack2()" class="card-preview" alt="Secondary card back" /><div class="card-overlay"><mat-icon>check_circle</mat-icon><span>Back uploaded</span><button class="remove-card-btn" (click)="$event.stopPropagation();removeCard('back2')">Remove</button></div> }
+                  @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Back of Card</span><span class="upload-sub">Tap or drag to upload</span> }
+                </div>
+              </div>
+            }
+
+            <!-- Tertiary Insurance -->
+            <div class="form-section-title" style="margin-top:20px">Tertiary Insurance</div>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you have tertiary (third) insurance?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasTertiary')?.value" (click)="insuranceForm.get('hasTertiary')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="!insuranceForm.get('hasTertiary')?.value" (click)="insuranceForm.get('hasTertiary')?.setValue(false)">No</button>
+              </div>
+            </div>
+            @if (insuranceForm.get('hasTertiary')?.value) {
+              <div class="form-row">
+                <mat-form-field appearance="outline"><mat-label>Insurance Carrier</mat-label><input matInput formControlName="terCarrier" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Subscriber ID / Member Number</mat-label><input matInput formControlName="terSubscriberId" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Group Number</mat-label><input matInput formControlName="terGroupNumber" /></mat-form-field>
+              </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline"><mat-label>Relationship to Policy Holder</mat-label><input matInput formControlName="terRelationship" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Policy Holder First Name</mat-label><input matInput formControlName="terPolicyHolderFirstName" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Policy Holder Last Name</mat-label><input matInput formControlName="terPolicyHolderLastName" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Policy Holder DOB</mat-label><input matInput type="date" formControlName="terPolicyHolderDob" /></mat-form-field>
+              </div>
+              <div class="card-upload-row" style="margin-top:8px">
+                <div class="card-upload-zone" [class.has-file]="insuranceCardFront3()" [class.uploading]="uploadingFront3()" (click)="front3Input.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event,'front3')">
+                  <input #front3Input type="file" accept="image/*" hidden (change)="onFileSelected($event,'front3')" />
+                  @if (insuranceCardFront3()) { <img [src]="insuranceCardFront3()" class="card-preview" alt="Tertiary card front" /><div class="card-overlay"><mat-icon>check_circle</mat-icon><span>Front uploaded</span><button class="remove-card-btn" (click)="$event.stopPropagation();removeCard('front3')">Remove</button></div> }
+                  @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Front of Card</span><span class="upload-sub">Tap or drag to upload</span> }
+                </div>
+                <div class="card-upload-zone" [class.has-file]="insuranceCardBack3()" [class.uploading]="uploadingBack3()" (click)="back3Input.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event,'back3')">
+                  <input #back3Input type="file" accept="image/*" hidden (change)="onFileSelected($event,'back3')" />
+                  @if (insuranceCardBack3()) { <img [src]="insuranceCardBack3()" class="card-preview" alt="Tertiary card back" /><div class="card-overlay"><mat-icon>check_circle</mat-icon><span>Back uploaded</span><button class="remove-card-btn" (click)="$event.stopPropagation();removeCard('back3')">Remove</button></div> }
+                  @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Back of Card</span><span class="upload-sub">Tap or drag to upload</span> }
+                </div>
+              </div>
+            }
+            } <!-- end @if hasInsurance -->
+
+            @if (insuranceForm.get('hasInsurance')?.value === false) {
+              <div class="oop-notice">
+                <div class="oop-notice-header">
+                  <mat-icon>account_balance_wallet</mat-icon>
+                  <strong>Self-Pay / Out-of-Pocket Agreement</strong>
+                </div>
+                <p>
+                  Since you have indicated that you do not have health insurance, your services will be billed as
+                  <strong>self-pay</strong>. By acknowledging below, you agree to the following:
+                </p>
+                <ul class="oop-terms">
+                  <li>Payment in full is due at the time of service unless prior arrangements have been made.</li>
+                  <li>You will receive an itemized statement for all services rendered.</li>
+                  <li>A discount may be available — please ask our billing team about our self-pay fee schedule.</li>
+                  <li>Failure to pay may result in referral to a collections agency.</li>
+                  <li>This practice does not accept financial responsibility for services rendered without prior payment arrangements.</li>
+                </ul>
+                <label class="oop-check-row">
+                  <input type="checkbox" formControlName="oopAcknowledged" class="oop-checkbox" />
+                  <span>I understand and agree that I am responsible for all charges related to my care as a self-pay patient.</span>
+                </label>
+              </div>
+            }
+
           </form>
 
           <hr class="super-step-divider" />
@@ -1290,6 +1395,26 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .toggle-btn:first-child { border-right: 1px solid #d0d5dd; }
     .toggle-btn.active { background: #094997; color: white; }
 
+    /* Out-of-pocket acknowledgment */
+    .oop-notice {
+      background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px;
+      padding: 18px 20px; margin-top: 4px;
+    }
+    .oop-notice-header {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+      mat-icon { color: #c95817; font-size: 20px; width: 20px; height: 20px; }
+      strong { font-size: 15px; color: #7a3e00; }
+    }
+    .oop-notice p { font-size: 14px; color: #5a3e00; line-height: 1.6; margin: 0 0 10px; }
+    .oop-terms {
+      font-size: 13px; color: #5a3e00; line-height: 1.7; margin: 0 0 14px; padding-left: 18px;
+    }
+    .oop-check-row {
+      display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+      font-size: 14px; color: #3e2700; font-weight: 500; line-height: 1.5;
+    }
+    .oop-checkbox { margin-top: 2px; width: 16px; height: 16px; flex-shrink: 0; accent-color: #094997; cursor: pointer; }
+
     .consent-box { background: #eef5fd; border: 1px solid #d9edf7; padding: 16px; margin-bottom: 24px; }
     .consent-check-row { margin-bottom: 16px; }
 
@@ -1356,12 +1481,24 @@ export class IntakeFormPageComponent implements OnInit {
   token: string | null = null;
 
   insuranceCardFront = signal<string | null>(null);
-  insuranceCardBack = signal<string | null>(null);
+  insuranceCardBack  = signal<string | null>(null);
+  insuranceCardFront2 = signal<string | null>(null);
+  insuranceCardBack2  = signal<string | null>(null);
+  insuranceCardFront3 = signal<string | null>(null);
+  insuranceCardBack3  = signal<string | null>(null);
   uploadingFront = signal(false);
-  uploadingBack = signal(false);
+  uploadingBack  = signal(false);
+  uploadingFront2 = signal(false);
+  uploadingBack2  = signal(false);
+  uploadingFront3 = signal(false);
+  uploadingBack3  = signal(false);
   uploadError = signal('');
   insuranceCardFrontUrl: string | null = null;
-  insuranceCardBackUrl: string | null = null;
+  insuranceCardBackUrl:  string | null = null;
+  insuranceCardFrontUrl2: string | null = null;
+  insuranceCardBackUrl2:  string | null = null;
+  insuranceCardFrontUrl3: string | null = null;
+  insuranceCardBackUrl3:  string | null = null;
 
   stepLabels = [
     'Patient Profile',
@@ -1431,9 +1568,17 @@ export class IntakeFormPageComponent implements OnInit {
     });
 
     this.insuranceForm = this.fb.group({
+      hasInsurance: [null],
+      oopAcknowledged: [false],
       primaryCarrier: [''], subscriberId: [''], groupNumber: [''],
-      relationship: ['Self', RequireMatchValidator(FHIR_CONSTANTS.RELATIONSHIPS)], 
-      policyHolderFirstName: [''], policyHolderLastName: [''], policyHolderDob: ['']
+      relationship: ['Self', RequireMatchValidator(FHIR_CONSTANTS.RELATIONSHIPS)],
+      policyHolderFirstName: [''], policyHolderLastName: [''], policyHolderDob: [''],
+      hasSecondary: [false],
+      secCarrier: [''], secSubscriberId: [''], secGroupNumber: [''], secRelationship: ['Self'],
+      secPolicyHolderFirstName: [''], secPolicyHolderLastName: [''], secPolicyHolderDob: [''],
+      hasTertiary: [false],
+      terCarrier: [''], terSubscriberId: [''], terGroupNumber: [''], terRelationship: ['Self'],
+      terPolicyHolderFirstName: [''], terPolicyHolderLastName: [''], terPolicyHolderDob: [''],
     });
 
     this.careTeamForm = this.fb.group({
@@ -1608,14 +1753,12 @@ export class IntakeFormPageComponent implements OnInit {
       }
 
       // Restore insurance card preview URLs
-      if (data.insuranceCardFrontUrl) {
-        this.insuranceCardFront.set(data.insuranceCardFrontUrl);
-        this.insuranceCardFrontUrl = data.insuranceCardFrontUrl;
-      }
-      if (data.insuranceCardBackUrl) {
-        this.insuranceCardBack.set(data.insuranceCardBackUrl);
-        this.insuranceCardBackUrl = data.insuranceCardBackUrl;
-      }
+      if (data.insuranceCardFrontUrl)  { this.insuranceCardFront.set(data.insuranceCardFrontUrl);   this.insuranceCardFrontUrl  = data.insuranceCardFrontUrl; }
+      if (data.insuranceCardBackUrl)   { this.insuranceCardBack.set(data.insuranceCardBackUrl);     this.insuranceCardBackUrl   = data.insuranceCardBackUrl; }
+      if (data.insuranceCardFrontUrl2) { this.insuranceCardFront2.set(data.insuranceCardFrontUrl2); this.insuranceCardFrontUrl2 = data.insuranceCardFrontUrl2; }
+      if (data.insuranceCardBackUrl2)  { this.insuranceCardBack2.set(data.insuranceCardBackUrl2);   this.insuranceCardBackUrl2  = data.insuranceCardBackUrl2; }
+      if (data.insuranceCardFrontUrl3) { this.insuranceCardFront3.set(data.insuranceCardFrontUrl3); this.insuranceCardFrontUrl3 = data.insuranceCardFrontUrl3; }
+      if (data.insuranceCardBackUrl3)  { this.insuranceCardBack3.set(data.insuranceCardBackUrl3);   this.insuranceCardBackUrl3  = data.insuranceCardBackUrl3; }
 
     } catch (err) {
       console.warn('Could not prefill from token:', err);
@@ -1639,66 +1782,68 @@ export class IntakeFormPageComponent implements OnInit {
   addFamilyCondition() { this.familyConditions.push(this.fb.group({ diagnosis: [''], member: [''] })); }
   removeFamilyCondition(index: number) { this.familyConditions.removeAt(index); }
 
-  onDrop(event: DragEvent, side: 'front' | 'back') {
+  private cardSignals(): Record<string, { preview: any; uploading: any }> {
+    return {
+      front:  { preview: this.insuranceCardFront,  uploading: this.uploadingFront  },
+      back:   { preview: this.insuranceCardBack,   uploading: this.uploadingBack   },
+      front2: { preview: this.insuranceCardFront2, uploading: this.uploadingFront2 },
+      back2:  { preview: this.insuranceCardBack2,  uploading: this.uploadingBack2  },
+      front3: { preview: this.insuranceCardFront3, uploading: this.uploadingFront3 },
+      back3:  { preview: this.insuranceCardBack3,  uploading: this.uploadingBack3  },
+    };
+  }
+
+  onDrop(event: DragEvent, side: string) {
     event.preventDefault();
     const file = event.dataTransfer?.files?.[0];
     if (file) this.uploadCard(file, side);
   }
 
-  onFileSelected(event: Event, side: 'front' | 'back') {
+  onFileSelected(event: Event, side: string) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) this.uploadCard(file, side);
   }
 
-  removeCard(side: 'front' | 'back') {
-    if (side === 'front') {
-      this.insuranceCardFront.set(null);
-      this.insuranceCardFrontUrl = null;
-    } else {
-      this.insuranceCardBack.set(null);
-      this.insuranceCardBackUrl = null;
-    }
+  removeCard(side: string) {
+    const s = this.cardSignals()[side];
+    if (!s) return;
+    s.preview.set(null);
+    if (side === 'front')  this.insuranceCardFrontUrl  = null;
+    if (side === 'back')   this.insuranceCardBackUrl   = null;
+    if (side === 'front2') this.insuranceCardFrontUrl2 = null;
+    if (side === 'back2')  this.insuranceCardBackUrl2  = null;
+    if (side === 'front3') this.insuranceCardFrontUrl3 = null;
+    if (side === 'back3')  this.insuranceCardBackUrl3  = null;
   }
 
-  async uploadCard(file: File, side: 'front' | 'back') {
+  async uploadCard(file: File, side: string) {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
-    if (!allowedTypes.includes(file.type)) {
-      this.uploadError.set('Only JPG, PNG, WEBP, or HEIC images are accepted.');
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      this.uploadError.set('File must be under 10MB.');
-      return;
-    }
+    if (!allowedTypes.includes(file.type)) { this.uploadError.set('Only JPG, PNG, WEBP, or HEIC images are accepted.'); return; }
+    if (file.size > 10 * 1024 * 1024) { this.uploadError.set('File must be under 10MB.'); return; }
     this.uploadError.set('');
 
-    if (side === 'front') this.uploadingFront.set(true);
-    else this.uploadingBack.set(true);
+    const s = this.cardSignals()[side];
+    if (!s) return;
+    s.uploading.set(true);
 
-    // Show local preview immediately
     const reader = new FileReader();
-    reader.onload = (e) => {
-      if (side === 'front') this.insuranceCardFront.set(e.target?.result as string);
-      else this.insuranceCardBack.set(e.target?.result as string);
-    };
+    reader.onload = (e) => s.preview.set(e.target?.result as string);
     reader.readAsDataURL(file);
 
     try {
       const filename = `insurance-cards/${side}-${Date.now()}-${file.name}`;
-      const blob = await upload(filename, file, {
-        access: 'public',
-        handleUploadUrl: '/api/getBlobUploadToken',
-      });
-
-      if (side === 'front') this.insuranceCardFrontUrl = blob.url;
-      else this.insuranceCardBackUrl = blob.url;
-    } catch (err: any) {
+      const blob = await upload(filename, file, { access: 'public', handleUploadUrl: '/api/getBlobUploadToken' });
+      if (side === 'front')  this.insuranceCardFrontUrl  = blob.url;
+      if (side === 'back')   this.insuranceCardBackUrl   = blob.url;
+      if (side === 'front2') this.insuranceCardFrontUrl2 = blob.url;
+      if (side === 'back2')  this.insuranceCardBackUrl2  = blob.url;
+      if (side === 'front3') this.insuranceCardFrontUrl3 = blob.url;
+      if (side === 'back3')  this.insuranceCardBackUrl3  = blob.url;
+    } catch {
       this.uploadError.set('Upload failed. Please try again.');
-      if (side === 'front') { this.insuranceCardFront.set(null); this.insuranceCardFrontUrl = null; }
-      else { this.insuranceCardBack.set(null); this.insuranceCardBackUrl = null; }
+      s.preview.set(null);
     } finally {
-      if (side === 'front') this.uploadingFront.set(false);
-      else this.uploadingBack.set(false);
+      s.uploading.set(false);
     }
   }
 
@@ -1720,8 +1865,12 @@ export class IntakeFormPageComponent implements OnInit {
     };
 
     if (this.token) payload.token = this.token;
-    payload.insuranceCardFrontUrl = this.insuranceCardFrontUrl;
-    payload.insuranceCardBackUrl = this.insuranceCardBackUrl;
+    payload.insuranceCardFrontUrl  = this.insuranceCardFrontUrl;
+    payload.insuranceCardBackUrl   = this.insuranceCardBackUrl;
+    payload.insuranceCardFrontUrl2 = this.insuranceCardFrontUrl2;
+    payload.insuranceCardBackUrl2  = this.insuranceCardBackUrl2;
+    payload.insuranceCardFrontUrl3 = this.insuranceCardFrontUrl3;
+    payload.insuranceCardBackUrl3  = this.insuranceCardBackUrl3;
 
     try {
       const response = await fetch('/api/submitIntake', {
