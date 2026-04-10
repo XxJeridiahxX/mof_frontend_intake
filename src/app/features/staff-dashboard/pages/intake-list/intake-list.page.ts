@@ -204,146 +204,149 @@ const SECTIONS: SectionDef[] = [
     </mat-card>
   </div>
 
-  <!-- ══ REVIEW PANEL ══ -->
+  <!-- ══ REVIEW OVERLAY ══ -->
   @if (reviewIntake()) {
-    <div class="review-panel">
+    <div class="overlay-backdrop" (click)="closeReview()"></div>
+    <div class="overlay-shell" role="dialog">
 
-      <!-- Panel header -->
-      <div class="rp-header">
-        <div class="rp-title-block">
-          <span class="rp-name">{{ reviewIntake()!.name }}</span>
-          <span class="rp-meta">ID #{{ reviewIntake()!.id }} &nbsp;·&nbsp; {{ reviewIntake()!.submitted }}</span>
+      <!-- ── Top bar ── -->
+      <div class="ov-topbar">
+        <div class="ov-patient">
+          <span class="ov-name">{{ reviewIntake()!.name }}</span>
+          <span class="ov-meta">ID #{{ reviewIntake()!.id }} &nbsp;·&nbsp; {{ reviewIntake()!.submitted }}</span>
         </div>
-        <div class="rp-header-right">
+        <div class="ov-topbar-right">
           <span class="status-badge status-{{ rpStatus() }}">{{ rpStatusLabel() }}</span>
           @if (dirty()) { <span class="unsaved-dot" matTooltip="Unsaved changes">●</span> }
-          <button class="rp-close-btn" (click)="closeReview()" matTooltip="Close"><mat-icon>close</mat-icon></button>
+          @if (cardFrontUrl() || cardBackUrl()) {
+            <div class="card-thumbs">
+              @if (cardFrontUrl()) {
+                <a [href]="cardFrontUrl()!" target="_blank" class="card-thumb-link" matTooltip="Insurance card front">
+                  <img [src]="cardFrontUrl()!" class="card-thumb" alt="Card front" />
+                </a>
+              }
+              @if (cardBackUrl()) {
+                <a [href]="cardBackUrl()!" target="_blank" class="card-thumb-link" matTooltip="Insurance card back">
+                  <img [src]="cardBackUrl()!" class="card-thumb" alt="Card back" />
+                </a>
+              }
+            </div>
+          }
+          <button class="ov-action-btn ov-btn-secondary" (click)="rpSave('in_progress', 'In Progress')" [disabled]="rpSaving()">
+            <mat-icon>save</mat-icon> Save
+          </button>
+          <button class="ov-action-btn ov-btn-primary" (click)="rpSave('reviewed', 'Reviewed')" [disabled]="rpSaving()">
+            <mat-icon>task_alt</mat-icon> Complete Review
+          </button>
+          <button class="ov-close-btn" (click)="closeReview()" matTooltip="Close"><mat-icon>close</mat-icon></button>
         </div>
       </div>
 
-      @if (rpLoading()) { <mat-progress-bar mode="indeterminate" color="accent" /> }
-
+      @if (rpLoading()) { <mat-progress-bar mode="indeterminate" color="accent" style="flex-shrink:0" /> }
       @if (rpError()) {
-        <div class="rp-error-bar"><mat-icon>error_outline</mat-icon> {{ rpError() }}</div>
+        <div class="ov-error-bar"><mat-icon>error_outline</mat-icon> {{ rpError() }}</div>
       }
 
-      <!-- Insurance card thumbnails -->
-      @if (cardFrontUrl() || cardBackUrl()) {
-        <div class="card-images-bar">
-          @if (cardFrontUrl()) {
-            <a [href]="cardFrontUrl()!" target="_blank" class="card-thumb-link">
-              <img [src]="cardFrontUrl()!" class="card-thumb" alt="Card front" />
-              <span class="card-thumb-label">Front</span>
-            </a>
-          }
-          @if (cardBackUrl()) {
-            <a [href]="cardBackUrl()!" target="_blank" class="card-thumb-link">
-              <img [src]="cardBackUrl()!" class="card-thumb" alt="Card back" />
-              <span class="card-thumb-label">Back</span>
-            </a>
-          }
-        </div>
-      }
+      <!-- ── Body: nav sidebar + content ── -->
+      <div class="ov-body">
 
-      <!-- Sections -->
-      <div class="rp-scroll">
-        @for (section of sections; track section.key) {
-          <div class="section-block">
-            <div class="section-header">
-              <mat-icon class="section-icon">{{ section.icon }}</mat-icon>
-              <span class="section-label">{{ section.label }}</span>
-            </div>
-              <div class="fields-grid">
-                @for (field of section.fields; track field.key) {
-                  <div class="field-cell" [class.span-full]="field.span === 'full'" [class.field-empty]="!getVal(section.key, field.key)">
-                    <label class="field-label">{{ field.label }}</label>
-                    @if (field.type === 'textarea') {
-                      <textarea class="field-input field-textarea" rows="2"
-                        [(ngModel)]="editState[section.key + '.' + field.key]"
-                        (ngModelChange)="dirty.set(true)"
-                        placeholder="—"></textarea>
-                    } @else {
-                      <input class="field-input"
-                        [type]="field.type === 'date' ? 'date' : 'text'"
-                        [(ngModel)]="editState[section.key + '.' + field.key]"
-                        (ngModelChange)="dirty.set(true)"
-                        placeholder="—" />
+        <!-- Section nav sidebar -->
+        <nav class="ov-sidenav">
+          @for (section of allNavSections; track section.key) {
+            <button class="nav-item" [class.nav-active]="activeSection() === section.key" (click)="activeSection.set(section.key)">
+              <mat-icon class="nav-icon">{{ section.icon }}</mat-icon>
+              <span class="nav-label">{{ section.label }}</span>
+              @if (sectionFillCount(section.key) > 0) {
+                <span class="nav-badge">{{ sectionFillCount(section.key) }}</span>
+              }
+            </button>
+          }
+        </nav>
+
+        <!-- Section content -->
+        <div class="ov-content">
+          @for (section of sections; track section.key) {
+            @if (activeSection() === section.key) {
+              <div class="content-section">
+                <div class="fields-grid">
+                  @for (field of section.fields; track field.key) {
+                    <div class="field-cell" [class.span-full]="field.span === 'full'" [class.field-empty]="!getVal(section.key, field.key)">
+                      <label class="field-label">{{ field.label }}</label>
+                      @if (field.type === 'textarea') {
+                        <textarea class="field-input field-textarea" rows="3"
+                          [(ngModel)]="editState[section.key + '.' + field.key]"
+                          (ngModelChange)="dirty.set(true)" placeholder="—"></textarea>
+                      } @else {
+                        <input class="field-input"
+                          [type]="field.type === 'date' ? 'date' : 'text'"
+                          [(ngModel)]="editState[section.key + '.' + field.key]"
+                          (ngModelChange)="dirty.set(true)" placeholder="—" />
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+
+          <!-- Clinicals section -->
+          @if (activeSection() === 'clinicals') {
+            <div class="content-section">
+              <div class="clinical-block">
+                <div class="clinical-block-title"><mat-icon>warning_amber</mat-icon> Allergies</div>
+                @if (allergies().length) {
+                  <div class="chip-list">
+                    @for (a of allergies(); track $index) {
+                      <div class="chip chip-allergy"><span class="chip-name">{{ a.name }}</span>@if(a.reaction){<span class="chip-sub">→ {{ a.reaction }}</span>}</div>
                     }
                   </div>
-                }
+                } @else { <p class="clinical-empty">None recorded</p> }
+              </div>
+              <div class="clinical-block">
+                <div class="clinical-block-title"><mat-icon>medication</mat-icon> Medications</div>
+                @if (medications().length) {
+                  <div class="chip-list">
+                    @for (m of medications(); track $index) {
+                      <div class="chip chip-med"><span class="chip-name">{{ m.name }}</span>@if(m.dosage){<span class="chip-sub">{{ m.dosage }}</span>}@if(m.frequency){<span class="chip-sub">{{ m.frequency }}</span>}</div>
+                    }
+                  </div>
+                } @else { <p class="clinical-empty">None recorded</p> }
+              </div>
+              <div class="clinical-block">
+                <div class="clinical-block-title"><mat-icon>cut</mat-icon> Surgical History</div>
+                @if (surgeries().length) {
+                  <div class="chip-list">
+                    @for (s of surgeries(); track $index) {
+                      <div class="chip chip-surgery"><span class="chip-name">{{ s.type }}</span>@if(s.date){<span class="chip-sub">{{ s.date }}</span>}</div>
+                    }
+                  </div>
+                } @else { <p class="clinical-empty">None recorded</p> }
+              </div>
+              <div class="clinical-block">
+                <div class="clinical-block-title"><mat-icon>family_restroom</mat-icon> Family History</div>
+                @if (familyConditions().length) {
+                  <div class="chip-list">
+                    @for (f of familyConditions(); track $index) {
+                      <div class="chip chip-family"><span class="chip-name">{{ f.diagnosis }}</span>@if(f.member){<span class="chip-sub">{{ f.member }}</span>}</div>
+                    }
+                  </div>
+                } @else { <p class="clinical-empty">None recorded</p> }
+              </div>
             </div>
-          </div>
-        }
+          }
+        </div>
 
-        @if (allergies().length) {
-          <div class="section-block">
-            <div class="section-header"><mat-icon class="section-icon">warning_amber</mat-icon><span class="section-label">Allergies</span></div>
-            <div class="chip-list">
-              @for (a of allergies(); track $index) {
-                <div class="chip chip-allergy"><span class="chip-name">{{ a.name }}</span>@if(a.reaction){<span class="chip-sub">→ {{ a.reaction }}</span>}</div>
-              }
-            </div>
-          </div>
-        }
-        @if (medications().length) {
-          <div class="section-block">
-            <div class="section-header"><mat-icon class="section-icon">medication</mat-icon><span class="section-label">Medications</span></div>
-            <div class="chip-list">
-              @for (m of medications(); track $index) {
-                <div class="chip chip-med"><span class="chip-name">{{ m.name }}</span>@if(m.dosage){<span class="chip-sub">{{ m.dosage }}</span>}@if(m.frequency){<span class="chip-sub">{{ m.frequency }}</span>}</div>
-              }
-            </div>
-          </div>
-        }
-        @if (surgeries().length) {
-          <div class="section-block">
-            <div class="section-header"><mat-icon class="section-icon">cut</mat-icon><span class="section-label">Surgical History</span></div>
-            <div class="chip-list">
-              @for (s of surgeries(); track $index) {
-                <div class="chip chip-surgery"><span class="chip-name">{{ s.type }}</span>@if(s.date){<span class="chip-sub">{{ s.date }}</span>}</div>
-              }
-            </div>
-          </div>
-        }
-        @if (familyConditions().length) {
-          <div class="section-block">
-            <div class="section-header"><mat-icon class="section-icon">family_restroom</mat-icon><span class="section-label">Family History</span></div>
-            <div class="chip-list">
-              @for (f of familyConditions(); track $index) {
-                <div class="chip chip-family"><span class="chip-name">{{ f.diagnosis }}</span>@if(f.member){<span class="chip-sub">{{ f.member }}</span>}</div>
-              }
-            </div>
-          </div>
-        }
       </div>
-
-      <!-- Panel footer actions -->
-      <div class="rp-footer">
-        <button class="rp-btn rp-btn-secondary" (click)="rpSave('in_progress', 'In Progress')" [disabled]="rpSaving()">
-          <mat-icon>save</mat-icon> Save for Later
-        </button>
-        <button class="rp-btn rp-btn-primary" (click)="rpSave('reviewed', 'Reviewed')" [disabled]="rpSaving()">
-          <mat-icon>task_alt</mat-icon> Complete Review
-        </button>
-      </div>
-
     </div>
   }
 
 </div>
   `,
   styles: `
-    .page-wrapper { display: flex; height: 100%; overflow: hidden; }
+    .page-wrapper { display: flex; height: 100%; overflow: hidden; position: relative; }
 
     /* ══ LIST PANEL ══ */
-    .list-panel {
-      flex: 1; overflow-y: auto; padding: 0;
-      transition: flex 0.25s ease; min-width: 0;
-    }
-    .list-panel.panel-shrunk { flex: 0 0 420px; }
-    @media (max-width: 900px) {
-      .list-panel.panel-shrunk { display: none; }
-    }
+    .list-panel { flex: 1; overflow-y: auto; padding: 0; }
 
     .list-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -409,108 +412,128 @@ const SECTIONS: SectionDef[] = [
     .status-converted   { background: #e1f3f5; color: #089bab; }
     .no-data { text-align: center; color: #999; padding: 40px; }
 
-    /* ══ REVIEW PANEL ══ */
-    .review-panel {
-      width: 520px; flex-shrink: 0; border-left: 1px solid #e0e4ea;
-      background: #f4f6f9; display: flex; flex-direction: column;
-      height: 100%; overflow: hidden; animation: slideIn 0.22s ease;
+    /* ══ OVERLAY ══ */
+    .overlay-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 200; animation: fadeIn 0.18s ease;
     }
-    @media (max-width: 900px) { .review-panel { width: 100%; border-left: none; } }
-    @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Panel header */
-    .rp-header {
+    .overlay-shell {
+      position: fixed; inset: 24px; z-index: 201;
+      background: #f4f6f9; border-radius: 12px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: popIn 0.2s ease;
+    }
+    @keyframes popIn { from { transform: scale(0.97); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @media (max-width: 640px) { .overlay-shell { inset: 0; border-radius: 0; } }
+
+    /* Top bar */
+    .ov-topbar {
       display: flex; align-items: center; justify-content: space-between;
       background: white; border-bottom: 1px solid #e8eaed;
-      padding: 10px 14px; gap: 8px; flex-shrink: 0;
+      padding: 10px 18px; gap: 12px; flex-shrink: 0;
     }
-    .rp-title-block { min-width: 0; }
-    .rp-name { font-size: 15px; font-weight: 700; color: #1a1a2e; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .rp-meta { font-size: 11px; color: #888; display: block; margin-top: 1px; }
-    .rp-header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .unsaved-dot { color: #f59e0b; font-size: 18px; }
-    .rp-close-btn {
+    .ov-patient { min-width: 0; }
+    .ov-name { font-size: 16px; font-weight: 700; color: #1a1a2e; display: block; }
+    .ov-meta { font-size: 11px; color: #888; display: block; margin-top: 1px; }
+    .ov-topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
+    .unsaved-dot { color: #f59e0b; font-size: 20px; line-height: 1; }
+
+    .card-thumbs { display: flex; gap: 6px; align-items: center; }
+    .card-thumb-link { text-decoration: none; }
+    .card-thumb { height: 40px; width: auto; max-width: 72px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; display: block; }
+
+    .ov-action-btn {
+      display: flex; align-items: center; gap: 5px; padding: 0 14px; height: 34px;
+      border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+      transition: background 0.15s; white-space: nowrap;
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    }
+    .ov-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .ov-btn-secondary { background: #f0f4ff; color: #094997; border: 1px solid #c7d6f5; }
+    .ov-btn-secondary:hover:not(:disabled) { background: #dce8ff; }
+    .ov-btn-primary { background: #094997; color: white; }
+    .ov-btn-primary:hover:not(:disabled) { background: #0a3f7f; }
+    .ov-close-btn {
       display: flex; align-items: center; justify-content: center;
       background: none; border: none; cursor: pointer; border-radius: 50%;
-      width: 32px; height: 32px; color: #555; transition: background 0.15s;
+      width: 34px; height: 34px; color: #555; transition: background 0.15s;
       mat-icon { font-size: 20px; width: 20px; height: 20px; }
     }
-    .rp-close-btn:hover { background: #f0f0f0; }
+    .ov-close-btn:hover { background: #f0f0f0; }
 
-    .rp-error-bar {
+    .ov-error-bar {
       background: #fff0f0; border-bottom: 1px solid #f44336; color: #d32f2f;
-      font-size: 12px; padding: 7px 14px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+      font-size: 12px; padding: 7px 18px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
       mat-icon { font-size: 16px; width: 16px; height: 16px; }
     }
 
-    /* Insurance card images */
-    .card-images-bar {
-      display: flex; gap: 10px; padding: 8px 14px;
-      background: white; border-bottom: 1px solid #eee; flex-shrink: 0;
-    }
-    .card-thumb-link { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; }
-    .card-thumb { height: 52px; width: auto; max-width: 90px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; }
-    .card-thumb-label { font-size: 10px; color: #777; }
+    /* Body: sidenav + content */
+    .ov-body { display: flex; flex: 1; min-height: 0; }
 
-    /* Scroll area */
-    .rp-scroll { flex: 1; overflow-y: auto; padding: 10px 12px 16px; }
+    /* Section sidenav */
+    .ov-sidenav {
+      width: 188px; flex-shrink: 0; background: #1e2a3b;
+      overflow-y: auto; display: flex; flex-direction: column; padding: 8px 0;
+    }
+    @media (max-width: 640px) { .ov-sidenav { display: none; } }
 
-    .section-block {
-      background: white; border-radius: 7px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 8px; overflow: hidden;
+    .nav-item {
+      display: flex; align-items: center; gap: 9px; width: 100%;
+      padding: 9px 14px; background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.62); text-align: left; transition: background 0.12s, color 0.12s;
+      border-left: 3px solid transparent; font-family: inherit;
     }
-    .section-header {
-      display: flex; align-items: center; gap: 7px;
-      padding: 6px 12px; background: #f8f9fb; border-bottom: 1px solid #eee;
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+    .nav-item.nav-active { background: rgba(8,155,171,0.18); color: white; border-left-color: #089bab; }
+    .nav-icon { font-size: 17px; width: 17px; height: 17px; flex-shrink: 0; }
+    .nav-label { font-size: 12px; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav-badge {
+      background: #089bab; color: white; font-size: 10px; font-weight: 700;
+      border-radius: 10px; padding: 1px 6px; min-width: 18px; text-align: center;
     }
-    .section-icon { font-size: 15px; width: 15px; height: 15px; color: #089bab; }
-    .section-label { font-size: 11px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Content area */
+    .ov-content { flex: 1; overflow-y: auto; min-width: 0; }
+    .content-section { padding: 16px; }
 
     .fields-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 1px; background: #eee;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1px; background: #e0e4ea; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
-    .field-cell { background: white; padding: 6px 10px; display: flex; flex-direction: column; gap: 2px; }
+    .field-cell { background: white; padding: 8px 12px; display: flex; flex-direction: column; gap: 3px; }
     .field-cell.span-full { grid-column: 1 / -1; }
-    .field-cell.field-empty { background: #fafafa; }
-    .field-cell.field-empty .field-input { color: #bbb; }
-    .field-label { font-size: 9px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+    .field-cell.field-empty { background: #f9fafb; }
+    .field-cell.field-empty .field-input { color: #c0c8d4; }
+    .field-label { font-size: 9px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.6px; }
     .field-input {
-      font-size: 12px; color: #1a1a2e; font-weight: 500; border: none; outline: none;
+      font-size: 13px; color: #1a1a2e; font-weight: 500; border: none; outline: none;
       background: transparent; width: 100%; border-bottom: 1px solid transparent;
-      transition: border-color 0.15s; padding: 1px 0; font-family: inherit;
+      transition: border-color 0.15s; padding: 2px 0; font-family: inherit;
     }
     .field-input:focus { border-bottom-color: #089bab; }
-    .field-textarea { resize: vertical; min-height: 40px; }
+    .field-textarea { resize: vertical; min-height: 48px; }
 
-    .chip-list { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
-    .chip {
-      display: flex; align-items: center; gap: 5px; border-radius: 20px;
-      padding: 3px 10px; font-size: 11px; font-weight: 500;
+    /* Clinicals */
+    .clinical-block { background: white; border-radius: 8px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .clinical-block-title {
+      display: flex; align-items: center; gap: 7px; padding: 8px 14px;
+      font-size: 12px; font-weight: 700; color: #333; text-transform: uppercase;
+      letter-spacing: 0.5px; background: #f8f9fb; border-bottom: 1px solid #eee;
+      mat-icon { font-size: 16px; width: 16px; height: 16px; color: #089bab; }
     }
+    .clinical-empty { color: #bbb; font-size: 12px; padding: 10px 14px; margin: 0; font-style: italic; }
+    .chip-list { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; }
+    .chip { display: flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 500; }
     .chip-allergy { background: #fff0f0; color: #d32f2f; border: 1px solid #fcc; }
     .chip-med     { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
     .chip-surgery { background: #fff8e1; color: #c95817; border: 1px solid #ffe082; }
     .chip-family  { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
     .chip-name { font-weight: 600; }
-    .chip-sub  { opacity: 0.75; }
-
-    /* Panel footer */
-    .rp-footer {
-      display: flex; gap: 10px; padding: 12px 14px;
-      background: white; border-top: 1px solid #e8eaed; flex-shrink: 0;
-    }
-    .rp-btn {
-      flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
-      height: 38px; border-radius: 6px; font-size: 13px; font-weight: 600;
-      cursor: pointer; border: none; transition: background 0.15s;
-      mat-icon { font-size: 17px; width: 17px; height: 17px; }
-    }
-    .rp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .rp-btn-secondary { background: #f0f4ff; color: #094997; border: 1px solid #c7d6f5; }
-    .rp-btn-secondary:hover:not(:disabled) { background: #dce8ff; }
-    .rp-btn-primary { background: #094997; color: white; }
-    .rp-btn-primary:hover:not(:disabled) { background: #0a3f7f; }
+    .chip-sub  { opacity: 0.75; font-size: 11px; }
   `,
 })
 export class IntakeListPageComponent implements OnInit {
@@ -521,8 +544,9 @@ export class IntakeListPageComponent implements OnInit {
   rows = signal<IntakeRow[]>([]);
   loading = signal(true);
 
-  // Review panel state
+  // Review overlay state
   reviewIntake = signal<IntakeRow | null>(null);
+  activeSection = signal<string>('basic');
   rpLoading = signal(false);
   rpSaving  = signal(false);
   rpError   = signal('');
@@ -537,6 +561,24 @@ export class IntakeListPageComponent implements OnInit {
   medications      = signal<any[]>([]);
   surgeries        = signal<any[]>([]);
   familyConditions = signal<any[]>([]);
+
+  // All nav entries including the clinicals catch-all
+  allNavSections = [
+    ...SECTIONS,
+    { key: 'clinicals', label: 'Clinicals', icon: 'biotech', fields: [] },
+  ];
+
+  sectionFillCount(sectionKey: string): number {
+    if (sectionKey === 'clinicals') {
+      return this.allergies().length + this.medications().length + this.surgeries().length + this.familyConditions().length;
+    }
+    const section = SECTIONS.find(s => s.key === sectionKey);
+    if (!section) return 0;
+    return section.fields.filter(f => {
+      const v = this.editState[`${sectionKey}.${f.key}`];
+      return v !== null && v !== undefined && v !== '';
+    }).length;
+  }
 
   ngOnInit() { this.fetchIntakes(); }
 
@@ -569,6 +611,7 @@ export class IntakeListPageComponent implements OnInit {
 
   async openReview(row: IntakeRow) {
     this.reviewIntake.set(row);
+    this.activeSection.set('basic');
     this.dirty.set(false);
     this.rpError.set('');
     this.editState = {};
