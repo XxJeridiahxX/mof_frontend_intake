@@ -111,7 +111,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
       <mat-stepper [linear]="false" #stepper class="intake-stepper">
         
         <!-- STEP 1: Patient Profile -->
-        <mat-step [stepControl]="step1Form" label="1. Patient Profile" [editable]="false">
+        <mat-step label="1. Patient Profile" [editable]="false">
           <div class="super-step-wrapper">
             
           <form [formGroup]="demographicsForm" class="step-form">
@@ -469,7 +469,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
         </mat-step>
 
         <!-- STEP 2: Coverage -->
-        <mat-step [stepControl]="step2Form" label="2. Coverage" [editable]="false">
+        <mat-step label="2. Coverage" [editable]="false">
           <div class="super-step-wrapper">
             
           <form [formGroup]="insuranceForm" class="step-form">
@@ -627,7 +627,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
         </mat-step>
 
         <!-- STEP 3: Current Visit -->
-        <mat-step [stepControl]="step3Form" label="3. Chief Complaint" [editable]="false">
+        <mat-step label="3. Chief Complaint" [editable]="false">
           <div class="super-step-wrapper">
             
           <form [formGroup]="visitForm" class="step-form">
@@ -657,7 +657,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
         </mat-step>
 
         <!-- STEP 4: Active Clinicals -->
-        <mat-step [stepControl]="step4Form" label="4. Allergies & Meds" [editable]="false">
+        <mat-step label="4. Allergies & Meds" [editable]="false">
           <div class="super-step-wrapper">
             
           <form [formGroup]="allergiesMedicationsForm" class="step-form">
@@ -732,7 +732,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
         </mat-step>
 
         <!-- STEP 5: Past History -->
-        <mat-step [stepControl]="step5Form" label="5. Health History" [editable]="false">
+        <mat-step label="5. Health History" [editable]="false">
           <div class="super-step-wrapper">
             
           <form [formGroup]="medicalHistoryForm" class="step-form">
@@ -970,7 +970,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
         </mat-step>
 
         <!-- STEP 6: Consents -->
-        <mat-step [stepControl]="step6Form" label="6. Signatures" [editable]="false">
+        <mat-step label="6. Signatures" [editable]="false">
           <div class="super-step-wrapper">
             
           <form [formGroup]="consentForm" class="step-form">
