@@ -1,4 +1,5 @@
-import { Component, signal, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, signal, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { upload } from '@vercel/blob/client';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import {
   FormBuilder,
@@ -524,8 +525,65 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </div>
             }
 
-            
-          
+            <!-- Insurance Card Upload -->
+            <div class="form-section-title" style="margin-top: 20px;">Insurance Card Photos</div>
+            <p class="upload-hint">Upload a photo of the front and back of your insurance card. Accepted: JPG, PNG, WEBP, HEIC (max 10MB each).</p>
+            <div class="card-upload-row">
+              <!-- Front -->
+              <div class="card-upload-zone"
+                   [class.has-file]="insuranceCardFront()"
+                   [class.uploading]="uploadingFront()"
+                   (click)="frontInput.click()"
+                   (dragover)="$event.preventDefault()"
+                   (drop)="onDrop($event, 'front')">
+                <input #frontInput type="file" accept="image/*" hidden (change)="onFileSelected($event, 'front')" />
+                @if (uploadingFront()) {
+                  <mat-progress-bar mode="indeterminate" style="position:absolute;top:0;left:0;right:0;border-radius:8px 8px 0 0"></mat-progress-bar>
+                }
+                @if (insuranceCardFront()) {
+                  <img [src]="insuranceCardFront()" class="card-preview" alt="Insurance card front" />
+                  <div class="card-overlay">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Front uploaded</span>
+                    <button class="remove-card-btn" (click)="$event.stopPropagation(); removeCard('front')">Remove</button>
+                  </div>
+                } @else {
+                  <mat-icon class="upload-icon">photo_camera</mat-icon>
+                  <span class="upload-label">Front of Card</span>
+                  <span class="upload-sub">Tap or drag to upload</span>
+                }
+              </div>
+              <!-- Back -->
+              <div class="card-upload-zone"
+                   [class.has-file]="insuranceCardBack()"
+                   [class.uploading]="uploadingBack()"
+                   (click)="backInput.click()"
+                   (dragover)="$event.preventDefault()"
+                   (drop)="onDrop($event, 'back')">
+                <input #backInput type="file" accept="image/*" hidden (change)="onFileSelected($event, 'back')" />
+                @if (uploadingBack()) {
+                  <mat-progress-bar mode="indeterminate" style="position:absolute;top:0;left:0;right:0;border-radius:8px 8px 0 0"></mat-progress-bar>
+                }
+                @if (insuranceCardBack()) {
+                  <img [src]="insuranceCardBack()" class="card-preview" alt="Insurance card back" />
+                  <div class="card-overlay">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Back uploaded</span>
+                    <button class="remove-card-btn" (click)="$event.stopPropagation(); removeCard('back')">Remove</button>
+                  </div>
+                } @else {
+                  <mat-icon class="upload-icon">photo_camera</mat-icon>
+                  <span class="upload-label">Back of Card</span>
+                  <span class="upload-sub">Tap or drag to upload</span>
+                }
+              </div>
+            </div>
+            @if (uploadError()) {
+              <div class="upload-error-banner">
+                <mat-icon>error_outline</mat-icon>
+                <span>{{ uploadError() }}</span>
+              </div>
+            }
           </form>
 
           <hr class="super-step-divider" />
@@ -1197,6 +1255,39 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .step-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; }
     .step-actions .btn { display: flex; align-items: center; gap: 4px; }
   
+    .upload-hint { font-size: 13px; color: #646464; margin: -8px 0 16px; }
+    .card-upload-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .card-upload-zone {
+      flex: 1; min-width: 200px; min-height: 140px; border: 2px dashed #c0c8d4;
+      border-radius: 10px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; cursor: pointer; position: relative; overflow: hidden;
+      transition: border-color 0.2s, background 0.2s; background: #f8fafc;
+    }
+    .card-upload-zone:hover { border-color: #089bab; background: #f0fafb; }
+    .card-upload-zone.has-file { border-style: solid; border-color: #089bab; }
+    .card-upload-zone.uploading { pointer-events: none; opacity: 0.8; }
+    .upload-icon { font-size: 40px; width: 40px; height: 40px; color: #b0bec5; margin-bottom: 8px; }
+    .upload-label { font-size: 14px; font-weight: 600; color: #444; }
+    .upload-sub { font-size: 12px; color: #999; margin-top: 4px; }
+    .card-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .card-overlay {
+      position: absolute; inset: 0; background: rgba(8,155,171,0.75);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: white; gap: 4px;
+    }
+    .card-overlay mat-icon { font-size: 32px; width: 32px; height: 32px; }
+    .card-overlay span { font-size: 13px; font-weight: 600; }
+    .remove-card-btn {
+      margin-top: 8px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5);
+      color: white; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-size: 12px;
+    }
+    .upload-error-banner {
+      display: flex; align-items: center; gap: 8px; background: #fff0f0;
+      border: 1px solid #f44336; border-radius: 4px; padding: 10px 14px;
+      margin-top: 12px; color: #f44336; font-size: 13px;
+    }
+    .upload-error-banner mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
     .mobile-sidenav-wrapper { min-height: 100vh; }
     .intake-sidenav { width: 280px; }
     /* NNg Fitts Law 48px tap targets */
@@ -1217,6 +1308,14 @@ export class IntakeFormPageComponent implements OnInit {
   submitting = signal(false);
   isMobile = false;
   token: string | null = null;
+
+  insuranceCardFront = signal<string | null>(null);
+  insuranceCardBack = signal<string | null>(null);
+  uploadingFront = signal(false);
+  uploadingBack = signal(false);
+  uploadError = signal('');
+  insuranceCardFrontUrl: string | null = null;
+  insuranceCardBackUrl: string | null = null;
 
   stepLabels = [
     'Patient Profile',
@@ -1402,6 +1501,69 @@ export class IntakeFormPageComponent implements OnInit {
   addFamilyCondition() { this.familyConditions.push(this.fb.group({ diagnosis: [''], member: [''] })); }
   removeFamilyCondition(index: number) { this.familyConditions.removeAt(index); }
 
+  onDrop(event: DragEvent, side: 'front' | 'back') {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.uploadCard(file, side);
+  }
+
+  onFileSelected(event: Event, side: 'front' | 'back') {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) this.uploadCard(file, side);
+  }
+
+  removeCard(side: 'front' | 'back') {
+    if (side === 'front') {
+      this.insuranceCardFront.set(null);
+      this.insuranceCardFrontUrl = null;
+    } else {
+      this.insuranceCardBack.set(null);
+      this.insuranceCardBackUrl = null;
+    }
+  }
+
+  async uploadCard(file: File, side: 'front' | 'back') {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+    if (!allowedTypes.includes(file.type)) {
+      this.uploadError.set('Only JPG, PNG, WEBP, or HEIC images are accepted.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      this.uploadError.set('File must be under 10MB.');
+      return;
+    }
+    this.uploadError.set('');
+
+    if (side === 'front') this.uploadingFront.set(true);
+    else this.uploadingBack.set(true);
+
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (side === 'front') this.insuranceCardFront.set(e.target?.result as string);
+      else this.insuranceCardBack.set(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    try {
+      const filename = `insurance-cards/${side}-${Date.now()}-${file.name}`;
+      const blob = await upload(filename, file, {
+        access: 'public',
+        handleUploadUrl: '/api/getBlobUploadToken',
+      });
+
+      if (side === 'front') this.insuranceCardFrontUrl = blob.url;
+      else this.insuranceCardBackUrl = blob.url;
+    } catch (err: any) {
+      this.uploadError.set('Upload failed. Please try again.');
+      if (side === 'front') { this.insuranceCardFront.set(null); this.insuranceCardFrontUrl = null; }
+      else { this.insuranceCardBack.set(null); this.insuranceCardBackUrl = null; }
+    } finally {
+      if (side === 'front') this.uploadingFront.set(false);
+      else this.uploadingBack.set(false);
+    }
+  }
+
   async onSubmit() {
     this.submitting.set(true);
 
@@ -1420,6 +1582,8 @@ export class IntakeFormPageComponent implements OnInit {
     };
 
     if (this.token) payload.token = this.token;
+    payload.insuranceCardFrontUrl = this.insuranceCardFrontUrl;
+    payload.insuranceCardBackUrl = this.insuranceCardBackUrl;
 
     try {
       const response = await fetch('/api/submitIntake', {

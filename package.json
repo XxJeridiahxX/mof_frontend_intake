@@ -23,6 +23,7 @@
     "@angular/material": "^21.2.6",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@vercel/blob": "^2.3.3",
     "@vercel/postgres": "^0.10.0",
     "bootstrap": "^5.3.8",
     "rxjs": "~7.8.0",
