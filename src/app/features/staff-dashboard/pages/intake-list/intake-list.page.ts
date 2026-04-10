@@ -36,18 +36,6 @@ interface FieldDef {
 
 const SECTIONS: SectionDef[] = [
   {
-    key: 'basic', label: 'Initial Intake', icon: 'assignment_ind',
-    fields: [
-      { key: 'firstName', label: 'First Name' }, { key: 'lastName', label: 'Last Name' },
-      { key: 'email', label: 'Email' },           { key: 'phone', label: 'Phone' },
-      { key: 'dateOfBirth', label: 'DOB', type: 'date' },
-      { key: 'preferredTime', label: 'Preferred Appt' },
-      { key: 'chiefComplaint',  label: 'Chief Complaint',  type: 'textarea', span: 'full' },
-      { key: 'currentSymptoms', label: 'Current Symptoms', type: 'textarea', span: 'full' },
-      { key: 'symptomOnset',    label: 'Symptom Onset' },
-    ]
-  },
-  {
     key: 'demographicsForm', label: 'Patient Profile', icon: 'person',
     fields: [
       { key: 'firstName', label: 'First Name' }, { key: 'middleName', label: 'Middle' },
@@ -650,7 +638,7 @@ export class IntakeListPageComponent implements OnInit {
 
   async openReview(row: IntakeRow) {
     this.reviewIntake.set(row);
-    this.activeSection.set('basic');
+    this.activeSection.set('demographicsForm');
     this.dirty.set(false);
     this.rpError.set('');
     this.editState = {};

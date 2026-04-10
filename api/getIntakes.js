@@ -7,11 +7,15 @@ module.exports = async function handler(req, res) {
 
   try {
     const { rows } = await sql`
-      SELECT id, first_name, last_name, email, phone, status, status_label, created_at 
-      FROM intakes 
+      SELECT id, status, status_label, created_at,
+        COALESCE(raw_data->'demographicsForm'->>'firstName', first_name)  AS first_name,
+        COALESCE(raw_data->'demographicsForm'->>'lastName',  last_name)   AS last_name,
+        COALESCE(raw_data->'contactForm'->>'emailAddress',   email)       AS email,
+        COALESCE(raw_data->'contactForm'->>'cellPhone',      phone)       AS phone
+      FROM intakes
       ORDER BY created_at DESC;
     `;
-    
+
     return res.status(200).json({ intakes: rows });
   } catch (error) {
     // If the table doesn't exist yet, return empty array to prevent breaking UI
