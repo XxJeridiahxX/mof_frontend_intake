@@ -28,11 +28,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   <div class="unified-header">
     <div class="unified-header-inner">
       <div class="unified-brand">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="24" height="24" rx="6" fill="white" fill-opacity="0.2"/>
-          <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-        <span class="unified-brand-name">MOF Patient Intake</span>
+        <img src="/mof logo.png" alt="Medical Office Force" class="brand-logo" />
       </div>
     </div>
     <mat-progress-bar mode="determinate" [value]="0" color="accent" style="opacity:0"></mat-progress-bar>
@@ -196,12 +192,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
       padding: 0 16px; height: 56px;
       max-width: 960px; margin: 0 auto; gap: 12px;
     }
-    .unified-brand { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
-    .unified-brand-name {
-      font-size: 15px; font-weight: 700; color: white;
-      letter-spacing: -0.1px; white-space: nowrap;
-    }
-    @media (max-width: 380px) { .unified-brand-name { display: none; } }
+    .unified-brand { display: flex; align-items: center; flex-shrink: 0; }
+    .brand-logo { height: 32px; width: auto; display: block; }
 
     /* ═══ SCROLL AREA ═══ */
     .shell-scroll { flex: 1; overflow-y: auto; }
