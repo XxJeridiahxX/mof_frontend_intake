@@ -34,12 +34,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
         </svg>
         <span class="unified-brand-name">MOF Patient Intake</span>
       </div>
-      <div class="unified-step-info">
-        <span class="unified-step-counter">Step 1 of 7</span>
-        <span class="unified-step-name">Basic Information</span>
-      </div>
     </div>
-    <mat-progress-bar mode="determinate" [value]="14" color="accent"></mat-progress-bar>
+    <mat-progress-bar mode="determinate" [value]="0" color="accent" style="opacity:0"></mat-progress-bar>
   </div>
 
   <!-- ══ SCROLLABLE CONTENT ══ -->
@@ -180,11 +176,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
       font-size: 15px; font-weight: 700; color: white;
       letter-spacing: -0.1px; white-space: nowrap;
     }
-    .unified-step-info {
-      display: flex; flex-direction: column; align-items: flex-start; flex: 1; min-width: 0;
-    }
-    .unified-step-counter { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
-    .unified-step-name { font-size: 11px; color: rgba(255,255,255,0.75); white-space: nowrap; }
     @media (max-width: 380px) { .unified-brand-name { display: none; } }
 
     /* ═══ SCROLL AREA ═══ */
