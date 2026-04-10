@@ -28,6 +28,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     <div class="unified-header-inner">
       <div class="unified-brand">
         <img src="/mof logo.png" alt="Medical Office Force" class="brand-logo" />
+        <span class="brand-name">Medical Office Force Patient Intake Form</span>
       </div>
     </div>
     <mat-progress-bar mode="determinate" [value]="0" color="accent" style="opacity:0"></mat-progress-bar>
@@ -108,11 +109,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     }
     .unified-header-inner {
       display: flex; align-items: center;
-      padding: 0 16px; height: 56px;
+      padding: 0 16px; height: 48px;
       max-width: 960px; margin: 0 auto; gap: 12px;
     }
-    .unified-brand { display: flex; align-items: center; flex-shrink: 0; }
-    .brand-logo { height: 32px; width: auto; display: block; }
+    .unified-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .brand-logo { height: 40px; width: auto; display: block; }
+    .brand-name { font-size: 14px; font-weight: 600; color: white; white-space: nowrap; }
+    @media (max-width: 500px) { .brand-name { display: none; } }
 
     /* ═══ SCROLL AREA ═══ */
     .shell-scroll { flex: 1; overflow-y: auto; }

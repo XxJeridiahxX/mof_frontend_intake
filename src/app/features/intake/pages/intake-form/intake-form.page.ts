@@ -59,6 +59,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     <div class="unified-header-inner">
       <div class="unified-brand">
         <img src="/mof logo.png" alt="Medical Office Force" class="brand-logo" />
+        <span class="brand-name">Medical Office Force Patient Intake Form</span>
       </div>
       <div class="unified-step-info">
         <span class="unified-step-counter">Step {{ (stepper?.selectedIndex || 0) + 1 }} of 6</span>
@@ -100,7 +101,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     <div class="intake-form-container">
       <h1 class="page-title">Comprehensive Medical Intake Form</h1>
       <p class="page-subtitle">
-        Please complete all 11 sections. Your information is encrypted and securely stored.
+        Please complete all 6 sections. Your information is encrypted and securely stored.
       </p>
 
       @if (submitting()) {
@@ -1090,13 +1091,15 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
       display: flex;
       align-items: center;
       padding: 0 16px;
-      height: 56px;
+      height: 48px;
       max-width: 960px;
       margin: 0 auto;
       gap: 12px;
     }
-    .unified-brand { display: flex; align-items: center; flex-shrink: 0; }
-    .brand-logo { height: 32px; width: auto; display: block; }
+    .unified-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .brand-logo { height: 40px; width: auto; display: block; }
+    .brand-name { font-size: 14px; font-weight: 600; color: white; white-space: nowrap; }
+    @media (max-width: 500px) { .brand-name { display: none; } }
     .unified-step-info {
       display: flex;
       flex-direction: column;
