@@ -248,33 +248,31 @@ const SECTIONS: SectionDef[] = [
       <!-- Sections -->
       <div class="rp-scroll">
         @for (section of sections; track section.key) {
-          @if (hasData(section)) {
-            <div class="section-block">
-              <div class="section-header">
-                <mat-icon class="section-icon">{{ section.icon }}</mat-icon>
-                <span class="section-label">{{ section.label }}</span>
-              </div>
+          <div class="section-block">
+            <div class="section-header">
+              <mat-icon class="section-icon">{{ section.icon }}</mat-icon>
+              <span class="section-label">{{ section.label }}</span>
+            </div>
               <div class="fields-grid">
                 @for (field of section.fields; track field.key) {
-                  @if (getVal(section.key, field.key) !== '' && getVal(section.key, field.key) !== null && getVal(section.key, field.key) !== undefined) {
-                    <div class="field-cell" [class.span-full]="field.span === 'full'">
-                      <label class="field-label">{{ field.label }}</label>
-                      @if (field.type === 'textarea') {
-                        <textarea class="field-input field-textarea" rows="2"
-                          [(ngModel)]="editState[section.key + '.' + field.key]"
-                          (ngModelChange)="dirty.set(true)"></textarea>
-                      } @else {
-                        <input class="field-input"
-                          [type]="field.type === 'date' ? 'date' : 'text'"
-                          [(ngModel)]="editState[section.key + '.' + field.key]"
-                          (ngModelChange)="dirty.set(true)" />
-                      }
-                    </div>
-                  }
+                  <div class="field-cell" [class.span-full]="field.span === 'full'" [class.field-empty]="!getVal(section.key, field.key)">
+                    <label class="field-label">{{ field.label }}</label>
+                    @if (field.type === 'textarea') {
+                      <textarea class="field-input field-textarea" rows="2"
+                        [(ngModel)]="editState[section.key + '.' + field.key]"
+                        (ngModelChange)="dirty.set(true)"
+                        placeholder="—"></textarea>
+                    } @else {
+                      <input class="field-input"
+                        [type]="field.type === 'date' ? 'date' : 'text'"
+                        [(ngModel)]="editState[section.key + '.' + field.key]"
+                        (ngModelChange)="dirty.set(true)"
+                        placeholder="—" />
+                    }
+                  </div>
                 }
-              </div>
             </div>
-          }
+          </div>
         }
 
         @if (allergies().length) {
@@ -474,6 +472,8 @@ const SECTIONS: SectionDef[] = [
     }
     .field-cell { background: white; padding: 6px 10px; display: flex; flex-direction: column; gap: 2px; }
     .field-cell.span-full { grid-column: 1 / -1; }
+    .field-cell.field-empty { background: #fafafa; }
+    .field-cell.field-empty .field-input { color: #bbb; }
     .field-label { font-size: 9px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
     .field-input {
       font-size: 12px; color: #1a1a2e; font-weight: 500; border: none; outline: none;
