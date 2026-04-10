@@ -204,9 +204,24 @@ const SECTIONS: SectionDef[] = [
     </mat-card>
   </div>
 
+  <!-- ══ CLOSE CONFIRMATION ══ -->
+  @if (showCloseConfirm()) {
+    <div class="confirm-backdrop">
+      <div class="confirm-dialog">
+        <div class="confirm-icon"><mat-icon>warning_amber</mat-icon></div>
+        <h3 class="confirm-title">Close without saving?</h3>
+        <p class="confirm-body">You have unsaved changes to this intake record. They will be lost if you close now.</p>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-cancel" (click)="showCloseConfirm.set(false)">Keep Editing</button>
+          <button class="confirm-btn confirm-discard" (click)="forceClose()">Discard &amp; Close</button>
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- ══ REVIEW OVERLAY ══ -->
   @if (reviewIntake()) {
-    <div class="overlay-backdrop" (click)="closeReview()"></div>
+    <div class="overlay-backdrop" (click)="confirmClose()"></div>
     <div class="overlay-shell" role="dialog">
 
       <!-- ── Top bar ── -->
@@ -238,7 +253,7 @@ const SECTIONS: SectionDef[] = [
           <button class="ov-action-btn ov-btn-primary" (click)="rpSave('reviewed', 'Reviewed')" [disabled]="rpSaving()">
             <mat-icon>task_alt</mat-icon> Complete Review
           </button>
-          <button class="ov-close-btn" (click)="closeReview()" matTooltip="Close"><mat-icon>close</mat-icon></button>
+          <button class="ov-close-btn" (click)="confirmClose()" matTooltip="Close"><mat-icon>close</mat-icon></button>
         </div>
       </div>
 
@@ -411,6 +426,30 @@ const SECTIONS: SectionDef[] = [
     .status-link_sent   { background: #f2f2f2; color: #646464; }
     .status-converted   { background: #e1f3f5; color: #089bab; }
     .no-data { text-align: center; color: #999; padding: 40px; }
+
+    /* ══ CLOSE CONFIRMATION ══ */
+    .confirm-backdrop {
+      position: fixed; inset: 0; z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.55); animation: fadeIn 0.15s ease;
+    }
+    .confirm-dialog {
+      background: white; border-radius: 10px; padding: 28px 28px 20px;
+      max-width: 380px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center; animation: popIn 0.18s ease;
+    }
+    .confirm-icon mat-icon { font-size: 40px; width: 40px; height: 40px; color: #f59e0b; }
+    .confirm-title { font-size: 17px; font-weight: 700; color: #1a1a2e; margin: 10px 0 6px; }
+    .confirm-body { font-size: 13px; color: #646464; line-height: 1.5; margin: 0 0 20px; }
+    .confirm-actions { display: flex; gap: 10px; }
+    .confirm-btn {
+      flex: 1; height: 38px; border-radius: 6px; font-size: 13px; font-weight: 600;
+      cursor: pointer; border: none; transition: background 0.15s; font-family: inherit;
+    }
+    .confirm-cancel { background: #f0f4ff; color: #094997; border: 1px solid #c7d6f5; }
+    .confirm-cancel:hover { background: #dce8ff; }
+    .confirm-discard { background: #d32f2f; color: white; }
+    .confirm-discard:hover { background: #b71c1c; }
 
     /* ══ OVERLAY ══ */
     .overlay-backdrop {
@@ -646,7 +685,22 @@ export class IntakeListPageComponent implements OnInit {
     }
   }
 
-  closeReview() { this.reviewIntake.set(null); }
+  showCloseConfirm = signal(false);
+
+  confirmClose() {
+    if (this.dirty()) {
+      this.showCloseConfirm.set(true);
+    } else {
+      this.closeReview();
+    }
+  }
+
+  forceClose() {
+    this.showCloseConfirm.set(false);
+    this.closeReview();
+  }
+
+  closeReview() { this.reviewIntake.set(null); this.dirty.set(false); }
 
   getVal(sectionKey: string, fieldKey: string): any {
     return this.editState[`${sectionKey}.${fieldKey}`];
