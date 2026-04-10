@@ -128,6 +128,31 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
             </div>
           </form>
         </div>
+
+        <!-- ══ CHIEF COMPLAINT CARD ══ -->
+        <div class="section-card">
+          <div class="form-section-title">Reason for Visit</div>
+          <form [formGroup]="form">
+            <div class="form-row">
+              <mat-form-field class="dont-apply" appearance="outline" style="flex:1">
+                <mat-label>Primary Reason for Visit / Chief Complaint</mat-label>
+                <textarea matInput rows="3" formControlName="chiefComplaint"></textarea>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field class="dont-apply" appearance="outline" style="flex:1">
+                <mat-label>Current Symptoms</mat-label>
+                <textarea matInput rows="3" formControlName="currentSymptoms"></textarea>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field class="dont-apply" appearance="outline">
+                <mat-label>When did these symptoms begin?</mat-label>
+                <input matInput formControlName="symptomOnset" />
+              </mat-form-field>
+            </div>
+          </form>
+        </div>
       }
 
     </div>
@@ -264,6 +289,9 @@ export class LandingPageComponent {
       phone: ['', Validators.required],
       dateOfBirth: ['', Validators.required],
       preferredTime: [''],
+      chiefComplaint: [''],
+      currentSymptoms: [''],
+      symptomOnset: [''],
     });
   }
 

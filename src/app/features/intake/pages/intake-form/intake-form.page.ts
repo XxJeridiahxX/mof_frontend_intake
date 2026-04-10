@@ -1482,6 +1482,42 @@ export class IntakeFormPageComponent implements OnInit {
       startWith('Self'), // Start with Default
       map(val => this._filter(val || '', FHIR_CONSTANTS.RELATIONSHIPS))
     );
+
+    // Pre-populate from initial intake if token is present
+    if (this.token) {
+      this.prefillFromToken(this.token);
+    }
+  }
+
+  async prefillFromToken(token: string) {
+    try {
+      const response = await fetch(`/api/getIntakeByToken?token=${encodeURIComponent(token)}`);
+      if (!response.ok) return;
+      const { data } = await response.json();
+      if (!data) return;
+
+      // Demographics: name, DOB from basic info
+      this.demographicsForm.patchValue({
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        dateOfBirth: data.dateOfBirth || '',
+      });
+
+      // Contact: email, phone
+      this.contactForm.patchValue({
+        emailAddress: data.email || '',
+        cellPhone: data.phone || '',
+      });
+
+      // Chief complaint from initial intake
+      this.visitForm.patchValue({
+        chiefComplaint: data.chiefComplaint || '',
+        currentSymptoms: data.currentSymptoms || '',
+        symptomOnset: data.symptomOnset || '',
+      });
+    } catch (err) {
+      console.warn('Could not prefill from token:', err);
+    }
   }
 
   private _filter(value: string, options: string[]): string[] {
