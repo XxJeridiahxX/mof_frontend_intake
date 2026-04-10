@@ -30,8 +30,9 @@ interface SectionDef {
 interface FieldDef {
   key: string;
   label: string;
-  type?: 'text' | 'date' | 'textarea';
+  type?: 'text' | 'date' | 'textarea' | 'select';
   span?: 'full';
+  options?: string[];
 }
 
 const SECTIONS: SectionDef[] = [
@@ -41,10 +42,14 @@ const SECTIONS: SectionDef[] = [
       { key: 'firstName', label: 'First Name' }, { key: 'middleName', label: 'Middle' },
       { key: 'lastName', label: 'Last Name' },   { key: 'suffix', label: 'Suffix' },
       { key: 'dateOfBirth', label: 'DOB', type: 'date' },
-      { key: 'sexAssigned', label: 'Sex' },      { key: 'genderIdentity', label: 'Gender ID' },
-      { key: 'ssn', label: 'SSN' },              { key: 'race', label: 'Race' },
-      { key: 'ethnicity', label: 'Ethnicity' },  { key: 'maritalStatus', label: 'Marital' },
-      { key: 'employmentStatus', label: 'Employment' }, { key: 'employerName', label: 'Employer' },
+      { key: 'sexAssigned', label: 'Sex', type: 'select', options: ['Male','Female','Intersex','Unknown','Prefer not to say'] },
+      { key: 'genderIdentity', label: 'Gender ID', type: 'select', options: ['Man','Woman','Non-binary','Transgender man','Transgender woman','Genderqueer','Other','Prefer not to say'] },
+      { key: 'ssn', label: 'SSN' },
+      { key: 'race', label: 'Race', type: 'select', options: ['American Indian/Alaska Native','Asian','Black/African American','Native Hawaiian/Pacific Islander','White','Multiracial','Other','Unknown'] },
+      { key: 'ethnicity', label: 'Ethnicity', type: 'select', options: ['Hispanic/Latino','Not Hispanic/Latino','Unknown'] },
+      { key: 'maritalStatus', label: 'Marital', type: 'select', options: ['Single','Married','Divorced','Widowed','Separated','Domestic partner'] },
+      { key: 'employmentStatus', label: 'Employment', type: 'select', options: ['Full-time','Part-time','Self-employed','Unemployed','Retired','Student','Disabled'] },
+      { key: 'employerName', label: 'Employer' },
     ]
   },
   {
@@ -54,14 +59,14 @@ const SECTIONS: SectionDef[] = [
       { key: 'workPhone', label: 'Work' },   { key: 'emailAddress', label: 'Email' },
       { key: 'mailingStreet', label: 'Street' }, { key: 'mailingCity', label: 'City' },
       { key: 'mailingState', label: 'State' },   { key: 'mailingZip', label: 'ZIP' },
-      { key: 'bestContactMethod', label: 'Best Contact' },
+      { key: 'bestContactMethod', label: 'Best Contact', type: 'select', options: ['Cell','Home','Work','Email','Text'] },
     ]
   },
   {
     key: 'insuranceForm', label: 'Insurance', icon: 'health_and_safety',
     fields: [
       { key: 'primaryCarrier', label: 'Carrier' },   { key: 'subscriberId', label: 'Member ID' },
-      { key: 'groupNumber', label: 'Group #' },       { key: 'relationship', label: 'Relationship' },
+      { key: 'groupNumber', label: 'Group #' },       { key: 'relationship', label: 'Relationship', type: 'select', options: ['Self','Spouse','Child','Other'] },
       { key: 'policyHolderFirstName', label: 'Holder First' },
       { key: 'policyHolderLastName',  label: 'Holder Last' },
       { key: 'policyHolderDob', label: 'Holder DOB', type: 'date' },
@@ -86,10 +91,13 @@ const SECTIONS: SectionDef[] = [
   {
     key: 'socialHistoryForm', label: 'Social History', icon: 'diversity_3',
     fields: [
-      { key: 'usesTobacco', label: 'Tobacco' },    { key: 'tobaccoFrequency', label: 'Frequency' },
-      { key: 'usesDrugs', label: 'Drug Use' },     { key: 'drugsTypes', label: 'Drug Types' },
-      { key: 'exercises', label: 'Exercise' },     { key: 'exerciseType', label: 'Type' },
-      { key: 'dietRating', label: 'Diet Rating' },
+      { key: 'usesTobacco', label: 'Tobacco', type: 'select', options: ['Yes','No','Former'] },
+      { key: 'tobaccoFrequency', label: 'Frequency' },
+      { key: 'usesDrugs', label: 'Drug Use', type: 'select', options: ['Yes','No','Former'] },
+      { key: 'drugsTypes', label: 'Drug Types' },
+      { key: 'exercises', label: 'Exercise', type: 'select', options: ['Yes','No','Sometimes'] },
+      { key: 'exerciseType', label: 'Type' },
+      { key: 'dietRating', label: 'Diet Rating', type: 'select', options: ['Poor','Fair','Good','Excellent'] },
     ]
   },
 ];
@@ -221,20 +229,6 @@ const SECTIONS: SectionDef[] = [
         <div class="ov-topbar-right">
           <span class="status-badge status-{{ rpStatus() }}">{{ rpStatusLabel() }}</span>
           @if (dirty()) { <span class="unsaved-dot" matTooltip="Unsaved changes">●</span> }
-          @if (cardFrontUrl() || cardBackUrl()) {
-            <div class="card-thumbs">
-              @if (cardFrontUrl()) {
-                <a [href]="cardFrontUrl()!" target="_blank" class="card-thumb-link" matTooltip="Insurance card front">
-                  <img [src]="cardFrontUrl()!" class="card-thumb" alt="Card front" />
-                </a>
-              }
-              @if (cardBackUrl()) {
-                <a [href]="cardBackUrl()!" target="_blank" class="card-thumb-link" matTooltip="Insurance card back">
-                  <img [src]="cardBackUrl()!" class="card-thumb" alt="Card back" />
-                </a>
-              }
-            </div>
-          }
           <button class="ov-action-btn ov-btn-secondary" (click)="rpSave('in_progress', 'In Progress')" [disabled]="rpSaving()">
             <mat-icon>save</mat-icon> Save
           </button>
@@ -283,6 +277,16 @@ const SECTIONS: SectionDef[] = [
                       <textarea class="field-input field-textarea" rows="3"
                         [(ngModel)]="editState[section.key + '.' + field.key]"
                         (ngModelChange)="dirty.set(true)" placeholder="—"></textarea>
+                    } @else if (field.type === 'select' && field.options) {
+                      <input class="field-input field-search"
+                        list="opts-{{ section.key }}-{{ field.key }}"
+                        [(ngModel)]="editState[section.key + '.' + field.key]"
+                        (ngModelChange)="dirty.set(true)" placeholder="—" autocomplete="off" />
+                      <datalist [id]="'opts-' + section.key + '-' + field.key">
+                        @for (opt of field.options; track opt) {
+                          <option [value]="opt"></option>
+                        }
+                      </datalist>
                     } @else {
                       <input class="field-input"
                         [type]="field.type === 'date' ? 'date' : 'text'"
@@ -292,6 +296,29 @@ const SECTIONS: SectionDef[] = [
                   </div>
                 }
               </div>
+              @if (section.key === 'insuranceForm' && (cardFrontUrl() || cardBackUrl())) {
+                <div class="insurance-cards-row">
+                  <span class="insurance-cards-label">Insurance Card Photos</span>
+                  <div class="insurance-card-thumbs">
+                    @if (cardFrontUrl()) {
+                      <a [href]="cardFrontUrl()!" target="_blank" class="ins-card-link">
+                        <div class="ins-card-wrap">
+                          <img [src]="cardFrontUrl()!" class="ins-card-img" alt="Card front" />
+                          <span class="ins-card-caption">Front</span>
+                        </div>
+                      </a>
+                    }
+                    @if (cardBackUrl()) {
+                      <a [href]="cardBackUrl()!" target="_blank" class="ins-card-link">
+                        <div class="ins-card-wrap">
+                          <img [src]="cardBackUrl()!" class="ins-card-img" alt="Card back" />
+                          <span class="ins-card-caption">Back</span>
+                        </div>
+                      </a>
+                    }
+                  </div>
+                </div>
+              }
             </div>
           }
 
@@ -475,10 +502,6 @@ const SECTIONS: SectionDef[] = [
     .ov-topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
     .unsaved-dot { color: #f59e0b; font-size: 20px; line-height: 1; }
 
-    .card-thumbs { display: flex; gap: 6px; align-items: center; }
-    .card-thumb-link { text-decoration: none; }
-    .card-thumb { height: 40px; width: auto; max-width: 72px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; display: block; }
-
     .ov-action-btn {
       display: flex; align-items: center; gap: 5px; padding: 0 14px; height: 34px;
       border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
@@ -556,6 +579,21 @@ const SECTIONS: SectionDef[] = [
     }
     .field-input:focus { border-bottom-color: #089bab; }
     .field-textarea { resize: vertical; min-height: 48px; }
+    .field-search { cursor: pointer; }
+    .field-search::-webkit-calendar-picker-indicator { opacity: 0; }
+
+    /* Insurance card inline */
+    .insurance-cards-row {
+      margin-top: 10px; padding: 10px 12px; background: #f8f9fb;
+      border-radius: 8px; border: 1px solid #e0e4ea;
+    }
+    .insurance-cards-label { font-size: 9px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 8px; }
+    .insurance-card-thumbs { display: flex; gap: 14px; flex-wrap: wrap; }
+    .ins-card-link { text-decoration: none; }
+    .ins-card-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .ins-card-img { height: 80px; width: auto; max-width: 140px; border-radius: 6px; border: 1px solid #ddd; object-fit: cover; display: block; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.15s; }
+    .ins-card-img:hover { transform: scale(1.03); }
+    .ins-card-caption { font-size: 10px; color: #666; font-weight: 500; }
 
     /* Clinicals */
     .clinical-block { background: white; border-radius: 8px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
