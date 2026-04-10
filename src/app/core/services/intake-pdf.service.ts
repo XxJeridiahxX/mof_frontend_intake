@@ -268,7 +268,7 @@ export class IntakePdfService {
           },
           {
             text: title.toUpperCase(),
-            fontSize: 8, bold: true, color: NAVY, letterSpacing: 0.5,
+            fontSize: 8, bold: true, color: NAVY, characterSpacing: 0.5,
             margin: [6, -14, 0, 0],
           },
         ],
@@ -346,7 +346,7 @@ export class IntakePdfService {
       {
         stack: [
           { canvas: [{ type: 'rect', x: 0, y: 0, w: 515, h: 20, color: LGRAY }] },
-          { text: title.toUpperCase(), fontSize: 8, bold: true, color: NAVY, letterSpacing: 0.5, margin: [6, -14, 0, 0] },
+          { text: title.toUpperCase(), fontSize: 8, bold: true, color: NAVY, characterSpacing: 0.5, margin: [6, -14, 0, 0] },
         ],
         margin: [0, 10, 0, 4],
       },
