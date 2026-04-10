@@ -279,7 +279,7 @@ const SECTIONS: SectionDef[] = [
                         (ngModelChange)="dirty.set(true)" placeholder="—"></textarea>
                     } @else if (field.type === 'select' && field.options) {
                       <input class="field-input field-search"
-                        list="opts-{{ section.key }}-{{ field.key }}"
+                        [attr.list]="'opts-' + section.key + '-' + field.key"
                         [(ngModel)]="editState[section.key + '.' + field.key]"
                         (ngModelChange)="dirty.set(true)" placeholder="—" autocomplete="off" />
                       <datalist [id]="'opts-' + section.key + '-' + field.key">
