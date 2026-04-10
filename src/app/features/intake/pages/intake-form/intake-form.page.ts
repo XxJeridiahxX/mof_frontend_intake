@@ -408,60 +408,78 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             </div>
 
             <div class="form-section-title">Primary Care Physician (PCP)</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>First Name</mat-label>
-                <input matInput formControlName="pcpFirst" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Last Name</mat-label>
-                <input matInput formControlName="pcpLast" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Practice Name</mat-label>
-                <input matInput formControlName="pcpPractice" />
-              </mat-form-field>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you have a Primary Care Physician?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasPcp')?.value" (click)="careTeamForm.get('hasPcp')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="!careTeamForm.get('hasPcp')?.value" (click)="careTeamForm.get('hasPcp')?.setValue(false)">No</button>
+              </div>
             </div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Practice Phone Number</mat-label>
-                <input matInput formControlName="pcpPhone" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Practice Fax Number</mat-label>
-                <input matInput formControlName="pcpFax" />
-              </mat-form-field>
-            </div>
+            @if (careTeamForm.get('hasPcp')?.value) {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>First Name</mat-label>
+                  <input matInput formControlName="pcpFirst" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Last Name</mat-label>
+                  <input matInput formControlName="pcpLast" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Practice Name</mat-label>
+                  <input matInput formControlName="pcpPractice" />
+                </mat-form-field>
+              </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Practice Phone Number</mat-label>
+                  <input matInput formControlName="pcpPhone" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Practice Fax Number</mat-label>
+                  <input matInput formControlName="pcpFax" />
+                </mat-form-field>
+              </div>
+            }
 
             <div class="form-section-title">Referring Physician</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>First Name</mat-label>
-                <input matInput formControlName="refFirst" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Last Name</mat-label>
-                <input matInput formControlName="refLast" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Specialty</mat-label>
-                <input matInput formControlName="refSpecialty" />
-              </mat-form-field>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Were you referred by a physician?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasReferring')?.value" (click)="careTeamForm.get('hasReferring')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="!careTeamForm.get('hasReferring')?.value" (click)="careTeamForm.get('hasReferring')?.setValue(false)">No</button>
+              </div>
             </div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Practice Name</mat-label>
-                <input matInput formControlName="refPractice" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Practice Phone</mat-label>
-                <input matInput formControlName="refPhone" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Practice Fax</mat-label>
-                <input matInput formControlName="refFax" />
-              </mat-form-field>
-            </div>
+            @if (careTeamForm.get('hasReferring')?.value) {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>First Name</mat-label>
+                  <input matInput formControlName="refFirst" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Last Name</mat-label>
+                  <input matInput formControlName="refLast" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Specialty</mat-label>
+                  <input matInput formControlName="refSpecialty" />
+                </mat-form-field>
+              </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Practice Name</mat-label>
+                  <input matInput formControlName="refPractice" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Practice Phone</mat-label>
+                  <input matInput formControlName="refPhone" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Practice Fax</mat-label>
+                  <input matInput formControlName="refFax" />
+                </mat-form-field>
+              </div>
+            }
 
             
           
@@ -588,38 +606,56 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
           <form [formGroup]="pharmacyForm" class="step-form">
 
             <div class="form-section-title">Preferred Local Pharmacy</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline" style="flex:2">
-                <mat-label>Pharmacy Name</mat-label>
-                <input matInput formControlName="localName" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Phone Number</mat-label>
-                <input matInput type="tel" formControlName="localPhone" />
-              </mat-form-field>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you have a preferred local pharmacy?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="pharmacyForm.get('hasLocalPharmacy')?.value" (click)="pharmacyForm.get('hasLocalPharmacy')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="!pharmacyForm.get('hasLocalPharmacy')?.value" (click)="pharmacyForm.get('hasLocalPharmacy')?.setValue(false)">No</button>
+              </div>
             </div>
-            <div class="form-row">
-              <mat-form-field appearance="outline" style="flex:2">
-                <mat-label>Street Address</mat-label>
-                <input matInput formControlName="localStreet" />
-              </mat-form-field>
-              <mat-form-field appearance="outline" style="flex:2">
-                <mat-label>City, State, ZIP Code</mat-label>
-                <input matInput formControlName="localCityStateZip" />
-              </mat-form-field>
-            </div>
+            @if (pharmacyForm.get('hasLocalPharmacy')?.value) {
+              <div class="form-row">
+                <mat-form-field appearance="outline" style="flex:2">
+                  <mat-label>Pharmacy Name</mat-label>
+                  <input matInput formControlName="localName" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Phone Number</mat-label>
+                  <input matInput type="tel" formControlName="localPhone" />
+                </mat-form-field>
+              </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" style="flex:2">
+                  <mat-label>Street Address</mat-label>
+                  <input matInput formControlName="localStreet" />
+                </mat-form-field>
+                <mat-form-field appearance="outline" style="flex:2">
+                  <mat-label>City, State, ZIP Code</mat-label>
+                  <input matInput formControlName="localCityStateZip" />
+                </mat-form-field>
+              </div>
+            }
 
-            <div class="form-section-title">Preferred Mail-In Pharmacy (Optional)</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Mail-in Pharmacy Name</mat-label>
-                <input matInput formControlName="mailName" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Account / Phone Number</mat-label>
-                <input matInput formControlName="mailAccount" />
-              </mat-form-field>
+            <div class="form-section-title">Preferred Mail-In Pharmacy</div>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you use a mail-in pharmacy?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="pharmacyForm.get('hasMailPharmacy')?.value" (click)="pharmacyForm.get('hasMailPharmacy')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="!pharmacyForm.get('hasMailPharmacy')?.value" (click)="pharmacyForm.get('hasMailPharmacy')?.setValue(false)">No</button>
+              </div>
             </div>
+            @if (pharmacyForm.get('hasMailPharmacy')?.value) {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Mail-in Pharmacy Name</mat-label>
+                  <input matInput formControlName="mailName" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Account / Phone Number</mat-label>
+                  <input matInput formControlName="mailAccount" />
+                </mat-form-field>
+              </div>
+            }
 
             
           
@@ -1237,6 +1273,23 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     }
     .array-add-btn { color: #2196f3; margin-top: 8px; margin-bottom: 24px; }
 
+    /* Conditional yes/no toggles */
+    .conditional-toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+      background: #f8fafc; border: 1px solid #e8eaed; border-radius: 8px;
+      padding: 12px 16px; margin-bottom: 14px;
+    }
+    .conditional-question { font-size: 14px; color: #444; font-weight: 500; }
+    .toggle-btn-group { display: flex; gap: 0; border-radius: 6px; overflow: hidden; border: 1px solid #d0d5dd; flex-shrink: 0; }
+    .toggle-btn {
+      padding: 6px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+      border: none; background: #fff; color: #666; transition: background 0.15s, color 0.15s;
+      font-family: inherit;
+    }
+    .toggle-btn:first-child { border-right: 1px solid #d0d5dd; }
+    .toggle-btn.active { background: #094997; color: white; }
+
     .consent-box { background: #eef5fd; border: 1px solid #d9edf7; padding: 16px; margin-bottom: 24px; }
     .consent-check-row { margin-bottom: 16px; }
 
@@ -1386,12 +1439,16 @@ export class IntakeFormPageComponent implements OnInit {
     this.careTeamForm = this.fb.group({
       emergFirst: ['', Validators.required], emergLast: ['', Validators.required], emergRel: [''], emergPhone: ['', Validators.required],
       familyFirst: [''], familyLast: [''], familyRel: [''], familyPhone: [''],
+      hasPcp: [false],
       pcpFirst: [''], pcpLast: [''], pcpPractice: [''], pcpPhone: [''], pcpFax: [''],
+      hasReferring: [false],
       refFirst: [''], refLast: [''], refSpecialty: [''], refPractice: [''], refPhone: [''], refFax: ['']
     });
 
     this.pharmacyForm = this.fb.group({
+      hasLocalPharmacy: [false],
       localName: [''], localStreet: [''], localCityStateZip: [''], localPhone: [''],
+      hasMailPharmacy: [false],
       mailName: [''], mailAccount: ['']
     });
 
