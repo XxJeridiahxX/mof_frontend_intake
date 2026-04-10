@@ -88,9 +88,9 @@ import { MatButtonModule } from '@angular/material/button';
     }
 
     p {
-      color: #646464;
+      color: #555;
       font-size: 15px;
-      line-height: 1.5;
+      line-height: 1.65;
     }
 
     .edit-notice {
@@ -99,7 +99,7 @@ import { MatButtonModule } from '@angular/material/button';
       padding: 12px 16px; margin-top: 20px; text-align: left;
     }
     .edit-notice mat-icon { color: #094997; flex-shrink: 0; margin-top: 1px; }
-    .edit-notice p { margin: 0; font-size: 13px; color: #444; line-height: 1.5; }
+    .edit-notice p { margin: 0; font-size: 14px; color: #444; line-height: 1.6; }
 
     .next-steps {
       text-align: left;
@@ -127,7 +127,8 @@ import { MatButtonModule } from '@angular/material/button';
 
     .step-item p {
       margin: 2px 0 0;
-      font-size: 13px;
+      font-size: 14px;
+      line-height: 1.5;
     }
   `,
 })

@@ -1109,17 +1109,17 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     }
     .unified-step-counter {
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       color: white;
       line-height: 1.2;
     }
     .unified-step-name {
-      font-size: 11px;
-      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 160px;
+      max-width: 200px;
     }
     /* On very small screens hide the brand text to save space */
     @media (max-width: 380px) {
@@ -1210,8 +1210,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .sidenav-close-btn:hover { background: rgba(255,255,255,0.15); }
 
     .intake-form-container { max-width: 960px; margin: 0 auto; }
-    .page-title { font-size: 28px; font-weight: 600; color: #094997; margin: 0 0 4px; }
-    .page-subtitle { color: #646464; font-size: 14px; margin: 0 0 24px; }
+    .page-title { font-size: 28px; font-weight: 700; color: #094997; margin: 0 0 6px; }
+    .page-subtitle { color: #555; font-size: 15px; line-height: 1.65; margin: 0 0 24px; }
     .intake-stepper { background: transparent; }
     
     .step-form { padding: 16px 0; }
@@ -1233,7 +1233,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .btn-compact-warn {
       background: #fee; border: 1px solid #fcc; color: #d32f2f;
       border-radius: 4px; cursor: pointer; padding: 6px 12px;
-      height: 38px; font-size: 13px; margin-top: 4px;
+      height: 38px; font-size: 14px; margin-top: 4px;
     }
     .array-add-btn { color: #2196f3; margin-top: 8px; margin-bottom: 24px; }
 
@@ -1243,7 +1243,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .step-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; }
     .step-actions .btn { display: flex; align-items: center; gap: 4px; }
   
-    .upload-hint { font-size: 13px; color: #646464; margin: -8px 0 16px; }
+    .upload-hint { font-size: 14px; color: #555; margin: -8px 0 16px; line-height: 1.5; }
     .card-upload-row { display: flex; gap: 16px; flex-wrap: wrap; }
     .card-upload-zone {
       flex: 1; min-width: 200px; min-height: 140px; border: 2px dashed #c0c8d4;
@@ -1255,8 +1255,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .card-upload-zone.has-file { border-style: solid; border-color: #089bab; }
     .card-upload-zone.uploading { pointer-events: none; opacity: 0.8; }
     .upload-icon { font-size: 40px; width: 40px; height: 40px; color: #b0bec5; margin-bottom: 8px; }
-    .upload-label { font-size: 14px; font-weight: 600; color: #444; }
-    .upload-sub { font-size: 12px; color: #999; margin-top: 4px; }
+    .upload-label { font-size: 15px; font-weight: 600; color: #444; }
+    .upload-sub { font-size: 13px; color: #888; margin-top: 4px; }
     .card-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
     .card-overlay {
       position: absolute; inset: 0; background: rgba(8,155,171,0.75);
@@ -1272,7 +1272,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
     .upload-error-banner {
       display: flex; align-items: center; gap: 8px; background: #fff0f0;
       border: 1px solid #f44336; border-radius: 4px; padding: 10px 14px;
-      margin-top: 12px; color: #f44336; font-size: 13px;
+      margin-top: 12px; color: #f44336; font-size: 14px;
     }
     .upload-error-banner mat-icon { font-size: 20px; width: 20px; height: 20px; }
 
@@ -1289,6 +1289,11 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
          padding: 0 16px;
       }
       .page-title { font-size: 24px; margin-top: 16px; }
+      /* Prevent iOS from zooming on input focus (requires font-size >= 16px) */
+      ::ng-deep input, ::ng-deep textarea, ::ng-deep select { font-size: 16px !important; }
+    }
+    @media (max-width: 380px) {
+      .page-title { font-size: 20px; }
     }
 `
 })

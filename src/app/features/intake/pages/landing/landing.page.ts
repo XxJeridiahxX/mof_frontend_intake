@@ -205,9 +205,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 
     /* ═══ INTRO ═══ */
     .page-intro { margin-bottom: 20px; }
-    .page-title { font-size: 26px; font-weight: 700; color: #094997; margin: 0 0 6px; }
-    .page-subtitle { font-size: 14px; color: #646464; margin: 0; line-height: 1.6; max-width: 600px; }
+    .page-title { font-size: 26px; font-weight: 700; color: #094997; margin: 0 0 8px; }
+    .page-subtitle { font-size: 15px; color: #555; margin: 0; line-height: 1.65; max-width: 600px; }
     @media (max-width: 550px) { .page-title { font-size: 22px; } }
+    @media (max-width: 380px) { .page-title { font-size: 20px; } }
 
     /* ═══ SECTION CARD ═══ */
     .section-card {
@@ -220,21 +221,25 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     .card-loader { position: absolute; top: 0; left: 0; right: 0; }
 
     .form-section-title {
-      font-size: 15px; font-weight: 600; color: #333;
+      font-size: 16px; font-weight: 600; color: #333;
       margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eee;
     }
 
     .form-row { display: flex; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
     .form-row > mat-form-field { flex: 1; min-width: 220px; }
-    @media (max-width: 599px) { .form-row { flex-direction: column; gap: 0; } }
+    @media (max-width: 599px) {
+      .form-row { flex-direction: column; gap: 0; }
+      /* Prevent iOS from zooming on input focus */
+      ::ng-deep input, ::ng-deep textarea, ::ng-deep select { font-size: 16px !important; }
+    }
 
     /* ═══ CHECK PHONE ═══ */
     .check-phone-card { text-align: center; padding: 40px 24px; }
     .check-icon-wrap { margin-bottom: 16px; }
     .check-icon { font-size: 64px; width: 64px; height: 64px; color: #089bab; }
     .check-title { font-size: 24px; font-weight: 700; color: #1a1a2e; margin: 0 0 12px; }
-    .check-desc { font-size: 15px; color: #646464; line-height: 1.6; margin: 0 0 20px; }
-    .check-helper { font-size: 14px; color: #888; margin: 0 0 28px; }
+    .check-desc { font-size: 16px; color: #555; line-height: 1.65; margin: 0 0 20px; }
+    .check-helper { font-size: 14px; color: #777; margin: 0 0 28px; }
     .proto-link-row {
       border-top: 1px solid #eee; padding-top: 20px; margin-top: 4px;
       display: flex; flex-direction: column; align-items: center; gap: 6px;

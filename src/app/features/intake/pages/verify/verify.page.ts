@@ -124,9 +124,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 
     /* ═══ INTRO ═══ */
     .page-intro { margin-bottom: 20px; }
-    .page-title { font-size: 26px; font-weight: 700; color: #094997; margin: 0 0 6px; }
-    .page-subtitle { font-size: 14px; color: #646464; margin: 0; line-height: 1.6; }
+    .page-title { font-size: 26px; font-weight: 700; color: #094997; margin: 0 0 8px; }
+    .page-subtitle { font-size: 15px; color: #555; margin: 0; line-height: 1.65; }
     @media (max-width: 550px) { .page-title { font-size: 22px; } }
+    @media (max-width: 380px) { .page-title { font-size: 20px; } }
 
     /* ═══ SECTION CARD ═══ */
     .section-card {
@@ -147,7 +148,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     .verify-icon { font-size: 38px; width: 38px; height: 38px; color: #089bab; }
 
     .form-section-title {
-      font-size: 15px; font-weight: 600; color: #333;
+      font-size: 16px; font-weight: 600; color: #333;
       margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eee;
     }
     .full-width { width: 100%; }
@@ -156,7 +157,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     .error-banner {
       display: flex; align-items: center; gap: 8px;
       background: #fff0f0; border: 1px solid #f44336; border-radius: 6px;
-      padding: 10px 14px; margin-bottom: 16px; color: #d32f2f; font-size: 13px;
+      padding: 10px 14px; margin-bottom: 16px; color: #d32f2f; font-size: 14px;
+    }
+
+    @media (max-width: 599px) {
+      /* Prevent iOS from zooming on input focus */
+      ::ng-deep input, ::ng-deep textarea, ::ng-deep select { font-size: 16px !important; }
     }
     .error-banner mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
 
