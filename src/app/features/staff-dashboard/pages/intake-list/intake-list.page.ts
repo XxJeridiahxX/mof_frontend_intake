@@ -118,35 +118,34 @@ const SECTIONS: SectionDef[] = [
   <!-- ══ LIST PANEL ══ -->
   <div class="list-panel" [class.panel-shrunk]="!!reviewIntake()">
 
-    <div class="list-header">
-      <h1 class="page-title">Intake Forms</h1>
-      <button mat-button class="action-add-btn">
+    <h1 class="page-title">Intake Forms</h1>
+
+    <div class="toolbar-row">
+      <div class="search-field">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Name, email, phone">
+      </div>
+
+      <mat-form-field appearance="outline" class="toolbar-select">
+        <mat-select placeholder="Status" [(ngModel)]="statusFilter">
+          <mat-option value="all">All Statuses</mat-option>
+          <mat-option value="link_sent">Link Sent</mat-option>
+          <mat-option value="in_progress">In Progress</mat-option>
+          <mat-option value="submitted">Submitted</mat-option>
+          <mat-option value="reviewed">Reviewed</mat-option>
+          <mat-option value="converted">Converted</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button class="toolbar-icon-btn" (click)="fetchIntakes()" matTooltip="Refresh">
+        <mat-icon>refresh</mat-icon>
+      </button>
+
+      <div class="toolbar-divider"></div>
+
+      <button class="action-add-btn">
         <mat-icon>send</mat-icon> Send New Intake
       </button>
-    </div>
-
-    <div class="cust-div-header">
-      <div class="filter-controls-row">
-        <div class="search-field">
-          <mat-icon class="search-icon">search</mat-icon>
-          <input type="text" [(ngModel)]="searchTerm" placeholder="Name, email, phone">
-        </div>
-        <mat-form-field appearance="outline" class="toolbar-select">
-          <mat-select placeholder="Status" [(ngModel)]="statusFilter">
-            <mat-option value="all">All Statuses</mat-option>
-            <mat-option value="link_sent">Link Sent</mat-option>
-            <mat-option value="in_progress">In Progress</mat-option>
-            <mat-option value="submitted">Submitted</mat-option>
-            <mat-option value="reviewed">Reviewed</mat-option>
-            <mat-option value="converted">Converted</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <div class="icon-group">
-          <button mat-icon-button class="toolbar-icon-btn" (click)="fetchIntakes()" matTooltip="Refresh">
-            <mat-icon>refresh</mat-icon>
-          </button>
-        </div>
-      </div>
     </div>
 
     <mat-card class="table-card">
@@ -460,40 +459,59 @@ const SECTIONS: SectionDef[] = [
     /* ══ LIST PANEL ══ */
     .list-panel { flex: 1; overflow-y: auto; padding: 0; }
 
-    .list-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
-    }
-    .page-title { font-size: 24px; font-weight: 600; color: #333; margin: 0; }
+    .page-title { font-size: 22px; font-weight: 600; color: #333; margin: 0 0 14px; }
 
-    .cust-div-header { display: flex; flex-direction: column; margin-bottom: 16px; }
-    .filter-controls-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-
-    ::ng-deep .toolbar-select { width: 130px; }
-    ::ng-deep .toolbar-select .mat-mdc-text-field-wrapper {
-      background: #fff; box-shadow: rgb(221,221,221) 0 0 10px 0; border-radius: 4px; height: 38px;
+    /* ── Unified toolbar ── */
+    .toolbar-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px; flex-wrap: wrap;
+      /* All direct children share the same 38px height */
+      & > * { height: 38px; box-sizing: border-box; }
     }
-    ::ng-deep .toolbar-select .mdc-notched-outline { display: none; }
-    ::ng-deep .toolbar-select .mat-mdc-form-field-flex { padding: 0 10px; align-items: center; height: 100%; }
-    ::ng-deep .toolbar-select .mat-mdc-select-value-text { font-size: 12px; color: #333; }
 
     .search-field {
-      height: 38px; width: 220px; background: #fff; border-radius: 20px;
-      box-shadow: inset 0 0 4px rgba(0,0,0,0.1); display: flex; align-items: center;
-      border: 1px solid #ccc; padding: 0 16px; gap: 4px;
-      input { border: none; outline: none; background: transparent; font-size: 13px; width: 100%; }
+      display: flex; align-items: center; gap: 6px;
+      background: #fff; border: 1px solid #d0d5dd; border-radius: 6px;
+      padding: 0 12px; min-width: 200px; flex: 1; max-width: 280px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      input { border: none; outline: none; background: transparent; font-size: 13px; width: 100%; line-height: 1; }
     }
-    .search-icon { color: #777; font-size: 20px; width: 20px; height: 20px; }
+    .search-icon { color: #9aa0ab; font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
 
-    .icon-group { display: flex; align-items: center; gap: 4px; }
-    .toolbar-icon-btn { color: #2196f3; width: 36px; height: 36px; mat-icon { font-size: 20px; width: 20px; height: 20px; } }
+    ::ng-deep .toolbar-select {
+      width: 140px;
+      /* Reset Material field height to exactly 38px */
+      .mat-mdc-text-field-wrapper {
+        height: 38px !important; padding: 0 !important;
+        background: #fff; border: 1px solid #d0d5dd; border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      }
+      .mdc-notched-outline { display: none; }
+      .mat-mdc-form-field-flex { height: 38px; padding: 0 12px; align-items: center; }
+      .mat-mdc-form-field-infix { padding: 0 !important; border-top: 0 !important; min-height: unset !important; }
+      .mat-mdc-select-value-text { font-size: 13px; color: #333; }
+      .mat-mdc-form-field-subscript-wrapper { display: none; }
+    }
+
+    .toolbar-icon-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 38px; height: 38px; border-radius: 6px; flex-shrink: 0;
+      background: #fff; border: 1px solid #d0d5dd; cursor: pointer; color: #555;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06); transition: background 0.15s;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    }
+    .toolbar-icon-btn:hover { background: #f0f4ff; color: #094997; }
+
+    .toolbar-divider { width: 1px; background: #e0e4ea; flex-shrink: 0; align-self: stretch; }
 
     .action-add-btn {
-      color: #2196f3; font-weight: 500; font-size: 13px;
-      border: 1px solid #e0e0e0; border-radius: 4px; background: #fafbfc;
-      min-width: unset; padding: 0 16px; display: flex; align-items: center; height: 36px;
-      mat-icon { font-size: 16px; width: 16px; height: 16px; margin-right: 6px; }
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+      background: #094997; color: white; border: none; border-radius: 6px;
+      padding: 0 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12); transition: background 0.15s; white-space: nowrap;
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
     }
+    .action-add-btn:hover { background: #0a3f7f; }
 
     .table-card { padding: 0; box-shadow: rgb(221,221,221) 0 0 10px 0; overflow: hidden; }
     .table-responsive { overflow-x: auto; }

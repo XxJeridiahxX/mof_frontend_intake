@@ -200,8 +200,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 
     /* ═══ SCROLL AREA ═══ */
     .shell-scroll { flex: 1; overflow-y: auto; }
-    .shell-inner { max-width: 960px; margin: 0 auto; padding: 24px 20px 100px; }
-    @media (max-width: 599px) { .shell-inner { padding: 16px 16px 100px; } }
+    .shell-inner { max-width: 960px; margin: 0 auto; padding: 24px 20px 80px; }
+    @media (max-width: 599px) { .shell-inner { padding: 16px 16px 76px; } }
 
     /* ═══ INTRO ═══ */
     .page-intro { margin-bottom: 20px; }
