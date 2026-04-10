@@ -250,13 +250,13 @@ const SECTIONS: SectionDef[] = [
         <div class="ov-error-bar"><mat-icon>error_outline</mat-icon> {{ rpError() }}</div>
       }
 
-      <!-- ── Body: nav sidebar + content ── -->
+      <!-- ── Body: nav sidebar + scrolling content ── -->
       <div class="ov-body">
 
         <!-- Section nav sidebar -->
         <nav class="ov-sidenav">
           @for (section of allNavSections; track section.key) {
-            <button class="nav-item" [class.nav-active]="activeSection() === section.key" (click)="activeSection.set(section.key)">
+            <button class="nav-item" [class.nav-active]="activeSection() === section.key" (click)="scrollToSection(section.key)">
               <mat-icon class="nav-icon">{{ section.icon }}</mat-icon>
               <span class="nav-label">{{ section.label }}</span>
               @if (sectionFillCount(section.key) > 0) {
@@ -266,77 +266,84 @@ const SECTIONS: SectionDef[] = [
           }
         </nav>
 
-        <!-- Section content -->
-        <div class="ov-content">
-          @for (section of sections; track section.key) {
-            @if (activeSection() === section.key) {
-              <div class="content-section">
-                <div class="fields-grid">
-                  @for (field of section.fields; track field.key) {
-                    <div class="field-cell" [class.span-full]="field.span === 'full'" [class.field-empty]="!getVal(section.key, field.key)">
-                      <label class="field-label">{{ field.label }}</label>
-                      @if (field.type === 'textarea') {
-                        <textarea class="field-input field-textarea" rows="3"
-                          [(ngModel)]="editState[section.key + '.' + field.key]"
-                          (ngModelChange)="dirty.set(true)" placeholder="—"></textarea>
-                      } @else {
-                        <input class="field-input"
-                          [type]="field.type === 'date' ? 'date' : 'text'"
-                          [(ngModel)]="editState[section.key + '.' + field.key]"
-                          (ngModelChange)="dirty.set(true)" placeholder="—" />
-                      }
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-          }
+        <!-- Long scrolling content -->
+        <div class="ov-content" id="ov-scroll-container" (scroll)="onContentScroll($event)">
 
-          <!-- Clinicals section -->
-          @if (activeSection() === 'clinicals') {
-            <div class="content-section">
-              <div class="clinical-block">
-                <div class="clinical-block-title"><mat-icon>warning_amber</mat-icon> Allergies</div>
-                @if (allergies().length) {
-                  <div class="chip-list">
-                    @for (a of allergies(); track $index) {
-                      <div class="chip chip-allergy"><span class="chip-name">{{ a.name }}</span>@if(a.reaction){<span class="chip-sub">→ {{ a.reaction }}</span>}</div>
-                    }
-                  </div>
-                } @else { <p class="clinical-empty">None recorded</p> }
+          @for (section of sections; track section.key) {
+            <div class="content-section" [id]="'section-' + section.key">
+              <div class="content-section-header">
+                <mat-icon class="cs-icon">{{ section.icon }}</mat-icon>
+                <span class="cs-title">{{ section.label }}</span>
               </div>
-              <div class="clinical-block">
-                <div class="clinical-block-title"><mat-icon>medication</mat-icon> Medications</div>
-                @if (medications().length) {
-                  <div class="chip-list">
-                    @for (m of medications(); track $index) {
-                      <div class="chip chip-med"><span class="chip-name">{{ m.name }}</span>@if(m.dosage){<span class="chip-sub">{{ m.dosage }}</span>}@if(m.frequency){<span class="chip-sub">{{ m.frequency }}</span>}</div>
+              <div class="fields-grid">
+                @for (field of section.fields; track field.key) {
+                  <div class="field-cell" [class.span-full]="field.span === 'full'" [class.field-empty]="!getVal(section.key, field.key)">
+                    <label class="field-label">{{ field.label }}</label>
+                    @if (field.type === 'textarea') {
+                      <textarea class="field-input field-textarea" rows="3"
+                        [(ngModel)]="editState[section.key + '.' + field.key]"
+                        (ngModelChange)="dirty.set(true)" placeholder="—"></textarea>
+                    } @else {
+                      <input class="field-input"
+                        [type]="field.type === 'date' ? 'date' : 'text'"
+                        [(ngModel)]="editState[section.key + '.' + field.key]"
+                        (ngModelChange)="dirty.set(true)" placeholder="—" />
                     }
                   </div>
-                } @else { <p class="clinical-empty">None recorded</p> }
-              </div>
-              <div class="clinical-block">
-                <div class="clinical-block-title"><mat-icon>cut</mat-icon> Surgical History</div>
-                @if (surgeries().length) {
-                  <div class="chip-list">
-                    @for (s of surgeries(); track $index) {
-                      <div class="chip chip-surgery"><span class="chip-name">{{ s.type }}</span>@if(s.date){<span class="chip-sub">{{ s.date }}</span>}</div>
-                    }
-                  </div>
-                } @else { <p class="clinical-empty">None recorded</p> }
-              </div>
-              <div class="clinical-block">
-                <div class="clinical-block-title"><mat-icon>family_restroom</mat-icon> Family History</div>
-                @if (familyConditions().length) {
-                  <div class="chip-list">
-                    @for (f of familyConditions(); track $index) {
-                      <div class="chip chip-family"><span class="chip-name">{{ f.diagnosis }}</span>@if(f.member){<span class="chip-sub">{{ f.member }}</span>}</div>
-                    }
-                  </div>
-                } @else { <p class="clinical-empty">None recorded</p> }
+                }
               </div>
             </div>
           }
+
+          <!-- Clinicals always at bottom -->
+          <div class="content-section" id="section-clinicals">
+            <div class="content-section-header">
+              <mat-icon class="cs-icon">biotech</mat-icon>
+              <span class="cs-title">Clinicals</span>
+            </div>
+            <div class="clinical-block">
+              <div class="clinical-block-title"><mat-icon>warning_amber</mat-icon> Allergies</div>
+              @if (allergies().length) {
+                <div class="chip-list">
+                  @for (a of allergies(); track $index) {
+                    <div class="chip chip-allergy"><span class="chip-name">{{ a.name }}</span>@if(a.reaction){<span class="chip-sub">→ {{ a.reaction }}</span>}</div>
+                  }
+                </div>
+              } @else { <p class="clinical-empty">None recorded</p> }
+            </div>
+            <div class="clinical-block">
+              <div class="clinical-block-title"><mat-icon>medication</mat-icon> Medications</div>
+              @if (medications().length) {
+                <div class="chip-list">
+                  @for (m of medications(); track $index) {
+                    <div class="chip chip-med"><span class="chip-name">{{ m.name }}</span>@if(m.dosage){<span class="chip-sub">{{ m.dosage }}</span>}@if(m.frequency){<span class="chip-sub">{{ m.frequency }}</span>}</div>
+                  }
+                </div>
+              } @else { <p class="clinical-empty">None recorded</p> }
+            </div>
+            <div class="clinical-block">
+              <div class="clinical-block-title"><mat-icon>cut</mat-icon> Surgical History</div>
+              @if (surgeries().length) {
+                <div class="chip-list">
+                  @for (s of surgeries(); track $index) {
+                    <div class="chip chip-surgery"><span class="chip-name">{{ s.type }}</span>@if(s.date){<span class="chip-sub">{{ s.date }}</span>}</div>
+                  }
+                </div>
+              } @else { <p class="clinical-empty">None recorded</p> }
+            </div>
+            <div class="clinical-block">
+              <div class="clinical-block-title"><mat-icon>family_restroom</mat-icon> Family History</div>
+              @if (familyConditions().length) {
+                <div class="chip-list">
+                  @for (f of familyConditions(); track $index) {
+                    <div class="chip chip-family"><span class="chip-name">{{ f.diagnosis }}</span>@if(f.member){<span class="chip-sub">{{ f.member }}</span>}</div>
+                  }
+                </div>
+              } @else { <p class="clinical-empty">None recorded</p> }
+            </div>
+          </div>
+
+          <div style="height: 40px"></div>
         </div>
 
       </div>
@@ -523,8 +530,14 @@ const SECTIONS: SectionDef[] = [
     }
 
     /* Content area */
-    .ov-content { flex: 1; overflow-y: auto; min-width: 0; }
-    .content-section { padding: 16px; }
+    .ov-content { flex: 1; overflow-y: auto; min-width: 0; scroll-behavior: smooth; }
+    .content-section { padding: 16px 16px 8px; }
+    .content-section-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #e8eaed;
+    }
+    .cs-icon { font-size: 18px; width: 18px; height: 18px; color: #089bab; }
+    .cs-title { font-size: 13px; font-weight: 700; color: #1a1a2e; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .fields-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -595,6 +608,30 @@ export class IntakeListPageComponent implements OnInit {
     { key: 'clinicals', label: 'Clinicals', icon: 'biotech', fields: [] },
   ];
 
+  scrollToSection(key: string) {
+    this.activeSection.set(key);
+    // Small delay lets Angular render if content just loaded
+    setTimeout(() => {
+      const el = document.getElementById(`section-${key}`);
+      const container = document.getElementById('ov-scroll-container');
+      if (el && container) {
+        container.scrollTo({ top: el.offsetTop - 8, behavior: 'smooth' });
+      }
+    }, 50);
+  }
+
+  onContentScroll(event: Event) {
+    const container = event.target as HTMLElement;
+    const scrollTop = container.scrollTop;
+    const keys = [...this.sections.map(s => s.key), 'clinicals'];
+    let current = keys[0];
+    for (const key of keys) {
+      const el = document.getElementById(`section-${key}`);
+      if (el && el.offsetTop - 32 <= scrollTop) current = key;
+    }
+    this.activeSection.set(current);
+  }
+
   sectionFillCount(sectionKey: string): number {
     if (sectionKey === 'clinicals') {
       return this.allergies().length + this.medications().length + this.surgeries().length + this.familyConditions().length;
@@ -639,6 +676,10 @@ export class IntakeListPageComponent implements OnInit {
   async openReview(row: IntakeRow) {
     this.reviewIntake.set(row);
     this.activeSection.set('demographicsForm');
+    setTimeout(() => {
+      const c = document.getElementById('ov-scroll-container');
+      if (c) c.scrollTop = 0;
+    }, 50);
     this.dirty.set(false);
     this.rpError.set('');
     this.editState = {};
