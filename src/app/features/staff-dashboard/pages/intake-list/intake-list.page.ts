@@ -125,14 +125,14 @@ const SECTIONS: SectionDef[] = [
     </div>
 
     <div class="cust-div-header">
-      <div class="filter-controls-row">
-        <div class="search-field">
-          <mat-icon class="search-icon">search</mat-icon>
-          <input type="text" [(ngModel)]="searchTerm" placeholder="Name, email, phone">
-        </div>
+      <div class="search-field">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search by name, email, or phone">
+      </div>
+      <div class="filter-row">
         <mat-form-field appearance="outline" class="toolbar-select">
           <mat-select placeholder="Status" [(ngModel)]="statusFilter">
-            <mat-option value="all">All</mat-option>
+            <mat-option value="all">All Statuses</mat-option>
             <mat-option value="link_sent">Link Sent</mat-option>
             <mat-option value="in_progress">In Progress</mat-option>
             <mat-option value="submitted">Submitted</mat-option>
@@ -354,45 +354,91 @@ const SECTIONS: SectionDef[] = [
               <mat-icon class="cs-icon">biotech</mat-icon>
               <span class="cs-title">Clinicals</span>
             </div>
+
+            <!-- Allergies -->
             <div class="clinical-block">
               <div class="clinical-block-title"><mat-icon>warning_amber</mat-icon> Allergies</div>
-              @if (allergies().length) {
-                <div class="chip-list">
-                  @for (a of allergies(); track $index) {
-                    <div class="chip chip-allergy"><span class="chip-name">{{ a.name }}</span>@if(a.reaction){<span class="chip-sub">→ {{ a.reaction }}</span>}</div>
-                  }
-                </div>
-              } @else { <p class="clinical-empty">None recorded</p> }
+              <div class="clin-rows">
+                @for (a of allergies(); track $index; let i = $index) {
+                  <div class="clin-row clin-allergy">
+                    <input class="clin-input clin-name" placeholder="Allergen" [value]="a.name"
+                      (input)="updateClinical('allergies', i, 'name', $any($event.target).value)" />
+                    <input class="clin-input clin-sub" placeholder="Reaction" [value]="a.reaction || ''"
+                      (input)="updateClinical('allergies', i, 'reaction', $any($event.target).value)" />
+                    <button class="clin-remove-btn" (click)="removeClinical('allergies', i)" matTooltip="Remove">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+              <button class="clin-add-btn" (click)="addClinical('allergies', {name:'',reaction:''})">
+                <mat-icon>add</mat-icon> Add Allergy
+              </button>
             </div>
+
+            <!-- Medications -->
             <div class="clinical-block">
               <div class="clinical-block-title"><mat-icon>medication</mat-icon> Medications</div>
-              @if (medications().length) {
-                <div class="chip-list">
-                  @for (m of medications(); track $index) {
-                    <div class="chip chip-med"><span class="chip-name">{{ m.name }}</span>@if(m.dosage){<span class="chip-sub">{{ m.dosage }}</span>}@if(m.frequency){<span class="chip-sub">{{ m.frequency }}</span>}</div>
-                  }
-                </div>
-              } @else { <p class="clinical-empty">None recorded</p> }
+              <div class="clin-rows">
+                @for (m of medications(); track $index; let i = $index) {
+                  <div class="clin-row clin-med">
+                    <input class="clin-input clin-name" placeholder="Medication" [value]="m.name"
+                      (input)="updateClinical('medications', i, 'name', $any($event.target).value)" />
+                    <input class="clin-input clin-sub" placeholder="Dosage" [value]="m.dosage || ''"
+                      (input)="updateClinical('medications', i, 'dosage', $any($event.target).value)" />
+                    <input class="clin-input clin-sub" placeholder="Frequency" [value]="m.frequency || ''"
+                      (input)="updateClinical('medications', i, 'frequency', $any($event.target).value)" />
+                    <button class="clin-remove-btn" (click)="removeClinical('medications', i)" matTooltip="Remove">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+              <button class="clin-add-btn" (click)="addClinical('medications', {name:'',dosage:'',frequency:''})">
+                <mat-icon>add</mat-icon> Add Medication
+              </button>
             </div>
+
+            <!-- Surgical History -->
             <div class="clinical-block">
               <div class="clinical-block-title"><mat-icon>cut</mat-icon> Surgical History</div>
-              @if (surgeries().length) {
-                <div class="chip-list">
-                  @for (s of surgeries(); track $index) {
-                    <div class="chip chip-surgery"><span class="chip-name">{{ s.type }}</span>@if(s.date){<span class="chip-sub">{{ s.date }}</span>}</div>
-                  }
-                </div>
-              } @else { <p class="clinical-empty">None recorded</p> }
+              <div class="clin-rows">
+                @for (s of surgeries(); track $index; let i = $index) {
+                  <div class="clin-row clin-surgery">
+                    <input class="clin-input clin-name" placeholder="Procedure" [value]="s.type"
+                      (input)="updateClinical('surgeries', i, 'type', $any($event.target).value)" />
+                    <input class="clin-input clin-sub" placeholder="Date / Year" [value]="s.date || ''"
+                      (input)="updateClinical('surgeries', i, 'date', $any($event.target).value)" />
+                    <button class="clin-remove-btn" (click)="removeClinical('surgeries', i)" matTooltip="Remove">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+              <button class="clin-add-btn" (click)="addClinical('surgeries', {type:'',date:''})">
+                <mat-icon>add</mat-icon> Add Surgery
+              </button>
             </div>
+
+            <!-- Family History -->
             <div class="clinical-block">
               <div class="clinical-block-title"><mat-icon>family_restroom</mat-icon> Family History</div>
-              @if (familyConditions().length) {
-                <div class="chip-list">
-                  @for (f of familyConditions(); track $index) {
-                    <div class="chip chip-family"><span class="chip-name">{{ f.diagnosis }}</span>@if(f.member){<span class="chip-sub">{{ f.member }}</span>}</div>
-                  }
-                </div>
-              } @else { <p class="clinical-empty">None recorded</p> }
+              <div class="clin-rows">
+                @for (f of familyConditions(); track $index; let i = $index) {
+                  <div class="clin-row clin-family">
+                    <input class="clin-input clin-name" placeholder="Diagnosis / Condition" [value]="f.diagnosis"
+                      (input)="updateClinical('familyConditions', i, 'diagnosis', $any($event.target).value)" />
+                    <input class="clin-input clin-sub" placeholder="Family Member" [value]="f.member || ''"
+                      (input)="updateClinical('familyConditions', i, 'member', $any($event.target).value)" />
+                    <button class="clin-remove-btn" (click)="removeClinical('familyConditions', i)" matTooltip="Remove">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+              <button class="clin-add-btn" (click)="addClinical('familyConditions', {diagnosis:'',member:''})">
+                <mat-icon>add</mat-icon> Add Condition
+              </button>
             </div>
           </div>
 
@@ -417,8 +463,10 @@ const SECTIONS: SectionDef[] = [
     }
     .page-title { font-size: 24px; font-weight: 600; color: #333; margin: 0; }
 
-    .cust-div-header { display: flex; flex-direction: column; margin-bottom: 16px; }
-    .filter-controls-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .cust-div-header { display: flex; flex-direction: column; margin-bottom: 16px; gap: 10px; }
+    .filter-controls-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .search-wrapper { width: 100%; }
+    .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 
     ::ng-deep .toolbar-select { width: 130px; }
     ::ng-deep .toolbar-select .mat-mdc-text-field-wrapper {
@@ -429,9 +477,9 @@ const SECTIONS: SectionDef[] = [
     ::ng-deep .toolbar-select .mat-mdc-select-value-text { font-size: 12px; color: #333; }
 
     .search-field {
-      height: 38px; width: 220px; background: #fff; border-radius: 20px;
+      height: 38px; width: 100%; background: #fff; border-radius: 20px;
       box-shadow: inset 0 0 4px rgba(0,0,0,0.1); display: flex; align-items: center;
-      border: 1px solid #ccc; padding: 0 16px; gap: 4px;
+      border: 1px solid #ccc; padding: 0 16px; gap: 4px; box-sizing: border-box;
       input { border: none; outline: none; background: transparent; font-size: 13px; width: 100%; }
     }
     .search-icon { color: #777; font-size: 20px; width: 20px; height: 20px; }
@@ -643,15 +691,34 @@ const SECTIONS: SectionDef[] = [
       letter-spacing: 0.5px; background: #f8f9fb; border-bottom: 1px solid #eee;
       mat-icon { font-size: 16px; width: 16px; height: 16px; color: #089bab; }
     }
-    .clinical-empty { color: #bbb; font-size: 12px; padding: 10px 14px; margin: 0; font-style: italic; }
-    .chip-list { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; }
-    .chip { display: flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 500; }
-    .chip-allergy { background: #fff0f0; color: #d32f2f; border: 1px solid #fcc; }
-    .chip-med     { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-    .chip-surgery { background: #fff8e1; color: #c95817; border: 1px solid #ffe082; }
-    .chip-family  { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
-    .chip-name { font-weight: 600; }
-    .chip-sub  { opacity: 0.75; font-size: 11px; }
+    .clin-rows { display: flex; flex-direction: column; gap: 1px; background: #eee; }
+    .clin-row {
+      display: flex; align-items: center; gap: 0; background: white;
+      padding: 0; border-bottom: 1px solid #f2f2f2;
+    }
+    .clin-input {
+      flex: 1; border: none; outline: none; font-size: 13px; color: #1a1a2e;
+      padding: 7px 10px; background: transparent; font-family: inherit;
+      border-right: 1px solid #f0f0f0; min-width: 0;
+    }
+    .clin-input:focus { background: #f7fbff; }
+    .clin-input.clin-name { flex: 2; font-weight: 500; }
+    .clin-input.clin-sub  { flex: 1; color: #555; }
+    .clin-remove-btn {
+      background: none; border: none; cursor: pointer; padding: 6px 8px;
+      color: #ccc; display: flex; align-items: center; flex-shrink: 0;
+      transition: color 0.15s;
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    }
+    .clin-remove-btn:hover { color: #d32f2f; }
+    .clin-add-btn {
+      display: flex; align-items: center; gap: 5px; margin: 8px 10px;
+      background: none; border: 1px dashed #c0c8d4; border-radius: 5px;
+      color: #089bab; font-size: 12px; font-weight: 600; cursor: pointer;
+      padding: 5px 12px; font-family: inherit; transition: background 0.15s;
+      mat-icon { font-size: 15px; width: 15px; height: 15px; }
+    }
+    .clin-add-btn:hover { background: #f0fdfe; border-color: #089bab; }
   `,
 })
 export class IntakeListPageComponent implements OnInit {
@@ -846,6 +913,32 @@ export class IntakeListPageComponent implements OnInit {
     }
   }
 
+  private clinicalSignal(list: string) {
+    const map: Record<string, any> = {
+      allergies: this.allergies, medications: this.medications,
+      surgeries: this.surgeries, familyConditions: this.familyConditions,
+    };
+    return map[list];
+  }
+
+  addClinical(list: string, template: any) {
+    const sig = this.clinicalSignal(list);
+    sig.update((arr: any[]) => [...arr, { ...template }]);
+    this.dirty.set(true);
+  }
+
+  removeClinical(list: string, index: number) {
+    const sig = this.clinicalSignal(list);
+    sig.update((arr: any[]) => arr.filter((_: any, i: number) => i !== index));
+    this.dirty.set(true);
+  }
+
+  updateClinical(list: string, index: number, field: string, value: string) {
+    const sig = this.clinicalSignal(list);
+    sig.update((arr: any[]) => arr.map((item: any, i: number) => i === index ? { ...item, [field]: value } : item));
+    this.dirty.set(true);
+  }
+
   getVal(sectionKey: string, fieldKey: string): any {
     return this.editState[`${sectionKey}.${fieldKey}`];
   }
@@ -870,6 +963,14 @@ export class IntakeListPageComponent implements OnInit {
         section.fields.forEach(f => { updatedRaw[section.key][f.key] = this.editState[`${section.key}.${f.key}`]; });
       }
     });
+    // Persist clinical arrays
+    if (!updatedRaw.allergiesMedicationsForm) updatedRaw.allergiesMedicationsForm = {};
+    updatedRaw.allergiesMedicationsForm.allergies   = this.allergies();
+    updatedRaw.allergiesMedicationsForm.medications = this.medications();
+    if (!updatedRaw.medicalHistoryForm) updatedRaw.medicalHistoryForm = {};
+    updatedRaw.medicalHistoryForm.surgeries = this.surgeries();
+    if (!updatedRaw.familyHistoryForm) updatedRaw.familyHistoryForm = {};
+    updatedRaw.familyHistoryForm.familyConditions = this.familyConditions();
 
     try {
       const res = await fetch('/api/updateIntake', {
