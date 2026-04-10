@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -190,19 +190,41 @@ import { MatButtonModule } from '@angular/material/button';
     .status-converted { background: #e1f3f5; color: #089bab; }
   `,
 })
-export class DashboardPageComponent {
-  stats = [
-    { label: 'Link Sent', value: 12, icon: 'send', bg: '#757575' },
-    { label: 'In Progress', value: 5, icon: 'edit_note', bg: '#fbc647' },
-    { label: 'Submitted', value: 8, icon: 'assignment_turned_in', bg: '#2196f3' },
-    { label: 'Reviewed', value: 23, icon: 'fact_check', bg: '#27b345' },
+export class DashboardPageComponent implements OnInit {
+  intakes = signal<any[]>([]);
+
+  statDefs = [
+    { label: 'Link Sent',  key: 'link_sent',   icon: 'send',                bg: '#757575' },
+    { label: 'In Progress', key: 'in_progress', icon: 'edit_note',           bg: '#fbc647' },
+    { label: 'Submitted',  key: 'submitted',    icon: 'assignment_turned_in', bg: '#2196f3' },
+    { label: 'Reviewed',   key: 'reviewed',     icon: 'fact_check',          bg: '#27b345' },
   ];
 
-  recentIntakes = [
-    { name: 'Jane Smith', status: 'submitted', statusLabel: 'Submitted', date: 'Apr 8, 2026' },
-    { name: 'Robert Johnson', status: 'in_progress', statusLabel: 'In Progress', date: 'Apr 8, 2026' },
-    { name: 'Maria Garcia', status: 'reviewed', statusLabel: 'Reviewed', date: 'Apr 7, 2026' },
-    { name: 'David Lee', status: 'link_sent', statusLabel: 'Link Sent', date: 'Apr 7, 2026' },
-    { name: 'Sarah Williams', status: 'converted', statusLabel: 'Converted', date: 'Apr 6, 2026' },
-  ];
+  get stats() {
+    const rows = this.intakes();
+    return this.statDefs.map(d => ({
+      ...d,
+      value: rows.filter(r => r.status === d.key).length,
+    }));
+  }
+
+  get recentIntakes() {
+    return this.intakes().slice(0, 5).map(i => ({
+      name: `${i.first_name} ${i.last_name}`,
+      status: i.status,
+      statusLabel: i.status_label,
+      date: new Date(i.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    }));
+  }
+
+  ngOnInit() { this.fetchIntakes(); }
+
+  async fetchIntakes() {
+    try {
+      const res = await fetch('/api/getIntakes');
+      if (!res.ok) return;
+      const data = await res.json();
+      this.intakes.set(data.intakes || []);
+    } catch { /* silent */ }
+  }
 }
