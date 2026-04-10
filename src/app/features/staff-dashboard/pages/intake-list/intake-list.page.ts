@@ -1,5 +1,6 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { upload } from '@vercel/blob/client';
+import { IntakePdfService } from '../../../../core/services/intake-pdf.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -230,6 +231,9 @@ const SECTIONS: SectionDef[] = [
         <div class="ov-topbar-right">
           <span class="status-badge status-{{ rpStatus() }}">{{ rpStatusLabel() }}</span>
           @if (dirty()) { <span class="unsaved-dot" matTooltip="Unsaved changes">●</span> }
+          <button class="ov-action-btn ov-btn-pdf" (click)="previewPdf()">
+            <mat-icon>picture_as_pdf</mat-icon> Preview PDF
+          </button>
           <button class="ov-action-btn ov-btn-secondary" (click)="rpSave('in_progress', 'In Progress')" [disabled]="rpSaving()">
             <mat-icon>save</mat-icon> Save
           </button>
@@ -282,7 +286,7 @@ const SECTIONS: SectionDef[] = [
                       <input class="field-input field-search"
                         [attr.list]="'opts-' + section.key + '-' + field.key"
                         [(ngModel)]="editState[section.key + '.' + field.key]"
-                        (ngModelChange)="dirty.set(true)" placeholder="—" autocomplete="off" />
+                        (ngModelChange)="dirty.set(true)" placeholder="—" />
                       <datalist [id]="'opts-' + section.key + '-' + field.key">
                         @for (opt of field.options; track opt) {
                           <option [value]="opt"></option>
@@ -583,6 +587,8 @@ const SECTIONS: SectionDef[] = [
       mat-icon { font-size: 16px; width: 16px; height: 16px; }
     }
     .ov-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .ov-btn-pdf { background: #fff4f0; color: #c0392b; border: 1px solid #f5c6c0; }
+    .ov-btn-pdf:hover { background: #ffe8e3; }
     .ov-btn-secondary { background: #f0f4ff; color: #094997; border: 1px solid #c7d6f5; }
     .ov-btn-secondary:hover:not(:disabled) { background: #dce8ff; }
     .ov-btn-primary { background: #094997; color: white; }
@@ -722,6 +728,8 @@ const SECTIONS: SectionDef[] = [
   `,
 })
 export class IntakeListPageComponent implements OnInit {
+  private pdfService = new IntakePdfService();
+
   sections = SECTIONS;
 
   searchTerm = '';
@@ -941,6 +949,17 @@ export class IntakeListPageComponent implements OnInit {
 
   getVal(sectionKey: string, fieldKey: string): any {
     return this.editState[`${sectionKey}.${fieldKey}`];
+  }
+
+  previewPdf() {
+    this.pdfService.generate(this.reviewIntake()!, this.rawData, {
+      allergies: this.allergies(),
+      medications: this.medications(),
+      surgeries: this.surgeries(),
+      familyConditions: this.familyConditions(),
+      cardFrontUrl: this.cardFrontUrl(),
+      cardBackUrl: this.cardBackUrl(),
+    });
   }
 
   hasData(section: SectionDef): boolean {
