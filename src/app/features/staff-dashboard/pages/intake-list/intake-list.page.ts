@@ -1,4 +1,5 @@
 import { Component, signal, OnInit } from '@angular/core';
+import { upload } from '@vercel/blob/client';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -296,26 +297,51 @@ const SECTIONS: SectionDef[] = [
                   </div>
                 }
               </div>
-              @if (section.key === 'insuranceForm' && (cardFrontUrl() || cardBackUrl())) {
+              @if (section.key === 'insuranceForm') {
+                <!-- Hidden file inputs -->
+                <input id="staff-card-front-input" type="file" accept="image/*" style="display:none" (change)="uploadCard('front', $event)" />
+                <input id="staff-card-back-input"  type="file" accept="image/*" style="display:none" (change)="uploadCard('back', $event)" />
+
                 <div class="insurance-cards-row">
                   <span class="insurance-cards-label">Insurance Card Photos</span>
                   <div class="insurance-card-thumbs">
-                    @if (cardFrontUrl()) {
-                      <a [href]="cardFrontUrl()!" target="_blank" class="ins-card-link">
-                        <div class="ins-card-wrap">
+
+                    <!-- Front -->
+                    <div class="ins-card-slot">
+                      @if (cardFrontUrl()) {
+                        <a [href]="cardFrontUrl()!" target="_blank" class="ins-card-link">
                           <img [src]="cardFrontUrl()!" class="ins-card-img" alt="Card front" />
-                          <span class="ins-card-caption">Front</span>
-                        </div>
-                      </a>
-                    }
-                    @if (cardBackUrl()) {
-                      <a [href]="cardBackUrl()!" target="_blank" class="ins-card-link">
-                        <div class="ins-card-wrap">
+                        </a>
+                      } @else {
+                        <div class="ins-card-placeholder"><mat-icon>add_photo_alternate</mat-icon></div>
+                      }
+                      @if (cardFrontUploading()) {
+                        <mat-progress-bar mode="determinate" [value]="cardFrontProgress()" class="ins-upload-bar"></mat-progress-bar>
+                      }
+                      <button class="ins-upload-btn" (click)="triggerCardUpload('front')" [disabled]="cardFrontUploading()">
+                        <mat-icon>{{ cardFrontUrl() ? 'swap_horiz' : 'upload' }}</mat-icon>
+                        {{ cardFrontUrl() ? 'Replace' : 'Upload' }} Front
+                      </button>
+                    </div>
+
+                    <!-- Back -->
+                    <div class="ins-card-slot">
+                      @if (cardBackUrl()) {
+                        <a [href]="cardBackUrl()!" target="_blank" class="ins-card-link">
                           <img [src]="cardBackUrl()!" class="ins-card-img" alt="Card back" />
-                          <span class="ins-card-caption">Back</span>
-                        </div>
-                      </a>
-                    }
+                        </a>
+                      } @else {
+                        <div class="ins-card-placeholder"><mat-icon>add_photo_alternate</mat-icon></div>
+                      }
+                      @if (cardBackUploading()) {
+                        <mat-progress-bar mode="determinate" [value]="cardBackProgress()" class="ins-upload-bar"></mat-progress-bar>
+                      }
+                      <button class="ins-upload-btn" (click)="triggerCardUpload('back')" [disabled]="cardBackUploading()">
+                        <mat-icon>{{ cardBackUrl() ? 'swap_horiz' : 'upload' }}</mat-icon>
+                        {{ cardBackUrl() ? 'Replace' : 'Upload' }} Back
+                      </button>
+                    </div>
+
                   </div>
                 </div>
               }
@@ -587,13 +613,27 @@ const SECTIONS: SectionDef[] = [
       margin-top: 10px; padding: 10px 12px; background: #f8f9fb;
       border-radius: 8px; border: 1px solid #e0e4ea;
     }
-    .insurance-cards-label { font-size: 9px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 8px; }
-    .insurance-card-thumbs { display: flex; gap: 14px; flex-wrap: wrap; }
-    .ins-card-link { text-decoration: none; }
-    .ins-card-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .insurance-cards-label { font-size: 9px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 10px; }
+    .insurance-card-thumbs { display: flex; gap: 16px; flex-wrap: wrap; }
+    .ins-card-slot { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+    .ins-card-link { text-decoration: none; display: block; }
     .ins-card-img { height: 80px; width: auto; max-width: 140px; border-radius: 6px; border: 1px solid #ddd; object-fit: cover; display: block; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.15s; }
     .ins-card-img:hover { transform: scale(1.03); }
-    .ins-card-caption { font-size: 10px; color: #666; font-weight: 500; }
+    .ins-card-placeholder {
+      height: 80px; width: 130px; border-radius: 6px; border: 2px dashed #c8d0da;
+      display: flex; align-items: center; justify-content: center; background: #f0f2f5;
+      mat-icon { color: #b0bac8; font-size: 28px; width: 28px; height: 28px; }
+    }
+    .ins-upload-bar { width: 130px; border-radius: 4px; }
+    .ins-upload-btn {
+      display: flex; align-items: center; gap: 4px; padding: 4px 10px; height: 28px;
+      background: #f0f4ff; color: #094997; border: 1px solid #c7d6f5; border-radius: 5px;
+      font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: background 0.15s; white-space: nowrap;
+      mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    }
+    .ins-upload-btn:hover:not(:disabled) { background: #dce8ff; }
+    .ins-upload-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* Clinicals */
     .clinical-block { background: white; border-radius: 8px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
@@ -633,6 +673,10 @@ export class IntakeListPageComponent implements OnInit {
   dirty = signal(false);
   cardFrontUrl = signal<string | null>(null);
   cardBackUrl  = signal<string | null>(null);
+  cardFrontUploading = signal(false);
+  cardBackUploading  = signal(false);
+  cardFrontProgress  = signal(0);
+  cardBackProgress   = signal(0);
   editState: Record<string, any> = {};
   rawData: any = {};
   allergies        = signal<any[]>([]);
@@ -768,6 +812,39 @@ export class IntakeListPageComponent implements OnInit {
   }
 
   closeReview() { this.reviewIntake.set(null); this.dirty.set(false); }
+
+  triggerCardUpload(side: 'front' | 'back') {
+    const id = side === 'front' ? 'staff-card-front-input' : 'staff-card-back-input';
+    (document.getElementById(id) as HTMLInputElement)?.click();
+  }
+
+  async uploadCard(side: 'front' | 'back', event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const uploading = side === 'front' ? this.cardFrontUploading : this.cardBackUploading;
+    const progress  = side === 'front' ? this.cardFrontProgress  : this.cardBackProgress;
+    uploading.set(true); progress.set(0);
+    try {
+      const blob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/getBlobUploadToken',
+        onUploadProgress: (e) => progress.set(Math.round(e.percentage)),
+      });
+      if (side === 'front') {
+        this.cardFrontUrl.set(blob.url);
+        this.rawData.insuranceCardFrontUrl = blob.url;
+      } else {
+        this.cardBackUrl.set(blob.url);
+        this.rawData.insuranceCardBackUrl = blob.url;
+      }
+      this.dirty.set(true);
+    } catch {
+      this.rpError.set(`Failed to upload insurance card ${side}.`);
+    } finally {
+      uploading.set(false); progress.set(0);
+      (event.target as HTMLInputElement).value = '';
+    }
+  }
 
   getVal(sectionKey: string, fieldKey: string): any {
     return this.editState[`${sectionKey}.${fieldKey}`];
