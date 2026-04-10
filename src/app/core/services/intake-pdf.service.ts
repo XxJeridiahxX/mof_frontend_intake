@@ -14,10 +14,10 @@ const DKGRAY = '#333333';
 @Injectable({ providedIn: 'root' })
 export class IntakePdfService {
 
-  generate(intake: any, rawData: any, options: {
+  async generate(intake: any, rawData: any, options: {
     allergies: any[], medications: any[], surgeries: any[], familyConditions: any[],
     cardFrontUrl: string | null, cardBackUrl: string | null,
-  }): void {
+  }): Promise<void> {
     const d = rawData || {};
     const dem  = d.demographicsForm  || {};
     const con  = d.contactForm       || {};
@@ -30,6 +30,12 @@ export class IntakePdfService {
     const now = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     const patientName = `${dem.firstName || ''} ${dem.lastName || ''}`.trim() || intake.name || '—';
     const dob = dem.dateOfBirth || '—';
+
+    // Pre-fetch insurance card images as base64 for embedding
+    const [cardFrontB64, cardBackB64] = await Promise.all([
+      options.cardFrontUrl ? this.toBase64(options.cardFrontUrl) : Promise.resolve(null),
+      options.cardBackUrl  ? this.toBase64(options.cardBackUrl)  : Promise.resolve(null),
+    ]);
 
     const docDef: TDocumentDefinitions = {
       pageSize: 'LETTER',
@@ -146,12 +152,22 @@ export class IntakePdfService {
             ['Holder DOB',          ins.policyHolderDob       || '—'],
             ['', ''],
           ]),
-          ...(options.cardFrontUrl || options.cardBackUrl ? [
-            { text: 'Insurance Card Photos', fontSize: 8, color: GRAY, bold: true, margin: [0, 6, 0, 2] } as Content,
+          ...(cardFrontB64 || cardBackB64 ? [
+            { text: 'Insurance Card Photos', fontSize: 8, color: GRAY, bold: true, margin: [0, 8, 0, 4] } as Content,
             {
               columns: [
-                options.cardFrontUrl ? { stack: [{ text: 'Front', fontSize: 7, color: GRAY }, { text: options.cardFrontUrl, link: options.cardFrontUrl, fontSize: 7, color: TEAL }] } : {},
-                options.cardBackUrl  ? { stack: [{ text: 'Back',  fontSize: 7, color: GRAY }, { text: options.cardBackUrl,  link: options.cardBackUrl,  fontSize: 7, color: TEAL }] } : {},
+                cardFrontB64 ? {
+                  stack: [
+                    { text: 'Front', fontSize: 7, color: GRAY, bold: true, margin: [0, 0, 0, 2] },
+                    { image: cardFrontB64, fit: [200, 120], margin: [0, 0, 0, 4] },
+                  ],
+                } : { text: '' },
+                cardBackB64 ? {
+                  stack: [
+                    { text: 'Back', fontSize: 7, color: GRAY, bold: true, margin: [0, 0, 0, 2] },
+                    { image: cardBackB64, fit: [200, 120], margin: [0, 0, 0, 4] },
+                  ],
+                } : { text: '' },
               ], columnGap: 16, margin: [0, 0, 0, 4],
             } as Content,
           ] : []),
@@ -360,5 +376,19 @@ export class IntakePdfService {
         margin: [0, 0, 0, 4],
       },
     ];
+  }
+
+  private async toBase64(url: string): Promise<string | null> {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const blob = await res.blob();
+      return await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload  = () => resolve(reader.result as string);
+        reader.onerror = () => reject(null);
+        reader.readAsDataURL(blob);
+      });
+    } catch { return null; }
   }
 }

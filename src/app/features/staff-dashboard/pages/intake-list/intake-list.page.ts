@@ -126,11 +126,11 @@ const SECTIONS: SectionDef[] = [
     </div>
 
     <div class="cust-div-header">
-      <div class="search-field">
-        <mat-icon class="search-icon">search</mat-icon>
-        <input type="text" [(ngModel)]="searchTerm" placeholder="Search by name, email, or phone">
-      </div>
-      <div class="filter-row">
+      <div class="filter-controls-row">
+        <div class="search-field">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Name, email, phone">
+        </div>
         <mat-form-field appearance="outline" class="toolbar-select">
           <mat-select placeholder="Status" [(ngModel)]="statusFilter">
             <mat-option value="all">All Statuses</mat-option>
@@ -283,15 +283,14 @@ const SECTIONS: SectionDef[] = [
                         [(ngModel)]="editState[section.key + '.' + field.key]"
                         (ngModelChange)="dirty.set(true)" placeholder="—"></textarea>
                     } @else if (field.type === 'select' && field.options) {
-                      <input class="field-input field-search"
-                        [attr.list]="'opts-' + section.key + '-' + field.key"
+                      <select class="field-input field-select"
                         [(ngModel)]="editState[section.key + '.' + field.key]"
-                        (ngModelChange)="dirty.set(true)" placeholder="—" />
-                      <datalist [id]="'opts-' + section.key + '-' + field.key">
+                        (ngModelChange)="dirty.set(true)">
+                        <option value="">—</option>
                         @for (opt of field.options; track opt) {
-                          <option [value]="opt"></option>
+                          <option [value]="opt">{{ opt }}</option>
                         }
-                      </datalist>
+                      </select>
                     } @else {
                       <input class="field-input"
                         [type]="field.type === 'date' ? 'date' : 'text'"
@@ -467,10 +466,8 @@ const SECTIONS: SectionDef[] = [
     }
     .page-title { font-size: 24px; font-weight: 600; color: #333; margin: 0; }
 
-    .cust-div-header { display: flex; flex-direction: column; margin-bottom: 16px; gap: 10px; }
-    .filter-controls-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-    .search-wrapper { width: 100%; }
-    .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .cust-div-header { display: flex; flex-direction: column; margin-bottom: 16px; }
+    .filter-controls-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 
     ::ng-deep .toolbar-select { width: 130px; }
     ::ng-deep .toolbar-select .mat-mdc-text-field-wrapper {
@@ -481,9 +478,9 @@ const SECTIONS: SectionDef[] = [
     ::ng-deep .toolbar-select .mat-mdc-select-value-text { font-size: 12px; color: #333; }
 
     .search-field {
-      height: 38px; width: 100%; background: #fff; border-radius: 20px;
+      height: 38px; width: 220px; background: #fff; border-radius: 20px;
       box-shadow: inset 0 0 4px rgba(0,0,0,0.1); display: flex; align-items: center;
-      border: 1px solid #ccc; padding: 0 16px; gap: 4px; box-sizing: border-box;
+      border: 1px solid #ccc; padding: 0 16px; gap: 4px;
       input { border: none; outline: none; background: transparent; font-size: 13px; width: 100%; }
     }
     .search-icon { color: #777; font-size: 20px; width: 20px; height: 20px; }
@@ -659,8 +656,10 @@ const SECTIONS: SectionDef[] = [
     }
     .field-input:focus { border-bottom-color: #089bab; }
     .field-textarea { resize: vertical; min-height: 48px; }
-    .field-search { cursor: pointer; }
-    .field-search::-webkit-calendar-picker-indicator { opacity: 0; }
+    .field-select {
+      cursor: pointer; appearance: auto; -webkit-appearance: auto;
+      padding-right: 4px;
+    }
 
     /* Insurance card inline */
     .insurance-cards-row {
