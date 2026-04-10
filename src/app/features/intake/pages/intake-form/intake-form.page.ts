@@ -1484,25 +1484,77 @@ export class IntakeFormPageComponent implements OnInit {
       const { data } = await response.json();
       if (!data) return;
 
-      // Demographics: name, DOB from basic info
-      this.demographicsForm.patchValue({
-        firstName: data.firstName || '',
-        lastName: data.lastName || '',
-        dateOfBirth: data.dateOfBirth || '',
-      });
+      // If the patient previously completed the full form, restore all sections
+      if (data.demographicsForm) {
+        this.demographicsForm.patchValue(data.demographicsForm);
+      } else {
+        // Fall back to top-level fields from initial intake
+        this.demographicsForm.patchValue({
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+          dateOfBirth: data.dateOfBirth || '',
+        });
+      }
 
-      // Contact: email, phone
-      this.contactForm.patchValue({
-        emailAddress: data.email || '',
-        cellPhone: data.phone || '',
-      });
+      if (data.contactForm) {
+        this.contactForm.patchValue(data.contactForm);
+      } else {
+        this.contactForm.patchValue({
+          emailAddress: data.email || '',
+          cellPhone: data.phone || '',
+        });
+      }
 
-      // Chief complaint from initial intake
+      if (data.insuranceForm)   this.insuranceForm.patchValue(data.insuranceForm);
+      if (data.careTeamForm)    this.careTeamForm.patchValue(data.careTeamForm);
+      if (data.pharmacyForm)    this.pharmacyForm.patchValue(data.pharmacyForm);
+      if (data.socialHistoryForm) this.socialHistoryForm.patchValue(data.socialHistoryForm);
+      if (data.familyHistoryForm) this.familyHistoryForm.patchValue({ hasFamilyHistory: data.familyHistoryForm.hasFamilyHistory });
+
+      // Chief complaint — prefer visitForm section, fall back to top-level initial intake fields
       this.visitForm.patchValue({
-        chiefComplaint: data.chiefComplaint || '',
-        currentSymptoms: data.currentSymptoms || '',
-        symptomOnset: data.symptomOnset || '',
+        chiefComplaint:  data.visitForm?.chiefComplaint  || data.chiefComplaint  || '',
+        currentSymptoms: data.visitForm?.currentSymptoms || data.currentSymptoms || '',
+        symptomOnset:    data.visitForm?.symptomOnset    || data.symptomOnset    || '',
       });
+
+      // Restore FormArrays
+      if (data.allergiesMedicationsForm) {
+        this.allergiesMedicationsForm.patchValue({
+          hasAllergies: data.allergiesMedicationsForm.hasAllergies,
+          hasMedications: data.allergiesMedicationsForm.hasMedications,
+        });
+        (data.allergiesMedicationsForm.allergies || []).forEach((a: any) => {
+          this.allergies.push(this.fb.group({ name: [a.name || ''], reaction: [a.reaction || ''] }));
+        });
+        (data.allergiesMedicationsForm.medications || []).forEach((m: any) => {
+          this.medications.push(this.fb.group({ name: [m.name || ''], dosage: [m.dosage || ''], frequency: [m.frequency || ''] }));
+        });
+      }
+
+      if (data.medicalHistoryForm) {
+        this.medicalHistoryForm.patchValue({ hasSurgeries: data.medicalHistoryForm.hasSurgeries });
+        (data.medicalHistoryForm.surgeries || []).forEach((s: any) => {
+          this.surgeries.push(this.fb.group({ type: [s.type || ''], date: [s.date || ''] }));
+        });
+      }
+
+      if (data.familyHistoryForm) {
+        (data.familyHistoryForm.familyConditions || []).forEach((f: any) => {
+          this.familyConditions.push(this.fb.group({ diagnosis: [f.diagnosis || ''], member: [f.member || ''] }));
+        });
+      }
+
+      // Restore insurance card preview URLs
+      if (data.insuranceCardFrontUrl) {
+        this.insuranceCardFront.set(data.insuranceCardFrontUrl);
+        this.insuranceCardFrontUrl = data.insuranceCardFrontUrl;
+      }
+      if (data.insuranceCardBackUrl) {
+        this.insuranceCardBack.set(data.insuranceCardBackUrl);
+        this.insuranceCardBackUrl = data.insuranceCardBackUrl;
+      }
+
     } catch (err) {
       console.warn('Could not prefill from token:', err);
     }

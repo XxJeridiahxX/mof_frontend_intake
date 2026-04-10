@@ -19,6 +19,11 @@ import { MatButtonModule } from '@angular/material/button';
           information and contact you shortly.
         </p>
 
+        <div class="edit-notice">
+          <mat-icon>edit_note</mat-icon>
+          <p>Need to make changes? You can return to this form at any time using the secure link we sent to your phone or email.</p>
+        </div>
+
         <div class="next-steps">
           <div class="step-item">
             <mat-icon>rate_review</mat-icon>
@@ -31,20 +36,14 @@ import { MatButtonModule } from '@angular/material/button';
             <mat-icon>phone_iphone</mat-icon>
             <div>
               <strong>Mobile App</strong>
-              <p>
-                You'll receive a text with download links for the patient app
-                and your login credentials.
-              </p>
+              <p>You'll receive a text with download links for the patient app and your login credentials.</p>
             </div>
           </div>
           <div class="step-item">
             <mat-icon>event</mat-icon>
             <div>
               <strong>Appointment</strong>
-              <p>
-                We'll confirm your preferred appointment time or suggest
-                alternatives.
-              </p>
+              <p>We'll confirm your preferred appointment time or suggest alternatives.</p>
             </div>
           </div>
         </div>
@@ -93,6 +92,14 @@ import { MatButtonModule } from '@angular/material/button';
       font-size: 15px;
       line-height: 1.5;
     }
+
+    .edit-notice {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: #f0f7ff; border: 1px solid #c7ddf8; border-radius: 8px;
+      padding: 12px 16px; margin-top: 20px; text-align: left;
+    }
+    .edit-notice mat-icon { color: #094997; flex-shrink: 0; margin-top: 1px; }
+    .edit-notice p { margin: 0; font-size: 13px; color: #444; line-height: 1.5; }
 
     .next-steps {
       text-align: left;
