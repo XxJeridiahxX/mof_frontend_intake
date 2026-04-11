@@ -627,7 +627,7 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                 <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasSecondary')?.value === false" (click)="insuranceForm.get('hasSecondary')?.setValue(false)">No</button>
               </div>
             </div>
-            @if (insuranceForm.get('hasSecondary')?.value) {
+            @if (insuranceForm.get('hasSecondary')?.value === true) {
               <div class="form-row">
                 <mat-form-field appearance="outline"><mat-label>Insurance Carrier</mat-label><input matInput formControlName="secCarrier" /></mat-form-field>
                 <mat-form-field appearance="outline"><mat-label>Subscriber ID / Member Number</mat-label><input matInput formControlName="secSubscriberId" /></mat-form-field>
@@ -651,41 +651,41 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                   @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Back of Card</span><span class="upload-sub">Tap or drag to upload</span> }
                 </div>
               </div>
-            }
 
-            <!-- Tertiary Insurance -->
-            <div class="form-section-title" style="margin-top:20px">Tertiary Insurance</div>
-            <div class="conditional-toggle-row">
-              <span class="conditional-question">Do you have tertiary (third) insurance?</span>
-              <div class="toggle-btn-group">
-                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasTertiary')?.value === true" (click)="insuranceForm.get('hasTertiary')?.setValue(true)">Yes</button>
-                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasTertiary')?.value === false" (click)="insuranceForm.get('hasTertiary')?.setValue(false)">No</button>
-              </div>
-            </div>
-            @if (insuranceForm.get('hasTertiary')?.value) {
-              <div class="form-row">
-                <mat-form-field appearance="outline"><mat-label>Insurance Carrier</mat-label><input matInput formControlName="terCarrier" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Subscriber ID / Member Number</mat-label><input matInput formControlName="terSubscriberId" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Group Number</mat-label><input matInput formControlName="terGroupNumber" /></mat-form-field>
-              </div>
-              <div class="form-row">
-                <mat-form-field appearance="outline"><mat-label>Relationship to Policy Holder</mat-label><input matInput formControlName="terRelationship" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Policy Holder First Name</mat-label><input matInput formControlName="terPolicyHolderFirstName" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Policy Holder Last Name</mat-label><input matInput formControlName="terPolicyHolderLastName" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Policy Holder DOB</mat-label><input matInput type="date" formControlName="terPolicyHolderDob" /></mat-form-field>
-              </div>
-              <div class="card-upload-row" style="margin-top:8px">
-                <div class="card-upload-zone" [class.has-file]="insuranceCardFront3()" [class.uploading]="uploadingFront3()" (click)="front3Input.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event,'front3')">
-                  <input #front3Input type="file" accept="image/*" hidden (change)="onFileSelected($event,'front3')" />
-                  @if (insuranceCardFront3()) { <img [src]="insuranceCardFront3()" class="card-preview" alt="Tertiary card front" /><div class="card-overlay"><mat-icon>check_circle</mat-icon><span>Front uploaded</span><button class="remove-card-btn" (click)="$event.stopPropagation();removeCard('front3')">Remove</button></div> }
-                  @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Front of Card</span><span class="upload-sub">Tap or drag to upload</span> }
-                </div>
-                <div class="card-upload-zone" [class.has-file]="insuranceCardBack3()" [class.uploading]="uploadingBack3()" (click)="back3Input.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event,'back3')">
-                  <input #back3Input type="file" accept="image/*" hidden (change)="onFileSelected($event,'back3')" />
-                  @if (insuranceCardBack3()) { <img [src]="insuranceCardBack3()" class="card-preview" alt="Tertiary card back" /><div class="card-overlay"><mat-icon>check_circle</mat-icon><span>Back uploaded</span><button class="remove-card-btn" (click)="$event.stopPropagation();removeCard('back3')">Remove</button></div> }
-                  @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Back of Card</span><span class="upload-sub">Tap or drag to upload</span> }
+              <!-- Tertiary Insurance — only shown after secondary is confirmed -->
+              <div class="form-section-title" style="margin-top:20px">Tertiary Insurance</div>
+              <div class="conditional-toggle-row">
+                <span class="conditional-question">Do you have tertiary (third) insurance?</span>
+                <div class="toggle-btn-group">
+                  <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasTertiary')?.value === true" (click)="insuranceForm.get('hasTertiary')?.setValue(true)">Yes</button>
+                  <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasTertiary')?.value === false" (click)="insuranceForm.get('hasTertiary')?.setValue(false)">No</button>
                 </div>
               </div>
+              @if (insuranceForm.get('hasTertiary')?.value === true) {
+                <div class="form-row">
+                  <mat-form-field appearance="outline"><mat-label>Insurance Carrier</mat-label><input matInput formControlName="terCarrier" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Subscriber ID / Member Number</mat-label><input matInput formControlName="terSubscriberId" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Group Number</mat-label><input matInput formControlName="terGroupNumber" /></mat-form-field>
+                </div>
+                <div class="form-row">
+                  <mat-form-field appearance="outline"><mat-label>Relationship to Policy Holder</mat-label><input matInput formControlName="terRelationship" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Policy Holder First Name</mat-label><input matInput formControlName="terPolicyHolderFirstName" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Policy Holder Last Name</mat-label><input matInput formControlName="terPolicyHolderLastName" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Policy Holder DOB</mat-label><input matInput type="date" formControlName="terPolicyHolderDob" /></mat-form-field>
+                </div>
+                <div class="card-upload-row" style="margin-top:8px">
+                  <div class="card-upload-zone" [class.has-file]="insuranceCardFront3()" [class.uploading]="uploadingFront3()" (click)="front3Input.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event,'front3')">
+                    <input #front3Input type="file" accept="image/*" hidden (change)="onFileSelected($event,'front3')" />
+                    @if (insuranceCardFront3()) { <img [src]="insuranceCardFront3()" class="card-preview" alt="Tertiary card front" /><div class="card-overlay"><mat-icon>check_circle</mat-icon><span>Front uploaded</span><button class="remove-card-btn" (click)="$event.stopPropagation();removeCard('front3')">Remove</button></div> }
+                    @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Front of Card</span><span class="upload-sub">Tap or drag to upload</span> }
+                  </div>
+                  <div class="card-upload-zone" [class.has-file]="insuranceCardBack3()" [class.uploading]="uploadingBack3()" (click)="back3Input.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event,'back3')">
+                    <input #back3Input type="file" accept="image/*" hidden (change)="onFileSelected($event,'back3')" />
+                    @if (insuranceCardBack3()) { <img [src]="insuranceCardBack3()" class="card-preview" alt="Tertiary card back" /><div class="card-overlay"><mat-icon>check_circle</mat-icon><span>Back uploaded</span><button class="remove-card-btn" (click)="$event.stopPropagation();removeCard('back3')">Remove</button></div> }
+                    @else { <mat-icon class="upload-icon">photo_camera</mat-icon><span class="upload-label">Back of Card</span><span class="upload-sub">Tap or drag to upload</span> }
+                  </div>
+                </div>
+              }
             }
             } <!-- end @if hasInsurance -->
 
