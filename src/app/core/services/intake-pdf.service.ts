@@ -85,47 +85,61 @@ export class IntakePdfService {
         // ── Demographics ──
         ...this.section('Patient Demographics', 'person', [
           this.row4([
-            ['First Name',   dem.firstName   || '—'],
-            ['Middle Name',  dem.middleName   || '—'],
-            ['Last Name',    dem.lastName     || '—'],
-            ['Suffix',       dem.suffix       || '—'],
+            ['First Name',    dem.firstName    || '—'],
+            ['Middle Name',   dem.middleName   || '—'],
+            ['Last Name',     dem.lastName     || '—'],
+            ['Suffix',        dem.suffix       || '—'],
           ]),
           this.row4([
-            ['Date of Birth',      dem.dateOfBirth      || '—'],
-            ['Sex at Birth',       dem.sexAssigned       || '—'],
-            ['Gender Identity',    dem.genderIdentity    || '—'],
-            ['SSN',               dem.ssn               || '—'],
+            ['Date of Birth',   dem.dateOfBirth      || '—'],
+            ['Sex at Birth',    dem.sexAssigned      || '—'],
+            ['Gender Identity', dem.genderIdentity   || '—'],
+            ['SSN',             dem.ssn              || '—'],
           ]),
           this.row4([
-            ['Race',             dem.race             || '—'],
-            ['Ethnicity',        dem.ethnicity        || '—'],
-            ['Marital Status',   dem.maritalStatus    || '—'],
-            ['Employment',       dem.employmentStatus || '—'],
+            ['Race',            dem.race             || '—'],
+            ['Ethnicity',       dem.ethnicity        || '—'],
+            ['Marital Status',  dem.maritalStatus    || '—'],
+            ['Housing Type',    dem.housingType      || '—'],
           ]),
-          this.row2([
-            ['Employer', dem.employerName || '—'],
-            ['', ''],
+          this.row4([
+            ['Employment',           dem.employmentStatus || '—'],
+            ['Employer Name',        dem.employerName     || '—'],
+            ['Employer Phone',       dem.employerPhone    || '—'],
+            ['Comm. Difficulties',   dem.communicationDiff || '—'],
           ]),
+          ...(dem.communicationDiff === 'Yes' ? [
+            this.row2([['Communication Notes', dem.communicationDesc || '—'], ['', '']]),
+          ] : []),
         ]),
 
         // ── Contact ──
         ...this.section('Contact Information', 'contact_phone', [
           this.row4([
-            ['Cell Phone',  con.cellPhone  || '—'],
-            ['Home Phone',  con.homePhone  || '—'],
-            ['Work Phone',  con.workPhone  || '—'],
-            ['Email',       con.emailAddress || '—'],
+            ['Cell Phone', con.cellPhone     || '—'],
+            ['Home Phone', con.homePhone     || '—'],
+            ['Work Phone', con.workPhone     || '—'],
+            ['Email',      con.emailAddress  || '—'],
           ]),
           this.row4([
-            ['Street',      con.mailingStreet || '—'],
-            ['City',        con.mailingCity   || '—'],
-            ['State',       con.mailingState  || '—'],
-            ['ZIP',         con.mailingZip    || '—'],
+            ['Primary Contact',   con.primaryContactNum   || '—'],
+            ['Best Contact',      con.bestContactMethod   || '—'],
+            ['', ''], ['', ''],
           ]),
-          this.row2([
-            ['Preferred Contact Method', con.bestContactMethod || '—'],
-            ['', ''],
+          this.row4([
+            ['Mailing Street', con.mailingStreet || '—'],
+            ['Apt/Suite',      con.mailingApt    || '—'],
+            ['City',           con.mailingCity   || '—'],
+            ['State / ZIP',    `${con.mailingState || '—'} ${con.mailingZip || ''}`.trim()],
           ]),
+          ...(con.billingSame === 'No' ? [
+            this.row4([
+              ['Billing Street', con.billingStreet || '—'],
+              ['Billing Apt',    con.billingApt    || '—'],
+              ['Billing City',   con.billingCity   || '—'],
+              ['Billing St/ZIP', `${con.billingState || '—'} ${con.billingZip || ''}`.trim()],
+            ]),
+          ] : []),
         ]),
 
         // ── Chief Complaint ──
@@ -133,18 +147,18 @@ export class IntakePdfService {
           this.rowFull('Chief Complaint',  vis.chiefComplaint  || '—'),
           this.rowFull('Current Symptoms', vis.currentSymptoms || '—'),
           this.row2([
-            ['Symptom Onset', vis.symptomOnset || '—'],
-            ['Appointment Requested', d.appointmentTime || '—'],
+            ['Symptom Onset',          vis.symptomOnset    || '—'],
+            ['Appointment Requested',  d.preferredTime     || '—'],
           ]),
         ]),
 
         // ── Insurance ──
         ...this.section('Insurance / Coverage', 'health_and_safety', [
           this.row4([
-            ['Primary Carrier',    ins.primaryCarrier  || '—'],
-            ['Member / Subscriber ID', ins.subscriberId || '—'],
-            ['Group Number',       ins.groupNumber     || '—'],
-            ['Relationship',       ins.relationship    || '—'],
+            ['Primary Carrier',         ins.primaryCarrier       || '—'],
+            ['Member / Subscriber ID',  ins.subscriberId         || '—'],
+            ['Group Number',            ins.groupNumber          || '—'],
+            ['Relationship',            ins.relationship         || '—'],
           ]),
           this.row4([
             ['Policy Holder First', ins.policyHolderFirstName || '—'],
@@ -153,63 +167,149 @@ export class IntakePdfService {
             ['', ''],
           ]),
           ...(cardFrontB64 || cardBackB64 ? [
-            { text: 'Insurance Card Photos', fontSize: 8, color: GRAY, bold: true, margin: [0, 8, 0, 4] } as Content,
+            { text: 'Primary Insurance Card', fontSize: 8, color: GRAY, bold: true, margin: [0, 8, 0, 4] } as Content,
             {
               columns: [
-                cardFrontB64 ? {
-                  stack: [
-                    { text: 'Front', fontSize: 7, color: GRAY, bold: true, margin: [0, 0, 0, 2] },
-                    { image: cardFrontB64, fit: [200, 120], margin: [0, 0, 0, 4] },
-                  ],
-                } : { text: '' },
-                cardBackB64 ? {
-                  stack: [
-                    { text: 'Back', fontSize: 7, color: GRAY, bold: true, margin: [0, 0, 0, 2] },
-                    { image: cardBackB64, fit: [200, 120], margin: [0, 0, 0, 4] },
-                  ],
-                } : { text: '' },
+                cardFrontB64 ? { stack: [
+                  { text: 'Front', fontSize: 7, color: GRAY, bold: true, margin: [0, 0, 0, 2] },
+                  { image: cardFrontB64, fit: [200, 120], margin: [0, 0, 0, 4] },
+                ]} : { text: '' },
+                cardBackB64 ? { stack: [
+                  { text: 'Back', fontSize: 7, color: GRAY, bold: true, margin: [0, 0, 0, 2] },
+                  { image: cardBackB64, fit: [200, 120], margin: [0, 0, 0, 4] },
+                ]} : { text: '' },
               ], columnGap: 16, margin: [0, 0, 0, 4],
             } as Content,
+          ] : []),
+          ...(ins.secCarrier ? [
+            { text: 'Secondary Insurance', fontSize: 8, color: GRAY, bold: true, margin: [0, 8, 0, 4] } as Content,
+            this.row4([
+              ['Carrier',    ins.secCarrier           || '—'],
+              ['Member ID',  ins.secSubscriberId      || '—'],
+              ['Group #',    ins.secGroupNumber       || '—'],
+              ['Relationship', ins.secRelationship    || '—'],
+            ]),
+            this.row4([
+              ['Holder First', ins.secPolicyHolderFirstName || '—'],
+              ['Holder Last',  ins.secPolicyHolderLastName  || '—'],
+              ['Holder DOB',   ins.secPolicyHolderDob       || '—'],
+              ['', ''],
+            ]),
+          ] : []),
+          ...(ins.terCarrier ? [
+            { text: 'Tertiary Insurance', fontSize: 8, color: GRAY, bold: true, margin: [0, 8, 0, 4] } as Content,
+            this.row4([
+              ['Carrier',    ins.terCarrier           || '—'],
+              ['Member ID',  ins.terSubscriberId      || '—'],
+              ['Group #',    ins.terGroupNumber       || '—'],
+              ['Relationship', ins.terRelationship    || '—'],
+            ]),
+            this.row4([
+              ['Holder First', ins.terPolicyHolderFirstName || '—'],
+              ['Holder Last',  ins.terPolicyHolderLastName  || '—'],
+              ['Holder DOB',   ins.terPolicyHolderDob       || '—'],
+              ['', ''],
+            ]),
           ] : []),
         ]),
 
         // ── Care Team ──
-        ...this.section('Care Team / Referral', 'groups', [
+        ...this.section('Care Team', 'groups', [
+          { text: 'Emergency Contact', fontSize: 8, color: GRAY, bold: true, margin: [0, 0, 0, 4] } as Content,
           this.row4([
-            ['Referring Provider',  care.referringProvider  || '—'],
-            ['Primary Care',        care.primaryCareProvider|| '—'],
-            ['Specialist',          care.specialist         || '—'],
-            ['Preferred Language',  care.preferredLanguage  || '—'],
+            ['First Name',    care.emergFirst || '—'],
+            ['Last Name',     care.emergLast  || '—'],
+            ['Relationship',  care.emergRel   || '—'],
+            ['Phone',         care.emergPhone || '—'],
           ]),
+          ...(care.familyFirst ? [
+            { text: 'Family / Friends Involved in Care', fontSize: 8, color: GRAY, bold: true, margin: [0, 6, 0, 4] } as Content,
+            this.row4([
+              ['First Name',   care.familyFirst || '—'],
+              ['Last Name',    care.familyLast  || '—'],
+              ['Relationship', care.familyRel   || '—'],
+              ['Phone',        care.familyPhone || '—'],
+            ]),
+          ] : []),
+          ...(care.pcpFirst || care.pcpLast ? [
+            { text: 'Primary Care Physician', fontSize: 8, color: GRAY, bold: true, margin: [0, 6, 0, 4] } as Content,
+            this.row4([
+              ['First Name', care.pcpFirst    || '—'],
+              ['Last Name',  care.pcpLast     || '—'],
+              ['Practice',   care.pcpPractice || '—'],
+              ['Phone',      care.pcpPhone    || '—'],
+            ]),
+            this.row2([['Fax', care.pcpFax || '—'], ['', '']]),
+          ] : []),
+          ...(care.refFirst || care.refLast ? [
+            { text: 'Referring Physician', fontSize: 8, color: GRAY, bold: true, margin: [0, 6, 0, 4] } as Content,
+            this.row4([
+              ['First Name', care.refFirst     || '—'],
+              ['Last Name',  care.refLast      || '—'],
+              ['Specialty',  care.refSpecialty || '—'],
+              ['Practice',   care.refPractice  || '—'],
+            ]),
+            this.row2([['Phone', care.refPhone || '—'], ['Fax', care.refFax || '—']]),
+          ] : []),
         ]),
 
         // ── Pharmacy ──
         ...this.section('Preferred Pharmacy', 'local_pharmacy', [
-          this.row4([
-            ['Name',   pha.localName   || '—'],
-            ['Phone',  pha.localPhone  || '—'],
-            ['Street', pha.localStreet || '—'],
-            ['City',   pha.localCity   || '—'],
-          ]),
-          this.row2([
-            ['State', pha.localState || '—'],
-            ['ZIP',   pha.localZip   || '—'],
-          ]),
+          ...(pha.localName ? [
+            { text: 'Local Pharmacy', fontSize: 8, color: GRAY, bold: true, margin: [0, 0, 0, 4] } as Content,
+            this.row4([
+              ['Name',         pha.localName        || '—'],
+              ['Phone',        pha.localPhone       || '—'],
+              ['Street',       pha.localStreet      || '—'],
+              ['City/St/ZIP',  pha.localCityStateZip || '—'],
+            ]),
+          ] : [{ text: 'No local pharmacy on file.', fontSize: 9, color: '#bbb', italics: true, margin: [0, 0, 0, 4] } as Content]),
+          ...(pha.mailName ? [
+            { text: 'Mail-In Pharmacy', fontSize: 8, color: GRAY, bold: true, margin: [0, 6, 0, 4] } as Content,
+            this.row2([
+              ['Name', pha.mailName    || '—'],
+              ['Account / Phone', pha.mailAccount || '—'],
+            ]),
+          ] : []),
         ]),
 
         // ── Social History ──
         ...this.section('Social History', 'diversity_3', [
           this.row4([
-            ['Tobacco Use',     soc.usesTobacco       || '—'],
-            ['Frequency',       soc.tobaccoFrequency  || '—'],
-            ['Drug Use',        soc.usesDrugs         || '—'],
-            ['Drug Types',      soc.drugsTypes        || '—'],
+            ['Alcohol Use',       soc.drinksAlcohol    || '—'],
+            ['Alcohol Frequency', soc.alcoholFrequency || '—'],
+            ['Drinks/Session',    soc.alcoholDrinks    || '—'],
+            ['', ''],
           ]),
           this.row4([
-            ['Exercise',        soc.exercises         || '—'],
-            ['Exercise Type',   soc.exerciseType      || '—'],
-            ['Diet Rating',     soc.dietRating        || '—'],
+            ['Tobacco Use',      soc.usesTobacco      || '—'],
+            ['Types',            Array.isArray(soc.tobaccoTypes) ? soc.tobaccoTypes.join(', ') : (soc.tobaccoTypes || '—')],
+            ['Frequency/Day',    soc.tobaccoFrequency || '—'],
+            ['Start Year',       soc.tobaccoStartYear || '—'],
+          ]),
+          this.row4([
+            ['Past Tobacco',     soc.usedTobaccoPast  || '—'],
+            ['Past Start',       soc.tobaccoPastStart || '—'],
+            ['Past Stop',        soc.tobaccoPastStop  || '—'],
             ['', ''],
+          ]),
+          this.row4([
+            ['Drug Use',         soc.usesDrugs        || '—'],
+            ['Drug Types',       soc.drugsTypes       || '—'],
+            ['Drug Start Year',  soc.drugsStartYear   || '—'],
+            ['', ''],
+          ]),
+          this.row4([
+            ['Past Drug Use',    soc.usedDrugsPast    || '—'],
+            ['Past Start',       soc.drugsPastStart   || '—'],
+            ['Past Stop',        soc.drugsPastStop    || '—'],
+            ['', ''],
+          ]),
+          this.row4([
+            ['Exercise',         soc.exercises        || '—'],
+            ['Exercise Type',    soc.exerciseType     || '—'],
+            ['Frequency',        soc.exerciseFrequency|| '—'],
+            ['Diet Rating',      soc.dietRating       || '—'],
           ]),
         ]),
 
