@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, signal, OnInit, ChangeDetectorRef } from '@angular/core';
 import { upload } from '@vercel/blob/client';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import {
@@ -23,7 +23,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -213,20 +213,22 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                 <mat-label>Type of Housing</mat-label>
                 <input matInput formControlName="housingType" placeholder="e.g. House, Apartment, Homeless" />
               </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Communication Difficulties?</mat-label>
-                <mat-select formControlName="communicationDiff">
-                  <mat-option value="Yes">Yes</mat-option>
-                  <mat-option value="No">No</mat-option>
-                </mat-select>
-              </mat-form-field>
-              @if (demographicsForm.value.communicationDiff === 'Yes') {
+            </div>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you have any communication difficulties (hearing, speech, language)?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="demographicsForm.get('communicationDiff')?.value === 'Yes'" (click)="demographicsForm.get('communicationDiff')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="demographicsForm.get('communicationDiff')?.value === 'No'" (click)="demographicsForm.get('communicationDiff')?.setValue('No')">No</button>
+              </div>
+            </div>
+            @if (demographicsForm.value.communicationDiff === 'Yes') {
+              <div class="form-row">
                 <mat-form-field appearance="outline">
                   <mat-label>Please describe</mat-label>
                   <input matInput formControlName="communicationDesc" placeholder="e.g., hearing impaired" />
                 </mat-form-field>
-              }
-            </div>
+              </div>
+            }
 
             <div class="form-row">
               <mat-form-field appearance="outline">
@@ -285,14 +287,12 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             </div>
 
             <div class="form-section-title">Billing Address</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Billing Address Same as Mailing?</mat-label>
-                <mat-select formControlName="billingSame">
-                  <mat-option value="Yes">Yes</mat-option>
-                  <mat-option value="No">No</mat-option>
-                </mat-select>
-              </mat-form-field>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Is your billing address the same as your mailing address?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="contactForm.get('billingSame')?.value === 'Yes'" (click)="contactForm.get('billingSame')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="contactForm.get('billingSame')?.value === 'No'" (click)="contactForm.get('billingSame')?.setValue('No')">No</button>
+              </div>
             </div>
             @if (contactForm.value.billingSame === 'No') {
               <div class="form-row">
@@ -388,31 +388,40 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             </div>
 
             <div class="form-section-title">Family / Friends Involved in Care</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>First Name</mat-label>
-                <input matInput formControlName="familyFirst" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Last Name</mat-label>
-                <input matInput formControlName="familyLast" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Relationship</mat-label>
-                <input matInput formControlName="familyRel" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Contact Number</mat-label>
-                <input matInput type="tel" formControlName="familyPhone" />
-              </mat-form-field>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Is a family member or friend involved in your care?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasFamilyCare')?.value === true" (click)="careTeamForm.get('hasFamilyCare')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasFamilyCare')?.value === false" (click)="careTeamForm.get('hasFamilyCare')?.setValue(false)">No</button>
+              </div>
             </div>
+            @if (careTeamForm.get('hasFamilyCare')?.value) {
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>First Name</mat-label>
+                  <input matInput formControlName="familyFirst" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Last Name</mat-label>
+                  <input matInput formControlName="familyLast" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Relationship</mat-label>
+                  <input matInput formControlName="familyRel" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Contact Number</mat-label>
+                  <input matInput type="tel" formControlName="familyPhone" />
+                </mat-form-field>
+              </div>
+            }
 
             <div class="form-section-title">Primary Care Physician (PCP)</div>
             <div class="conditional-toggle-row">
               <span class="conditional-question">Do you have a Primary Care Physician?</span>
               <div class="toggle-btn-group">
-                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasPcp')?.value" (click)="careTeamForm.get('hasPcp')?.setValue(true)">Yes</button>
-                <button type="button" class="toggle-btn" [class.active]="!careTeamForm.get('hasPcp')?.value" (click)="careTeamForm.get('hasPcp')?.setValue(false)">No</button>
+                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasPcp')?.value === true" (click)="careTeamForm.get('hasPcp')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasPcp')?.value === false" (click)="careTeamForm.get('hasPcp')?.setValue(false)">No</button>
               </div>
             </div>
             @if (careTeamForm.get('hasPcp')?.value) {
@@ -446,8 +455,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             <div class="conditional-toggle-row">
               <span class="conditional-question">Were you referred by a physician?</span>
               <div class="toggle-btn-group">
-                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasReferring')?.value" (click)="careTeamForm.get('hasReferring')?.setValue(true)">Yes</button>
-                <button type="button" class="toggle-btn" [class.active]="!careTeamForm.get('hasReferring')?.value" (click)="careTeamForm.get('hasReferring')?.setValue(false)">No</button>
+                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasReferring')?.value === true" (click)="careTeamForm.get('hasReferring')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="careTeamForm.get('hasReferring')?.value === false" (click)="careTeamForm.get('hasReferring')?.setValue(false)">No</button>
               </div>
             </div>
             @if (careTeamForm.get('hasReferring')?.value) {
@@ -614,8 +623,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             <div class="conditional-toggle-row">
               <span class="conditional-question">Do you have secondary insurance?</span>
               <div class="toggle-btn-group">
-                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasSecondary')?.value" (click)="insuranceForm.get('hasSecondary')?.setValue(true)">Yes</button>
-                <button type="button" class="toggle-btn" [class.active]="!insuranceForm.get('hasSecondary')?.value" (click)="insuranceForm.get('hasSecondary')?.setValue(false)">No</button>
+                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasSecondary')?.value === true" (click)="insuranceForm.get('hasSecondary')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasSecondary')?.value === false" (click)="insuranceForm.get('hasSecondary')?.setValue(false)">No</button>
               </div>
             </div>
             @if (insuranceForm.get('hasSecondary')?.value) {
@@ -649,8 +658,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             <div class="conditional-toggle-row">
               <span class="conditional-question">Do you have tertiary (third) insurance?</span>
               <div class="toggle-btn-group">
-                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasTertiary')?.value" (click)="insuranceForm.get('hasTertiary')?.setValue(true)">Yes</button>
-                <button type="button" class="toggle-btn" [class.active]="!insuranceForm.get('hasTertiary')?.value" (click)="insuranceForm.get('hasTertiary')?.setValue(false)">No</button>
+                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasTertiary')?.value === true" (click)="insuranceForm.get('hasTertiary')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="insuranceForm.get('hasTertiary')?.value === false" (click)="insuranceForm.get('hasTertiary')?.setValue(false)">No</button>
               </div>
             </div>
             @if (insuranceForm.get('hasTertiary')?.value) {
@@ -714,8 +723,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             <div class="conditional-toggle-row">
               <span class="conditional-question">Do you have a preferred local pharmacy?</span>
               <div class="toggle-btn-group">
-                <button type="button" class="toggle-btn" [class.active]="pharmacyForm.get('hasLocalPharmacy')?.value" (click)="pharmacyForm.get('hasLocalPharmacy')?.setValue(true)">Yes</button>
-                <button type="button" class="toggle-btn" [class.active]="!pharmacyForm.get('hasLocalPharmacy')?.value" (click)="pharmacyForm.get('hasLocalPharmacy')?.setValue(false)">No</button>
+                <button type="button" class="toggle-btn" [class.active]="pharmacyForm.get('hasLocalPharmacy')?.value === true" (click)="pharmacyForm.get('hasLocalPharmacy')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="pharmacyForm.get('hasLocalPharmacy')?.value === false" (click)="pharmacyForm.get('hasLocalPharmacy')?.setValue(false)">No</button>
               </div>
             </div>
             @if (pharmacyForm.get('hasLocalPharmacy')?.value) {
@@ -745,8 +754,8 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             <div class="conditional-toggle-row">
               <span class="conditional-question">Do you use a mail-in pharmacy?</span>
               <div class="toggle-btn-group">
-                <button type="button" class="toggle-btn" [class.active]="pharmacyForm.get('hasMailPharmacy')?.value" (click)="pharmacyForm.get('hasMailPharmacy')?.setValue(true)">Yes</button>
-                <button type="button" class="toggle-btn" [class.active]="!pharmacyForm.get('hasMailPharmacy')?.value" (click)="pharmacyForm.get('hasMailPharmacy')?.setValue(false)">No</button>
+                <button type="button" class="toggle-btn" [class.active]="pharmacyForm.get('hasMailPharmacy')?.value === true" (click)="pharmacyForm.get('hasMailPharmacy')?.setValue(true)">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="pharmacyForm.get('hasMailPharmacy')?.value === false" (click)="pharmacyForm.get('hasMailPharmacy')?.setValue(false)">No</button>
               </div>
             </div>
             @if (pharmacyForm.get('hasMailPharmacy')?.value) {
@@ -804,12 +813,12 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
           <form [formGroup]="allergiesMedicationsForm" class="step-form">
 
             <div class="form-section-title">Allergies</div>
-            <div class="form-row">
-              <p style="margin:0 0 8px;">Do you have any known allergies (Medications, Food, Environmental, Latex)?</p>
-              <mat-radio-group formControlName="hasAllergies" color="primary">
-                <mat-radio-button value="Yes">Yes</mat-radio-button>
-                <mat-radio-button value="No">No</mat-radio-button>
-              </mat-radio-group>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you have any known allergies (medications, food, environmental, latex)?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="allergiesMedicationsForm.get('hasAllergies')?.value === 'Yes'" (click)="allergiesMedicationsForm.get('hasAllergies')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="allergiesMedicationsForm.get('hasAllergies')?.value === 'No'" (click)="allergiesMedicationsForm.get('hasAllergies')?.setValue('No')">No</button>
+              </div>
             </div>
             
             @if (allergiesMedicationsForm.value.hasAllergies === 'Yes') {
@@ -834,12 +843,12 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
             }
 
             <div class="form-section-title" style="margin-top:24px;">Current Medications</div>
-            <div class="form-row">
-              <p style="margin:0 0 8px;">Are you currently taking any prescription medications, OTC medications, or supplements?</p>
-              <mat-radio-group formControlName="hasMedications" color="primary">
-                <mat-radio-button value="Yes">Yes</mat-radio-button>
-                <mat-radio-button value="No">No</mat-radio-button>
-              </mat-radio-group>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Are you currently taking any prescription medications, OTC medications, or supplements?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="allergiesMedicationsForm.get('hasMedications')?.value === 'Yes'" (click)="allergiesMedicationsForm.get('hasMedications')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="allergiesMedicationsForm.get('hasMedications')?.value === 'No'" (click)="allergiesMedicationsForm.get('hasMedications')?.setValue('No')">No</button>
+              </div>
             </div>
 
             @if (allergiesMedicationsForm.value.hasMedications === 'Yes') {
@@ -879,12 +888,12 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
           <form [formGroup]="medicalHistoryForm" class="step-form">
 
             <div class="form-section-title">Past Surgical History</div>
-            <div class="form-row">
-              <p style="margin:0 0 8px;">Have you had any past procedures or surgeries?</p>
-              <mat-radio-group formControlName="hasSurgeries" color="primary">
-                <mat-radio-button value="Yes">Yes</mat-radio-button>
-                <mat-radio-button value="No">No</mat-radio-button>
-              </mat-radio-group>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Have you had any past procedures or surgeries?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="medicalHistoryForm.get('hasSurgeries')?.value === 'Yes'" (click)="medicalHistoryForm.get('hasSurgeries')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="medicalHistoryForm.get('hasSurgeries')?.value === 'No'" (click)="medicalHistoryForm.get('hasSurgeries')?.setValue('No')">No</button>
+              </div>
             </div>
             
             @if (medicalHistoryForm.value.hasSurgeries === 'Yes') {
@@ -916,15 +925,15 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
           <form [formGroup]="socialHistoryForm" class="step-form">
 
             <div class="form-section-title">Alcohol</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Do you drink alcohol?</mat-label>
-                <mat-select formControlName="drinksAlcohol">
-                  <mat-option value="Yes">Yes</mat-option>
-                  <mat-option value="No">No</mat-option>
-                </mat-select>
-              </mat-form-field>
-              @if (socialHistoryForm.value.drinksAlcohol === 'Yes') {
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you drink alcohol?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('drinksAlcohol')?.value === 'Yes'" (click)="socialHistoryForm.get('drinksAlcohol')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('drinksAlcohol')?.value === 'No'" (click)="socialHistoryForm.get('drinksAlcohol')?.setValue('No')">No</button>
+              </div>
+            </div>
+            @if (socialHistoryForm.value.drinksAlcohol === 'Yes') {
+              <div class="form-row">
                 <mat-form-field appearance="outline">
                   <mat-label>How often?</mat-label>
                   <mat-select formControlName="alcoholFrequency">
@@ -938,18 +947,16 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                   <mat-label>Drinks at a time?</mat-label>
                   <input matInput formControlName="alcoholDrinks" />
                 </mat-form-field>
-              }
-            </div>
+              </div>
+            }
 
             <div class="form-section-title">Tobacco / Nicotine</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Current use?</mat-label>
-                <mat-select formControlName="usesTobacco">
-                  <mat-option value="Yes">Yes</mat-option>
-                  <mat-option value="No">No</mat-option>
-                </mat-select>
-              </mat-form-field>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you currently use tobacco or nicotine products?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('usesTobacco')?.value === 'Yes'" (click)="socialHistoryForm.get('usesTobacco')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('usesTobacco')?.value === 'No'" (click)="socialHistoryForm.get('usesTobacco')?.setValue('No')">No</button>
+              </div>
             </div>
             @if (socialHistoryForm.value.usesTobacco === 'Yes') {
               <div class="form-row">
@@ -973,15 +980,15 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </div>
             }
             @if (socialHistoryForm.value.usesTobacco === 'No') {
-              <div class="form-row">
-                <mat-form-field appearance="outline">
-                  <mat-label>Used in the past?</mat-label>
-                  <mat-select formControlName="usedTobaccoPast">
-                    <mat-option value="Yes">Yes</mat-option>
-                    <mat-option value="No">No</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                @if (socialHistoryForm.value.usedTobaccoPast === 'Yes') {
+              <div class="conditional-toggle-row">
+                <span class="conditional-question">Have you used tobacco or nicotine products in the past?</span>
+                <div class="toggle-btn-group">
+                  <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('usedTobaccoPast')?.value === 'Yes'" (click)="socialHistoryForm.get('usedTobaccoPast')?.setValue('Yes')">Yes</button>
+                  <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('usedTobaccoPast')?.value === 'No'" (click)="socialHistoryForm.get('usedTobaccoPast')?.setValue('No')">No</button>
+                </div>
+              </div>
+              @if (socialHistoryForm.value.usedTobaccoPast === 'Yes') {
+                <div class="form-row">
                   <mat-form-field appearance="outline">
                     <mat-label>Start Year</mat-label>
                     <input matInput formControlName="tobaccoPastStart" />
@@ -990,19 +997,17 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                     <mat-label>Stop Year</mat-label>
                     <input matInput formControlName="tobaccoPastStop" />
                   </mat-form-field>
-                }
-              </div>
+                </div>
+              }
             }
 
             <div class="form-section-title">Recreational Drugs</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Current use?</mat-label>
-                <mat-select formControlName="usesDrugs">
-                  <mat-option value="Yes">Yes</mat-option>
-                  <mat-option value="No">No</mat-option>
-                </mat-select>
-              </mat-form-field>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you currently use recreational drugs?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('usesDrugs')?.value === 'Yes'" (click)="socialHistoryForm.get('usesDrugs')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('usesDrugs')?.value === 'No'" (click)="socialHistoryForm.get('usesDrugs')?.setValue('No')">No</button>
+              </div>
             </div>
             @if (socialHistoryForm.value.usesDrugs === 'Yes') {
               <div class="form-row">
@@ -1017,15 +1022,15 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
               </div>
             }
             @if (socialHistoryForm.value.usesDrugs === 'No') {
-              <div class="form-row">
-                <mat-form-field appearance="outline">
-                  <mat-label>Used in the past?</mat-label>
-                  <mat-select formControlName="usedDrugsPast">
-                    <mat-option value="Yes">Yes</mat-option>
-                    <mat-option value="No">No</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                @if (socialHistoryForm.value.usedDrugsPast === 'Yes') {
+              <div class="conditional-toggle-row">
+                <span class="conditional-question">Have you used recreational drugs in the past?</span>
+                <div class="toggle-btn-group">
+                  <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('usedDrugsPast')?.value === 'Yes'" (click)="socialHistoryForm.get('usedDrugsPast')?.setValue('Yes')">Yes</button>
+                  <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('usedDrugsPast')?.value === 'No'" (click)="socialHistoryForm.get('usedDrugsPast')?.setValue('No')">No</button>
+                </div>
+              </div>
+              @if (socialHistoryForm.value.usedDrugsPast === 'Yes') {
+                <div class="form-row">
                   <mat-form-field appearance="outline">
                     <mat-label>Start Year</mat-label>
                     <input matInput formControlName="drugsPastStart" />
@@ -1034,20 +1039,20 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                     <mat-label>Stop Year</mat-label>
                     <input matInput formControlName="drugsPastStop" />
                   </mat-form-field>
-                }
-              </div>
+                </div>
+              }
             }
 
             <div class="form-section-title">Exercise & Diet</div>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Regular Exercise?</mat-label>
-                <mat-select formControlName="exercises">
-                  <mat-option value="Yes">Yes</mat-option>
-                  <mat-option value="No">No</mat-option>
-                </mat-select>
-              </mat-form-field>
-              @if (socialHistoryForm.value.exercises === 'Yes') {
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Do you exercise regularly?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('exercises')?.value === 'Yes'" (click)="socialHistoryForm.get('exercises')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="socialHistoryForm.get('exercises')?.value === 'No'" (click)="socialHistoryForm.get('exercises')?.setValue('No')">No</button>
+              </div>
+            </div>
+            @if (socialHistoryForm.value.exercises === 'Yes') {
+              <div class="form-row">
                 <mat-form-field appearance="outline">
                   <mat-label>Type</mat-label>
                   <input matInput formControlName="exerciseType" />
@@ -1056,7 +1061,9 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
                   <mat-label>Frequency</mat-label>
                   <input matInput formControlName="exerciseFrequency" placeholder="Days per week" />
                 </mat-form-field>
-              }
+              </div>
+            }
+            <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Diet Rating</mat-label>
                 <mat-select formControlName="dietRating">
@@ -1077,12 +1084,12 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
           <form [formGroup]="familyHistoryForm" class="step-form">
 
             <div class="form-section-title">Family History</div>
-            <div class="form-row">
-              <p style="margin:0 0 8px;">Significant family history of medical conditions?</p>
-              <mat-radio-group formControlName="hasFamilyHistory" color="primary">
-                <mat-radio-button value="Yes">Yes</mat-radio-button>
-                <mat-radio-button value="No">No</mat-radio-button>
-              </mat-radio-group>
+            <div class="conditional-toggle-row">
+              <span class="conditional-question">Is there significant family history of medical conditions?</span>
+              <div class="toggle-btn-group">
+                <button type="button" class="toggle-btn" [class.active]="familyHistoryForm.get('hasFamilyHistory')?.value === 'Yes'" (click)="familyHistoryForm.get('hasFamilyHistory')?.setValue('Yes')">Yes</button>
+                <button type="button" class="toggle-btn" [class.active]="familyHistoryForm.get('hasFamilyHistory')?.value === 'No'" (click)="familyHistoryForm.get('hasFamilyHistory')?.setValue('No')">No</button>
+              </div>
             </div>
             
             @if (familyHistoryForm.value.hasFamilyHistory === 'Yes') {
@@ -1383,17 +1390,22 @@ import { FHIR_CONSTANTS, RequireMatchValidator } from '../../../../core/constant
       display: flex; align-items: center; justify-content: space-between;
       gap: 12px; flex-wrap: wrap;
       background: #f8fafc; border: 1px solid #e8eaed; border-radius: 8px;
-      padding: 12px 16px; margin-bottom: 14px;
+      padding: 14px 16px; margin-bottom: 14px;
     }
-    .conditional-question { font-size: 14px; color: #444; font-weight: 500; }
+    .conditional-question { font-size: 14px; color: #444; font-weight: 500; flex: 1; min-width: 0; }
     .toggle-btn-group { display: flex; gap: 0; border-radius: 6px; overflow: hidden; border: 1px solid #d0d5dd; flex-shrink: 0; }
     .toggle-btn {
-      padding: 6px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+      padding: 10px 28px; font-size: 14px; font-weight: 600; cursor: pointer;
       border: none; background: #fff; color: #666; transition: background 0.15s, color 0.15s;
-      font-family: inherit;
+      font-family: inherit; min-height: 44px; line-height: 1;
     }
-    .toggle-btn:first-child { border-right: 1px solid #d0d5dd; }
+    .toggle-btn:not(:last-child) { border-right: 1px solid #d0d5dd; }
     .toggle-btn.active { background: #094997; color: white; }
+    @media (max-width: 480px) {
+      .conditional-toggle-row { flex-direction: column; align-items: stretch; }
+      .toggle-btn-group { width: 100%; }
+      .toggle-btn { flex: 1; }
+    }
 
     /* Out-of-pocket acknowledgment */
     .oop-notice {
@@ -1557,12 +1569,12 @@ export class IntakeFormPageComponent implements OnInit {
       ethnicity: ['', RequireMatchValidator(FHIR_CONSTANTS.OMB_ETHNICITY)], 
       maritalStatus: ['', RequireMatchValidator(FHIR_CONSTANTS.MARITAL_STATUS)], 
       housingType: [''],
-      communicationDiff: ['No'], communicationDesc: [''], employmentStatus: [''], employerName: [''], employerPhone: ['']
+      communicationDiff: [null], communicationDesc: [''], employmentStatus: [''], employerName: [''], employerPhone: ['']
     });
 
     this.contactForm = this.fb.group({
       mailingStreet: [''], mailingApt: [''], mailingCity: [''], mailingState: [''], mailingZip: [''],
-      billingSame: ['Yes'], billingStreet: [''], billingApt: [''], billingCity: [''], billingState: [''], billingZip: [''],
+      billingSame: [null], billingStreet: [''], billingApt: [''], billingCity: [''], billingState: [''], billingZip: [''],
       cellPhone: ['', Validators.required], homePhone: [''], workPhone: [''],
       primaryContactNum: ['Cell'], bestContactMethod: ['Phone Call'], emailAddress: ['', [Validators.required, Validators.email]]
     });
@@ -1573,52 +1585,53 @@ export class IntakeFormPageComponent implements OnInit {
       primaryCarrier: [''], subscriberId: [''], groupNumber: [''],
       relationship: ['Self', RequireMatchValidator(FHIR_CONSTANTS.RELATIONSHIPS)],
       policyHolderFirstName: [''], policyHolderLastName: [''], policyHolderDob: [''],
-      hasSecondary: [false],
+      hasSecondary: [null],
       secCarrier: [''], secSubscriberId: [''], secGroupNumber: [''], secRelationship: ['Self'],
       secPolicyHolderFirstName: [''], secPolicyHolderLastName: [''], secPolicyHolderDob: [''],
-      hasTertiary: [false],
+      hasTertiary: [null],
       terCarrier: [''], terSubscriberId: [''], terGroupNumber: [''], terRelationship: ['Self'],
       terPolicyHolderFirstName: [''], terPolicyHolderLastName: [''], terPolicyHolderDob: [''],
     });
 
     this.careTeamForm = this.fb.group({
       emergFirst: ['', Validators.required], emergLast: ['', Validators.required], emergRel: [''], emergPhone: ['', Validators.required],
+      hasFamilyCare: [null],
       familyFirst: [''], familyLast: [''], familyRel: [''], familyPhone: [''],
-      hasPcp: [false],
+      hasPcp: [null],
       pcpFirst: [''], pcpLast: [''], pcpPractice: [''], pcpPhone: [''], pcpFax: [''],
-      hasReferring: [false],
+      hasReferring: [null],
       refFirst: [''], refLast: [''], refSpecialty: [''], refPractice: [''], refPhone: [''], refFax: ['']
     });
 
     this.pharmacyForm = this.fb.group({
-      hasLocalPharmacy: [false],
+      hasLocalPharmacy: [null],
       localName: [''], localStreet: [''], localCityStateZip: [''], localPhone: [''],
-      hasMailPharmacy: [false],
+      hasMailPharmacy: [null],
       mailName: [''], mailAccount: ['']
     });
 
     this.visitForm = this.fb.group({ chiefComplaint: [''], currentSymptoms: [''], symptomOnset: [''] });
 
     this.allergiesMedicationsForm = this.fb.group({
-      hasAllergies: ['No'], allergies: this.fb.array([]),
-      hasMedications: ['No'], medications: this.fb.array([])
+      hasAllergies: [null], allergies: this.fb.array([]),
+      hasMedications: [null], medications: this.fb.array([])
     });
 
     this.medicalHistoryForm = this.fb.group({
-      hasSurgeries: ['No'], surgeries: this.fb.array([])
+      hasSurgeries: [null], surgeries: this.fb.array([])
     });
 
     this.socialHistoryForm = this.fb.group({
-      drinksAlcohol: ['No'], alcoholFrequency: [''], alcoholDrinks: [''],
-      usesTobacco: ['No'], tobaccoTypes: [[]], tobaccoFrequency: [''], tobaccoStartYear: [''],
-      usedTobaccoPast: ['No'], tobaccoPastStart: [''], tobaccoPastStop: [''],
-      usesDrugs: ['No'], drugsTypes: [''], drugsStartYear: [''],
-      usedDrugsPast: ['No'], drugsPastStart: [''], drugsPastStop: [''],
-      exercises: ['No'], exerciseType: [''], exerciseFrequency: [''], dietRating: ['Good']
+      drinksAlcohol: [null], alcoholFrequency: [''], alcoholDrinks: [''],
+      usesTobacco: [null], tobaccoTypes: [[]], tobaccoFrequency: [''], tobaccoStartYear: [''],
+      usedTobaccoPast: [null], tobaccoPastStart: [''], tobaccoPastStop: [''],
+      usesDrugs: [null], drugsTypes: [''], drugsStartYear: [''],
+      usedDrugsPast: [null], drugsPastStart: [''], drugsPastStop: [''],
+      exercises: [null], exerciseType: [''], exerciseFrequency: [''], dietRating: ['']
     });
 
     this.familyHistoryForm = this.fb.group({
-      hasFamilyHistory: ['No'], familyConditions: this.fb.array([])
+      hasFamilyHistory: [null], familyConditions: this.fb.array([])
     });
 
     this.consentForm = this.fb.group({
